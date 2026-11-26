@@ -1,0 +1,54 @@
+{
+  "ranging": {
+    "墙体数据": {
+      "train_bias_m": -0.060000000000000414,
+      "holdout_n": 10,
+      "median_absolute_error_m": 0.030999999999999972,
+      "mean_absolute_error_m": 0.045600000000000016,
+      "max_absolute_error_m": 0.1679999999999997
+    },
+    "金属板数据": {
+      "train_bias_m": -0.015000000000000346,
+      "holdout_n": 10,
+      "median_absolute_error_m": 0.012999999999999956,
+      "mean_absolute_error_m": 0.016600000000000014,
+      "max_absolute_error_m": 0.04500000000000004
+    }
+  },
+  "walls": {
+    "all": {
+      "front_median_absolute_error_m": 0.36104938271604947,
+      "front_fitted_slope": -1.3793406593406599,
+      "rear_apparent_y_m": 1.3,
+      "rear_band_peak_to_median_db": 2.2017938619361925
+    },
+    "odd": {
+      "front_median_absolute_error_m": 0.37104938271604937,
+      "front_fitted_slope": -1.3872527472527478,
+      "rear_apparent_y_m": 1.3,
+      "rear_band_peak_to_median_db": 2.257559799474927
+    },
+    "even": {
+      "front_median_absolute_error_m": 0.024197530864197514,
+      "front_fitted_slope": -1.342417582417583,
+      "rear_apparent_y_m": 1.3,
+      "rear_band_peak_to_median_db": 2.052738294519949
+    }
+  },
+  "ranging_pass": true,
+  "wall_pass": false,
+  "rear_split_difference_m": 0.0,
+  "empty_direct_offsets_samples": [
+    3.0,
+    1.0,
+    0.0,
+    0.0,
+    1.0,
+    3.0,
+    3.0
+  ],
+  "empty_record_count": 10,
+  "range_processing": "relative envelope and one offset fitted per material",
+  "wall_processing": "air-path envelope back-projection",
+  "bounded_amplitude_gain": true
+}

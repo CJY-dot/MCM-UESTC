@@ -1,0 +1,16 @@
+name: mcm-modeling
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.13
+  - libblas=*=*openblas
+  - numpy
+  - pandas
+  - scipy
+  - matplotlib-base
+  - pillow
+  - scikit-learn
+  - statsmodels
+  - sympy
+  - openpyxl

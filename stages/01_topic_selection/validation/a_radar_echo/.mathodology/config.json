@@ -1,0 +1,6 @@
+{
+  "stop_gate": "errors",
+  "near_miss_rel": 0.02,
+  "allow_result_edits": false,
+  "contest": null
+}

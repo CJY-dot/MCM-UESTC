@@ -1,0 +1,33 @@
+flowchart TD
+    source["B 题原始计划与工序事件表"] --> data["核对炉次、浇次、设备和时间语义<br/>生成重包与空包运输任务"]
+    layout["题设设备约束与有依据的布局情景"] --> core["共用模型<br/>任务时窗、工序前序、资源占用、五车连续净距"]
+    data --> core
+
+    subgraph deterministic["场景一  确定性调度"]
+        base["匀速轨迹与事件驱动派车"] --> replay["独立回放五车全天窗轨迹"]
+        replay --> good{"通过硬约束检查？"}
+        good -->|通过| schedule["可行任务表、轨迹与交接余量"]
+        good -->|未通过或无候选| diagnosis["检查物理下界与资源冲突<br/>必要时用短窗时空弧 MILP 诊断"]
+        diagnosis -->|找到候选| replay
+        diagnosis -->|有证据| boundary["记录不可行条件与最小时间调整"]
+    end
+
+    core --> base
+    schedule --> random["场景二  按历史估计工时扰动<br/>用档位、加减速和避让模板替换匀速段"]
+    core --> random
+    random --> risk["配对回放<br/>比较供钢连续性、等待分布和运行时间"]
+    schedule --> recovery["场景三  故障到达后冻结已执行前缀<br/>继承车、包、设备和浇次状态"]
+    random -->|复用运动模板和可见状态| recovery
+    recovery --> repair["先局部修复，再短窗滚动重优化"]
+    repair --> outcomes["校验重排轨迹与计划保序<br/>报告可恢复范围与中断边界"]
+    schedule --> report["三场景共用的任务表、轨迹和指标"]
+    boundary --> report
+    risk --> report
+    outcomes --> report
+
+    classDef shared fill:#eaf2ff,stroke:#3b69a5,color:#132d4d
+    classDef verification fill:#e7f5ed,stroke:#347956,color:#173e2c
+    classDef issue fill:#fff3de,stroke:#ad7434,color:#563710
+    class core,base,random,recovery shared
+    class replay,schedule,risk,outcomes,report verification
+    class diagnosis,boundary issue

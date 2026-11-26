@@ -1,0 +1,70 @@
+# 原始赛题、参考资料、原始及派生输入
+/docs/
+/校赛/
+/正式赛/
+/problem/data/raw/
+/problem/data/processed/
+/references/
+
+# 本机指令、安装工具、备份与临时工作区
+/AGENTS.md
+/AGENTS.override.md
+/CLAUDE.md
+CLAUDE.local.md
+/SETUP_REPORT.md
+/.agents/skills/
+/.codex/agents/
+/.claude/
+/.setup-backups/
+/local/
+
+# 本机日志、状态与 Workbench 自动产物（含短验证子工作区）
+/logs/
+/state/
+runs/
+**/.mathodology/report.json
+
+# 含实际生产明细的短验证和原稿，确认授权或脱敏后再共享
+/stages/01_topic_selection/validation/b_crane_dispatch/problem/case.json
+/stages/01_topic_selection/validation/b_crane_dispatch/results/
+/stages/01_topic_selection/validation/VALIDATION_SUMMARY.md
+/stages/01_topic_selection/A/A_math_modeling_analysis.md
+/stages/01_topic_selection/C/C_critical_review.md
+/stages/02_modeling/A/A_model_proposal.md
+/stages/02_modeling/A/A_discussion_brief.md
+
+# 开发环境、缓存、凭据与办公软件临时文件
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+node_modules/
+.env
+.env.*
+*.pem
+*.key
+credentials.json
+~$*
+Thumbs.db
+desktop.ini
+.DS_Store
+*.tmp
+*.swp
+
+# 生成的 LaTeX 宏、表格和编译产物（含短验证子工作区）
+**/paper/results.tex
+**/paper/tables/
+**/paper/main.pdf
+**/paper/**/*.aux
+**/paper/**/*.bbl
+**/paper/**/*.blg
+**/paper/**/*.fdb_latexmk
+**/paper/**/*.fls
+**/paper/**/*.log
+**/paper/**/*.out
+**/paper/**/*.synctex.gz
+**/paper/**/*.toc
+**/paper/**/*.xdv
