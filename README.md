@@ -14,6 +14,7 @@
 ├── .gitignore
 ├── environment.yml
 ├── .mathodology/config.json           # Workbench 共享配置
+├── docs/分工说明.md                    # 初始分工参考，目录以本 README 为准
 ├── stages/
 │   ├── 01_topic_selection/           # 选题
 │   │   ├── A/ B/ C/
@@ -38,6 +39,8 @@
 ├── experiments/                      # 环境锁、实验配置与复现说明
 ├── results/                          # 核准的程序输出
 ├── figures/                          # 正式采用的图表
+├── references/                       # 共享的来源核对笔记，按需建立
+├── state/                            # 跨阶段决定或核验记录，按需建立
 └── paper/
     ├── main.tex                       # 校赛 LaTeX 内部草稿模板
     ├── sections/                     # 正式章节和手写表格
@@ -57,7 +60,7 @@
 ├── .codex/agents/                     # 本机安装的 Codex 专业 Agent
 ├── .claude/                          # 本地 Skills 和设置
 ├── .mathodology/report.json          # Workbench 检查报告
-├── docs/                             # 原题、附件、分工原件和参考资料
+├── docs/                             # 原题、附件和模板子目录留本地
 │   ├── 校赛题目/                      # 现有题包的读取入口
 │   └── 校赛word模板/                  # 校赛论文 Word 原件
 ├── problem/data/
@@ -66,16 +69,15 @@
 ├── paper/
 │   ├── results.tex、tables/          # Workbench 生成
 │   └── main.pdf 和编译缓存
-├── references/                       # 下载资料
+├── references/downloads/             # 下载资料
 ├── logs/                             # 本地日志和 AI 使用记录
-├── state/                            # 本地状态记录
 ├── runs/                             # Workbench 运行记录
 └── local/                            # 个人试跑和临时文件
 ```
 
 现有附件继续从 `docs/校赛题目/` 读取。将来如需把正式输入集中到 `problem/data/raw/`，统一迁移并更新引用，避免维护两套附件。Workbench 的输入快照覆盖 `code/` 和 `problem/`，读取 `docs/` 的实验应另外记录相对路径与哈希。
 
-短验证中含生产明细的案例输入、结果明细和报告原稿按路径逐项忽略，其他阶段材料和共享代码按正常规则提交。需要共享原稿时，先确认授权或提供脱敏版本。A 题历史短验证保留代码和已有结果，当前本机缺少复跑附件。虚拟环境、缓存和凭据均留本机。
+短验证逐任务输入和结果明细按路径留本机。建模稿、审查意见和验证总结可共享，其中的生产实例用相对时差或汇总描述。带原始生产明细的原稿存入本机备份。A 题历史短验证保留代码和已有结果，当前本机缺少复跑附件。虚拟环境、缓存和凭据均留本机。
 
 ## 提交与收敛
 
@@ -85,6 +87,8 @@
 ## 环境与检查
 
 使用 Conda 环境 `mcm-modeling`。首次安装可运行 `conda env create -f environment.yml`。Windows 需要按固定版本复现时，使用 `conda create -n mcm-modeling --file experiments/conda-win-64.lock.txt`。
+
+已有 Windows 环境可用 `conda install -n mcm-modeling --file experiments/conda-win-64.lock.txt` 同步锁定包。读取旧版 `.xls` 时显式使用 `pd.read_excel(path, engine="calamine")`，普通 `.xlsx` 可显式使用 `engine="openpyxl"`。
 
 运行下列检查前，各成员先在本机安装 Mathodology v0.19.0，项目固定提交为 `49c639648c614900e4c3d88e1b6a28ffe3fae5b4`。Workbench 命令使用 `.agents/skills/` 下的脚本。 [固定版本安装指南](https://github.com/sweetcornna/mathodology/blob/49c639648c614900e4c3d88e1b6a28ffe3fae5b4/docs/INSTALL_zh.md)
 

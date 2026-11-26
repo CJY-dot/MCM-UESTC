@@ -94,3 +94,4 @@ https://conda.anaconda.org/conda-forge/win-64/libharfbuzz-15.1.0-h197bf8c_0.cond
 https://conda.anaconda.org/conda-forge/win-64/statsmodels-0.15.0-np2py313haacffc7_2.conda#cb0ec2d888a3a486bf894fcbd707ba29090fb9b02a5b1171590548471096790f
 https://conda.anaconda.org/conda-forge/win-64/libraqm-0.11.0-h50d6d30_0.conda#1bc52f781355e233411a7aaebbb155d9fd53efa2a1fc6c621250833d80cc5ab1
 https://conda.anaconda.org/conda-forge/win-64/matplotlib-base-3.11.2-py313hd763eb3_1.conda#87cab69923a2f12b7155d2ff3fdb7be1697ad9a0413a0eed123ac82d63fea2b7
+https://conda.anaconda.org/conda-forge/win-64/python-calamine-0.9.1-py313hfbe8231_0.conda#850ec111bb92210c902f341bcf9c885b1f363ec600f5f655c464f02570c6063f
