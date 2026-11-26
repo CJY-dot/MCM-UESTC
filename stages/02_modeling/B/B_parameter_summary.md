@@ -1,6 +1,6 @@
 # B 成员参数与短窗实测摘要
 
-数值来自本机 `problem/data/processed/stage02_b/audit.json`、`calibration.csv` 和 `probe_summary.json`。判定适用范围与复跑方式见 [数据审计](B_data_audit.md) 和 [B 交接](B_HANDOFF.md)。
+数值来自授权工作簿生成的 `audit.json`、`calibration.csv` 和短窗回放。使用共享的相对时间算例和重建的校准表，可以复现这里的数值。干净克隆默认采用合成校准表，可验证 Q2 的计算流程。复跑命令与结果口径见 [数据审计](B_data_audit.md) 和 [B 交接](B_HANDOFF.md)。
 
 ## 1. 历史观测
 

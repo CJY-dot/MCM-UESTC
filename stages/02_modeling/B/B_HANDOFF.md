@@ -21,17 +21,25 @@
 
 ## 复现
 
-在仓库根目录激活团队 `mcm-modeling` 环境。源文件应位于本地 `docs/校赛题目/` 里的 B 题附件目录，并需具备授权的团队短验证 `case.json`。数据与依赖版本按现有项目环境使用。
+在仓库根目录激活团队 `mcm-modeling` 环境。以下命令可从干净克隆运行：
 
 ~~~powershell
 conda activate mcm-modeling
-python -B stages/02_modeling/B/B_preprocess.py
 python -B stages/02_modeling/B/B_probe.py --seed 20261126 --samples 200
 ~~~
 
-PowerShell 无法激活 Conda 时，使用本机该环境的解释器路径调用。原始附件放在其他位置时，给预处理传 `--raw <附件目录>`。`--output` 接受 `problem/data/processed/` 内的独立子目录。原型可传入 `--calibration`、`--case` 和受忽略的 `--out`。
+默认读取[相对时间算例](../../01_topic_selection/validation/b_crane_dispatch/problem/case_relative.json)和[合成校准表](fixtures/calibration_synthetic.csv)，生成 `problem/data/processed/stage02_b/probe_fixture_summary.json`。Q1 和 Q3 的原型指标与历史报告一致。Q2 会真实执行留出、拟合及同样本策略比较，校准样本与该次随机输出属于合成验证。
 
-默认产物在 `problem/data/processed/stage02_b/`，包括 `audit.json`、`events.csv`、`tasks.csv`、`calibration.csv` 和 `probe_summary.json`。Workbench 日志在同目录的 `preprocess-workbench/runs/` 与 `workbench_probe/runs/`。最终运行 ID 分别为 `20261126-183818-stage02_b_preprocess_final` 和 `20261126-183912-b_short_window_final`。审计 JSON 记录源工作簿、脚本及 Python 包版本，原型 JSON 记录输入 SHA-256、仿真假设、三种种子和汇总结果。逐炉次数据留本机。
+要复现 [参数摘要](B_parameter_summary.md) 中的真实参数与 Q1–Q3 历史数字，使用授权的 B 题 12 份工作簿：
+
+~~~powershell
+python -B stages/02_modeling/B/B_preprocess.py
+python -B stages/02_modeling/B/B_probe.py --calibration problem/data/processed/stage02_b/calibration.csv --seed 20261126 --samples 200
+~~~
+
+第二条仍使用共享算例，所需生产信息从第一条重新生成。原始附件放在其他位置时，给预处理传 `--raw <附件目录>`。`--output` 接受 `problem/data/processed/` 内的独立子目录。原型可用 `--case` 指定原有授权算例，用 `--out` 选择本机输出。PowerShell 无法激活 Conda 时直接调用该环境的解释器。
+
+预处理默认在 `problem/data/processed/stage02_b/` 生成 `audit.json`、`events.csv`、`tasks.csv` 和 `calibration.csv`。授权复跑的原型结果写入同目录下的 `probe_replay_summary.json`，保留原历史文件 `probe_summary.json`。审计 JSON 记录源工作簿、脚本及 Python 包版本，原型 JSON 记录输入模式、SHA-256、假设、种子和结果。逐炉次数据留在本机。
 
 ## 接手时先确认
 

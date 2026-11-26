@@ -1,13 +1,8 @@
 # 原始赛题、参考资料、原始及派生输入
 /docs/校赛题目/
 /docs/校赛word模板/
-/docs/模板/
-/docs/讲义/
-/docs/提示词/
-/docs/*.zip
-/校赛/
-/正式赛/
 /problem/data/raw/
+# 含逐炉次事件、任务、校准样本及其来源的本机派生数据
 /problem/data/processed/
 /references/downloads/
 
@@ -34,6 +29,9 @@ runs/
 /stages/01_topic_selection/validation/b_crane_dispatch/results/nominal_tasks_heavy_only.csv
 /stages/01_topic_selection/validation/b_crane_dispatch/results/sensitivity.json
 /stages/01_topic_selection/validation/b_crane_dispatch/results/sensitivity_heavy_only.json
+
+# 回放可重新生成，也可能包含授权算例的逐任务输出
+/stages/01_topic_selection/validation/b_crane_dispatch/results/replay/
 
 # 开发环境、缓存、凭据与办公软件临时文件
 __pycache__/

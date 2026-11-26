@@ -9,27 +9,21 @@ from datetime import datetime
 from pathlib import Path
 
 
-CASE = json.loads(Path("problem/case.json").read_text(encoding="utf-8"))
-BASE = datetime.fromisoformat(CASE["base_time"])
-CRANES = CASE["cranes"]
+WORKSPACE = Path(__file__).resolve().parents[1]
+DEFAULT_CASE = WORKSPACE / "problem/case_relative.json"
 EPS = 1e-6
 
 
-def seconds(clock):
-    value = datetime.combine(BASE.date(), datetime.strptime(clock, "%H:%M:%S").time())
-    return int((value - BASE).total_seconds())
-
-
-def build_tasks(lead):
+def build_tasks(case, seconds, lead):
     tasks = {}
-    for index, heat in enumerate(CASE["heats"], 1):
+    for index, heat in enumerate(case["heats"], 1):
         cast_start = seconds(heat["plan_cast_start"])
-        tasks[f"H{index}"] = (heat["origin"], CASE["caster"], heat["weight"],
+        tasks[f"H{index}"] = (heat["origin"], case["caster"], heat["weight"],
                              seconds(heat["observed_pickup"]),
-                             cast_start - CASE["seat_early_limit_seconds"], cast_start - lead)
-    empty = CASE["empty"]
+                             cast_start - case["seat_early_limit_seconds"], cast_start - lead)
+    empty = case["empty"]
     due = seconds(empty["observed_ferry_drop"])
-    tasks["E1"] = (CASE["caster"], empty["slag_station"], empty["pre_slag_weight"],
+    tasks["E1"] = (case["caster"], empty["slag_station"], empty["pre_slag_weight"],
                    seconds(empty["observed_pickup"]), 0, due)
     tasks["E2"] = (empty["slag_station"], empty["ferry_station"], empty["post_slag_weight"],
                    seconds(empty["observed_ferry_ready"]), 0, due)
@@ -47,10 +41,10 @@ def translated(start, active, target, gap):
     return tuple(end)
 
 
-def replay(records, tasks, gap, limit, geometry, seconds_per_unit, slag):
+def replay(records, tasks, gap, limit, geometry, seconds_per_unit, slag, cranes):
     """Validate crane capacities, geometry, timing, and interpolation endpoints."""
     lower, upper = limit
-    last = tuple(crane["initial_position"] for crane in CRANES)
+    last = tuple(crane["initial_position"] for crane in cranes)
     time = 0
     task_starts, task_ends = {}, {}
     gaps = []
@@ -71,7 +65,7 @@ def replay(records, tasks, gap, limit, geometry, seconds_per_unit, slag):
             ref = event["task"]
             origin, destination, mass, ready, seat_early, due = tasks[ref]
             index = event["crane_index"]
-            assert ref not in task_ends and mass <= CRANES[index]["capacity"]
+            assert ref not in task_ends and mass <= cranes[index]["capacity"]
             assert before[index] == geometry[origin] and after[index] == geometry[destination]
             assert t0 >= ready - EPS and seat_early - EPS <= t1 <= due + EPS
             task_starts[ref], task_ends[ref] = t0, t1
@@ -82,15 +76,16 @@ def replay(records, tasks, gap, limit, geometry, seconds_per_unit, slag):
     return min(gaps), motion
 
 
-def solve(positions, lead, gap, duration, heavy_only_empty):
-    limit = CASE["rail_limits"]
-    tasks = build_tasks(lead)
-    empty = CASE["empty"]
+def solve(case, seconds, positions, lead, gap, duration, heavy_only_empty):
+    limit = case["rail_limits"]
+    tasks = build_tasks(case, seconds, lead)
+    empty = case["empty"]
+    cranes = case["cranes"]
     slag = seconds(empty["observed_slag_end"]) - seconds(empty["observed_slag_start"])
     best = None
     prunes = Counter()
     visits = 0
-    starts = tuple(crane["initial_position"] for crane in CRANES)
+    starts = tuple(crane["initial_position"] for crane in cranes)
 
     for ref, (origin, destination, _, ready, _, due) in tasks.items():
         if ready + abs(positions[origin] - positions[destination]) * duration > due + EPS:
@@ -100,7 +95,7 @@ def solve(positions, lead, gap, duration, heavy_only_empty):
         nonlocal best, visits
         visits += 1
         if len(finished) == len(tasks):
-            gap_actual, motion = replay(records, tasks, gap, limit, positions, duration, slag)
+            gap_actual, motion = replay(records, tasks, gap, limit, positions, duration, slag, cranes)
             score = (total_wait, motion)
             if best is None or score < best[0]:
                 best = (score, gap_actual, records)
@@ -115,7 +110,7 @@ def solve(positions, lead, gap, duration, heavy_only_empty):
             origin, destination, mass, ready, seat_early, due = task
             if ref == "E2":
                 ready = max(ready, finished["E1"] + slag)
-            for index, crane in enumerate(CRANES):
+            for index, crane in enumerate(cranes):
                 if mass > crane["capacity"] or (heavy_only_empty and ref.startswith("E")
                                                 and crane["capacity"] < 450):
                     continue
@@ -155,7 +150,7 @@ def solve(positions, lead, gap, duration, heavy_only_empty):
             effective_release = max(release, e1_drop + slag) if e["task"] == "E2" else release
             deliveries.append({
                 "task": e["task"], "from_station": origin, "to_station": destination,
-                "crane": CRANES[e["crane_index"]]["id"], "mass_t": mass,
+                "crane": cranes[e["crane_index"]]["id"], "mass_t": mass,
                 "release_s": effective_release, "pick_s": e["start_s"], "drop_s": e["end_s"],
                 "due_s": due, "slack_s": round(due - e["end_s"], 3),
             })
@@ -166,23 +161,35 @@ def solve(positions, lead, gap, duration, heavy_only_empty):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--case", type=Path, default=DEFAULT_CASE,
+                        help="Case JSON (default: the checked-in relative-time fixture)")
     parser.add_argument("--heavy-only-empty", action="store_true")
-    heavy_only_empty = parser.parse_args().heavy_only_empty
-    heats = CASE["heats"]
+    args = parser.parse_args()
+    case = json.loads(args.case.read_text(encoding="utf-8"))
+    base = datetime.fromisoformat(case["base_time"]) if "base_time" in case else None
+
+    def seconds(value):
+        if base is None:
+            return int(value)
+        clock = datetime.strptime(value, "%H:%M:%S").time()
+        return int((datetime.combine(base.date(), clock) - base).total_seconds())
+
+    heavy_only_empty = args.heavy_only_empty
+    heats = case["heats"]
     assert heats[0]["plan_cast_end"] == heats[1]["plan_cast_start"]
     assert heats[1]["cast_index"] == heats[0]["cast_index"] + 1
     transport = sorted(seconds(h["observed_seat"]) - seconds(h["observed_pickup"]) for h in heats)
     assert transport == [182, 247]
-    duration = dict(zip(CASE["movement_duration_modes"],
+    duration = dict(zip(case["movement_duration_modes"],
                         (transport[0], sum(transport) / 2, transport[-1])))
     cases, nominal = [], None
     for geometry, gap, lead, mode in itertools.product(
-        CASE["geometry_hypotheses"], CASE["minimum_gap_hypotheses"],
-        CASE["seat_lead_seconds"], CASE["movement_duration_modes"],
+        case["geometry_hypotheses"], case["minimum_gap_hypotheses"],
+        case["seat_lead_seconds"], case["movement_duration_modes"],
     ):
         g = geometry["positions"]
         scale = duration[mode] / abs(g["CC3"] - g["LF1"])
-        result = solve(g, lead, gap, scale, heavy_only_empty)
+        result = solve(case, seconds, g, lead, gap, scale, heavy_only_empty)
         labels = {"layout": geometry["id"], "gap": gap, "seat_lead_s": lead,
                   "motion": mode, "seconds_per_unit": scale}
         cases.append(labels | {k: v for k, v in result.items() if k not in ("deliveries", "events")})
@@ -190,14 +197,17 @@ def main():
             nominal = labels | result
     tally = Counter(item["outcome"] for item in cases)
     output = {"model": "one loaded move at a time, idle crane repositioning allowed",
+              "case_mode": "relative_fixture" if base is None else "authorized_original",
               "heavy_only_empty": heavy_only_empty,
               "observed_transfer_seconds": transport, "summary": tally, "nominal": nominal,
               "cases": cases}
     suffix = "_heavy_only" if heavy_only_empty else ""
-    Path(f"results/sensitivity{suffix}.json").write_text(
+    folder = WORKSPACE / "results/replay" / output["case_mode"]
+    folder.mkdir(parents=True, exist_ok=True)
+    (folder / f"sensitivity{suffix}.json").write_text(
         json.dumps(output, indent=2) + "\n", encoding="utf-8")
     if nominal and nominal.get("deliveries"):
-        with Path(f"results/nominal_tasks{suffix}.csv").open("w", newline="", encoding="utf-8-sig") as f:
+        with (folder / f"nominal_tasks{suffix}.csv").open("w", newline="", encoding="utf-8-sig") as f:
             writer = csv.DictWriter(f, fieldnames=list(nominal["deliveries"][0]))
             writer.writeheader()
             writer.writerows(nominal["deliveries"])

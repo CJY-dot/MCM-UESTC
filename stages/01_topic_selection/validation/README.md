@@ -6,4 +6,26 @@
 2. 用历史可观察量限定扰动，再改变未知的轨道布局、行程时间及座包提前量。只有能在可辩护的布局上通过检查，才把 B 题列为可推荐。条件模型有解和实际现场可实施分开判断。
 3. 若 B 的关键几何仍未知且结果对合理扰动翻转，再验证 A 题。仅检查墙体与金属板的留出测距、一行天线的墙体 2D 剖面。A 同时通过两项才建议改选。
 
-目录使用小写下划线命名。每题的 problem/ 存放输入或来源清单，code/ 存放可复跑的最小脚本，results/ 保存机器可读结果，figures/ 保存必要的核验图，runs/ 由 Workbench 记录。团队采用的结论见[选题决定](../topic_decision.md)。[短验证总结](VALIDATION_SUMMARY.md)保留相对时间、结论和复跑步骤。B 题逐任务输入和输出留在具备授权资料的本机。A 题复跑需要原附件，当前工作区保留其脚本与已有结果。
+各题的 `problem/` 存放算例或配置，`code/` 存放脚本，`results/` 与 `figures/` 保存验证证据。阶段结论见[选题决定](../topic_decision.md)和[短验证总结](VALIDATION_SUMMARY.md)。
+
+## B 题复跑
+
+[相对时间算例](b_crane_dispatch/problem/case_relative.json)保留求解所用的相对时差、容量资格和归一化布局。炉次、浇次、原表行号、绝对日期时刻和实际吊重均留在原始本机算例。共享算例的吨位是同一容量档位的代表值。与历史输出对比，两种车型规则各自的 36 个情景分类、名义轨迹、等待及运行指标均一致。
+
+在项目根目录激活 `mcm-modeling` 后运行：
+
+~~~powershell
+python -B stages/01_topic_selection/validation/b_crane_dispatch/code/run_pilot.py
+python -B stages/01_topic_selection/validation/b_crane_dispatch/code/run_pilot.py --heavy-only-empty
+~~~
+
+输出在 B 短验证工作区的 `results/replay/relative_fixture/`。持有授权原算例时，可显式传入 `--case <原始 case.json 路径>`，输出写入 `results/replay/authorized_original/`。两个目录按生成物忽略，历史输出可保留在本机原位置。阶段二 Q1–Q3 的复跑入口见 [B 交接](../../02_modeling/B/B_HANDOFF.md)。
+
+## A 题复跑
+
+[雷达配置](a_radar_echo/problem/pilot.json)、代码、两套 JSON 结果、逐组测距 CSV 和两幅剖面图都已纳入 Git。重新计算需要原始雷达附件，当前工作区缺少该附件。取得授权原件后，按[来源与校验清单](source_manifest.json)中的相对路径和 SHA-256 核对，再从 A 短验证工作区运行：
+
+~~~powershell
+python -B code/run_pilot.py
+python -B code/run_pilot.py --gain
+~~~

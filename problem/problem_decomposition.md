@@ -22,7 +22,7 @@
 
 **历史日志提供观测。** 工序时间信息、转炉、LF、RH、连铸分表用于重建出钢结束、吹氩后钢车到位、精炼进出位、吊起、座包、开浇、停浇、空包吊离、翻渣及渡车交接。以熔炼号连接，并用设备、路线和时间核对重复记录。出钢记号、钢包号和临时罐号用于消歧。时间戳统一转换到含日期的秒级时间轴，时长统一成秒。空值区分工序未经过和真实缺失。倒序、重复表头或多表冲突按事件语义择源，保留原表行与异常说明。
 
-**任务表是共同接口。** 每段运输至少含炉次、浇次、载重状态、起讫站、总吊重、前序、物理可吊时刻、到位窗口、可用行车和参数来源。重包任务连接当炉必要工序，空包任务接续浇铸、翻渣和渡车。空车调位由行车上个任务终点和下个任务起点派生，初始位置也进入状态。计划与实际分别存储，用真实记录估计时长和偏差分布。 [A 方数据核对](../stages/01_topic_selection/A/A_math_modeling_analysis.md) · [B 方实现与数据意见](../stages/01_topic_selection/B/B_implementation_analysis.md) · [短验证输入及原表行号](../stages/01_topic_selection/validation/b_crane_dispatch/problem/case.json)
+**任务表是共同接口。** 每段运输至少含炉次、浇次、载重状态、起讫站、总吊重、前序、物理可吊时刻、到位窗口、可用行车和参数来源。重包任务连接当炉必要工序，空包任务接续浇铸、翻渣和渡车。空车调位由行车上个任务终点和下个任务起点派生，初始位置也进入状态。计划与实际分别存储，用真实记录估计时长和偏差分布。 [A 方数据核对](../stages/01_topic_selection/A/A_math_modeling_analysis.md) · [B 方实现与数据意见](../stages/01_topic_selection/B/B_implementation_analysis.md) · [短验证相对时间算例](../stages/01_topic_selection/validation/b_crane_dispatch/problem/case_relative.json)
 
 ### 2.2 共同决策变量、硬约束与目标口径
 

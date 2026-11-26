@@ -13,7 +13,8 @@ from scipy import stats
 
 ROOT = Path(__file__).resolve().parents[3]
 PRIVATE = ROOT / "problem/data/processed"
-PILOT = ROOT / "stages/01_topic_selection/validation/b_crane_dispatch/problem/case.json"
+DEFAULT_CASE = ROOT / "stages/01_topic_selection/validation/b_crane_dispatch/problem/case_relative.json"
+DEFAULT_CALIBRATION = Path(__file__).resolve().parent / "fixtures/calibration_synthetic.csv"
 EPS = 1e-7
 
 
@@ -224,10 +225,13 @@ def replay(rows, tasks, cranes, limits, gap, motion):
 
 def case_data(path, layout, lead, travel_scale):
     case = json.loads(path.read_text(encoding="utf-8"))
-    start = datetime.fromisoformat(case["base_time"])
+    start = datetime.fromisoformat(case["base_time"]) if "base_time" in case else None
 
-    def offset(clock):
-        return (datetime.combine(start.date(), datetime.strptime(clock, "%H:%M:%S").time()) - start).total_seconds()
+    def offset(value):
+        if start is None:
+            return float(value)
+        clock = datetime.strptime(value, "%H:%M:%S").time()
+        return (datetime.combine(start.date(), clock) - start).total_seconds()
 
     positions = next(item["positions"] for item in case["geometry_hypotheses"] if item["id"] == layout)
     tasks = [
@@ -351,14 +355,24 @@ def compare(draws, policy_model, tasks, run):
 
 def main():
     cli = argparse.ArgumentParser(description=__doc__)
-    cli.add_argument("--case", type=Path, default=PILOT)
-    cli.add_argument("--calibration", type=Path, default=PRIVATE / "stage02_b/calibration.csv")
-    cli.add_argument("--out", type=Path, default=PRIVATE / "stage02_b/probe_summary.json")
+    cli.add_argument("--case", type=Path, default=DEFAULT_CASE,
+                     help="Four-task case JSON (default: the checked-in relative-time fixture)")
+    cli.add_argument("--calibration", type=Path, default=DEFAULT_CALIBRATION,
+                     help="Calibration CSV (default: the checked-in synthetic fixture)")
+    cli.add_argument("--out", type=Path, help="Summary path inside problem/data/processed")
     cli.add_argument("--samples", type=int, default=200)
     cli.add_argument("--seed", type=int, default=20261126)
     args = cli.parse_args()
+    case_mode = "relative_fixture" if args.case.resolve() == DEFAULT_CASE else "supplied"
+    calibration_mode = "synthetic_fixture" if args.calibration.resolve() == DEFAULT_CALIBRATION else "supplied"
+    if args.out is None:
+        label = "probe_fixture_summary.json" if calibration_mode == "synthetic_fixture" else "probe_replay_summary.json"
+        args.out = PRIVATE / "stage02_b" / label
     if not args.out.resolve().is_relative_to(PRIVATE) or args.samples < 1:
         cli.error("Output must be inside problem/data/processed and samples must be positive")
+    for path in (args.case, args.calibration):
+        if not path.is_file():
+            cli.error(f"Missing input {path}. See B_HANDOFF.md for the shared and authorized replay commands.")
 
     assert minimum_segment_gap(2, 3, -2, 2) == 2.0
     assert abs(minimum_segment_gap(4000, 3, -1e-4, 5e-8) - 2.9) < EPS
@@ -407,6 +421,7 @@ def main():
             **{f"adjacent_{s}": compare(draws_block * s, kinetics, tasks, run) for s in (90, 180, 360)},
         }
     summary = {
+        "input_mode": {"case": case_mode, "calibration": calibration_mode},
         "input_sha256": {path.name: sha256(path.read_bytes()).hexdigest() for path in (args.case, args.calibration)},
         "aggregate_calibration": aggregates, "lf_holdout": fit,
         "scenario_assumptions": {"track_layout": "east_turnaround", "gap": gap, "lead_s": 120,

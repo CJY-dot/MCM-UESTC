@@ -6,7 +6,7 @@
 
 ## B 题 · 确定性共轨调度
 
-从 3 号连铸机的一个浇次取四段运输。两段重包从 LF1 到 CC3，另有前一炉的空包经 2# 倒渣位转至渡车。原始记录显示空包回程与其中一段重包运输重叠。两条计划、三条工序记录和三条连铸记录已逐项对回原表。复跑所需的逐条输入留在取得授权附件的本机。 [外部输入哈希](source_manifest.json)
+从 3 号连铸机的一个浇次取四段运输。两段重包从 LF1 到 CC3，另有前一炉的空包经 2# 倒渣位转至渡车。原始记录显示空包回程与其中一段重包运输重叠。两条计划、三条工序记录和三条连铸记录已逐项对回原表。共享算例保留计算所需的相对时间与容量档位。逐条原始记录留在取得授权资料的本机。 [相对时间算例](b_crane_dispatch/problem/case_relative.json) · [外部输入哈希](source_manifest.json)
 
 用小规模枚举检查四段运输的先后与分配。每次只安排一个有载任务，允许其他行车空载移到让行点。五辆行车的位置以分段线性轨迹记录。回放检查总吊重、站点、出发与到位、翻渣前序、轨道边界与相邻车间距。速度、净距和坐标使用归一化单位。两组倒渣与渡车相对位置是测试假设，途中及待命的行车均参加净距核对。同浇次顺序使用计划窗口，重包最早可吊用历史实际起吊时刻作为保守代理。空包交接上界用历史放下渡车时刻，翻渣用历史作业时长。窗内未计未选中炉次的并发占用、车道横向运动、设备与待避区的实际容量。
 
@@ -40,14 +40,4 @@
 
 ## 复跑
 
-在项目根目录激活项目 Conda 环境后，从 PowerShell 执行。每个题目的 Workbench 工作区独立，分别产生 runs/ 下的运行清单。
-
-~~~powershell
-$python = (Get-Command python).Source
-$mtd = '.agents/skills/mathodology-workbench/scripts/mtd.py'
-$pilot = 'stages/01_topic_selection/validation'
-& $python -B $mtd run --root "$pilot/b_crane_dispatch" --name b_crane_pilot -- $python -B code/run_pilot.py
-& $python -B $mtd run --root "$pilot/b_crane_dispatch" --name b_crane_heavy_only -- $python -B code/run_pilot.py --heavy-only-empty
-& $python -B $mtd run --root "$pilot/a_radar_echo" --name a_radar_pilot -- $python -B code/run_pilot.py
-& $python -B $mtd run --root "$pilot/a_radar_echo" --name a_radar_gain_pilot -- $python -B code/run_pilot.py --gain
-~~~
+B 题可直接用共享算例复现本阶段的调度结果。A 题重新计算需要来源清单中的原始雷达附件。命令和输出路径见[短验证复跑说明](README.md)。

@@ -1,0 +1,103 @@
+{
+  "schema": "mcm-uestc.pilot-relative/1",
+  "time_basis": "seconds from replay origin",
+  "weight_basis": "representative values preserving 150 t and 450 t eligibility",
+  "caster": "CC3",
+  "heats": [
+    {
+      "cast_index": 1,
+      "plan_cast_start": 834,
+      "plan_cast_end": 3294,
+      "observed_pickup": 443,
+      "observed_seat": 625,
+      "origin": "LF1",
+      "weight": 300
+    },
+    {
+      "cast_index": 2,
+      "plan_cast_start": 3294,
+      "plan_cast_end": 5754,
+      "observed_pickup": 2329,
+      "observed_seat": 2576,
+      "origin": "LF1",
+      "weight": 300
+    }
+  ],
+  "empty": {
+    "observed_pickup": 2054,
+    "observed_slag_start": 2505,
+    "observed_slag_end": 2561,
+    "observed_ferry_ready": 2130,
+    "observed_ferry_drop": 2768,
+    "slag_station": "SLAG2",
+    "ferry_station": "FERRY_CANDIDATE",
+    "pre_slag_weight": 100,
+    "post_slag_weight": 100
+  },
+  "geometry_hypotheses": [
+    {
+      "id": "east_turnaround",
+      "positions": {
+        "LF1": 70,
+        "CC3": 79,
+        "SLAG2": 85,
+        "FERRY_CANDIDATE": 90
+      }
+    },
+    {
+      "id": "west_turnaround",
+      "positions": {
+        "LF1": 70,
+        "CC3": 79,
+        "SLAG2": 62,
+        "FERRY_CANDIDATE": 58
+      }
+    }
+  ],
+  "rail_limits": [
+    0,
+    100
+  ],
+  "cranes": [
+    {
+      "id": "2#150",
+      "capacity": 150,
+      "initial_position": 8
+    },
+    {
+      "id": "4#450",
+      "capacity": 450,
+      "initial_position": 45
+    },
+    {
+      "id": "3#450",
+      "capacity": 450,
+      "initial_position": 58
+    },
+    {
+      "id": "5#450",
+      "capacity": 450,
+      "initial_position": 82
+    },
+    {
+      "id": "1#150",
+      "capacity": 150,
+      "initial_position": 97
+    }
+  ],
+  "minimum_gap_hypotheses": [
+    3,
+    6
+  ],
+  "seat_lead_seconds": [
+    0,
+    120,
+    180
+  ],
+  "seat_early_limit_seconds": 900,
+  "movement_duration_modes": [
+    "fast",
+    "central",
+    "slow"
+  ]
+}
