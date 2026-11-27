@@ -1,8 +1,10 @@
 # MCM/ICM 校赛模拟赛 · B 题钢包调度
 
-**先找到自己的交付目录 `stages/<阶段>/<A|B|C>/`。** A 在聊天软件发布阶段提示词、基线提交和交付文件名。三人从同一基线开工，分别推送各自的分支，由 A 收齐并合入 `main`。
+**按当前轮次和负责人进入交付目录 `stages/<阶段>/<A|B|C>/`。** Stage 03 每轮按 B→A→C 串行推进，后续成员使用上一环节已合并的 `main`。
 
-> **当前进度** · B 题《炼钢厂钢包周转与排产优化问题》已完成 Stage 02 模型收敛，待团队审查。下一阶段按[统一模型](stages/02_modeling/model_spec.md)和[实现契约](stages/02_modeling/implementation_contract.md)开展。[模型交接](stages/02_modeling/MODEL_HANDOFF.md) · [选题决定](stages/01_topic_selection/topic_decision.md)
+> **当前进度** · Stage 02.5 范围与实施对齐文档已交付，待项目负责人审查。通过后进入 Stage 03，从 Q1 的 B 环节开始。 [范围修订](stages/02_modeling/model_scope_revision.md) · [实施顺序](stages/03_implementation/IMPLEMENTATION_ALIGNMENT.md)
+
+当前调度范围为 EF。[统一模型](stages/02_modeling/model_spec.md)及[实现契约](stages/02_modeling/implementation_contract.md)是实施依据，渡车作为外部交接进入事件链。 [模型交接](stages/02_modeling/MODEL_HANDOFF.md) · [选题决定](stages/01_topic_selection/topic_decision.md)
 
 ## GitHub 共享目录树
 
@@ -23,10 +25,12 @@ GitHub 仓库当前公开，仅提交获准公开的内容。`stages/` 存放成
 │   ├── 02_modeling/                  # 独立交付与模型收敛
 │   │   ├── A/ B/ C/
 │   │   ├── model_spec.md              # 统一模型
+│   │   ├── model_scope_revision.md    # EF 范围、工位与设备证据
 │   │   ├── implementation_contract.md
 │   │   ├── convergence_report.md
 │   │   └── MODEL_HANDOFF.md
 │   ├── 03_implementation/            # 实现与验证
+│   │   ├── IMPLEMENTATION_ALIGNMENT.md
 │   │   └── A/ B/ C/
 │   ├── 04_paper_plan/                # 论文结构与图表规划
 │   │   └── A/ B/ C/
@@ -82,29 +86,29 @@ GitHub 仓库当前公开，仅提交获准公开的内容。`stages/` 存放成
 
 `problem/data/processed/` 用于本机派生数据。B 的预处理会写出带炉次和来源定位的事件、任务及校准表。可共享的输入样例放在对应阶段，并随 Git 交付。详见 [数据复现说明](problem/data/README.md)。
 
-B 题可直接用共享算例复跑确定性短验证。阶段二原型提供合成校准表，用于从干净克隆运行 Q1–Q3。复现实测 Q2 数值时需从授权工作簿重建历史校准表。A 题的代码、配置和已有结果均可取用，重新计算需要原始雷达附件。 [短验证复跑](stages/01_topic_selection/validation/README.md) · [B 交接](stages/02_modeling/B/B_HANDOFF.md)
+B 题短验证与阶段二原型保留为历史回归，按原配置和证据级别复用。Stage 03 正式输入按当前 EF 范围、设备准入和工位证据另行冻结。A 题的代码、配置和已存结果仍可查阅，重新计算需要原始雷达附件。 [短验证复跑](stages/01_topic_selection/validation/README.md) · [历史 B 交接](stages/02_modeling/B/B_HANDOFF.md)
 
 ## 提交与收敛
 
-1. **各自交付。** 以建模阶段的 B 为例，在 `stage02/b` 分支只写 `stages/02_modeling/B/`。交付说明写清结论、验证依据和待确认事项。按路径暂存，用 `git diff --cached --name-only` 核对后推送。
-2. **由 A 收敛。** A 用 `git fetch origin` 获取成员分支，在集成分支汇总。统一模型写入 `model_spec.md`，采纳的实现、实验结果和论文内容放入相应正式目录。检查通过后合入 `main`，作为下一阶段的基线。
+1. **按环节开 PR。** 在每轮中，B 的输入合并后 A 开始调度，A 的实现合并后 C 独立验收。每个环节从前一次已合并的 `main` 开分支，只提交获授权的目录和模块。
+2. **验收后启动下一轮。** 负责人确认 C 的结果后，按 Q1、Q2、Q3 顺序推进。发现缺陷由原负责人返修，合并后重新验收。 [交接与 PR 规则](stages/03_implementation/IMPLEMENTATION_ALIGNMENT.md#pr-与返修)
 
 ## 环境与检查
 
-使用 Conda 环境 `mcm-modeling`。首次安装可运行 `conda env create -f environment.yml`。Windows 需要按固定版本复现时，使用 `conda create -n mcm-modeling --file experiments/conda-win-64.lock.txt`。
+Conda 环境名见 [environment.yml](environment.yml)。首次安装可运行 `conda env create -f environment.yml`。Windows 按固定版本复现时，使用 `conda create -n <环境名> --file experiments/conda-win-64.lock.txt`。
 
-已有 Windows 环境可用 `conda install -n mcm-modeling --file experiments/conda-win-64.lock.txt` 同步锁定包。读取旧版 `.xls` 时显式使用 `pd.read_excel(path, engine="calamine")`，普通 `.xlsx` 可显式使用 `engine="openpyxl"`。
+已有 Windows 环境可用 `conda install -n <环境名> --file experiments/conda-win-64.lock.txt` 同步锁定包。读取旧版 `.xls` 时使用 `pd.read_excel(path, engine="calamine")`，普通 `.xlsx` 可使用 `engine="openpyxl"`。
 
 运行下列检查前，各成员先在本机安装 Mathodology v0.19.0，项目固定提交为 `49c639648c614900e4c3d88e1b6a28ffe3fae5b4`。Workbench 命令使用 `.agents/skills/` 下的脚本。 [固定版本安装指南](https://github.com/sweetcornna/mathodology/blob/49c639648c614900e4c3d88e1b6a28ffe3fae5b4/docs/INSTALL_zh.md)
 
 ```text
-conda activate mcm-modeling
+conda activate <环境名>
 python -B experiments/smoke.py
 python -B .agents/skills/mathodology-workbench/scripts/mtd.py status
 python -B .agents/skills/mathodology-workbench/scripts/mtd.py check --no-sync
 ```
 
-在项目根目录运行。PowerShell 无法激活 Conda 时，用 `&` 和本机解释器的完整路径调用 Python。`smoke.py` 使用临时工作区和合成数据，PDF 检查需要 LaTeX。正式结果更新后由 A 运行 `mtd.py sync`，交付前运行 `mtd.py check --compile` 并核对 PDF。
+在项目根目录运行，并用 `environment.yml` 的环境名替换 `<环境名>`。PowerShell 无法激活 Conda 时，用 `&` 和本机解释器的完整路径调用 Python。`smoke.py` 使用临时工作区和合成数据，PDF 检查需要 LaTeX。正式结果更新后由 A 运行 `mtd.py sync`，交付前运行 `mtd.py check --compile` 并核对 PDF。
 
 ## 校赛论文
 
