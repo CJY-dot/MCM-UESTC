@@ -4,11 +4,11 @@
   "scenario": "Q1",
   "mode": "strict_plan",
   "clock": {
-    "origin_s": 1700000000,
+    "origin_s": 0,
     "horizon_s": 90000,
     "time_unit": "s",
     "timezone": "synthetic UTC seconds",
-    "timestamp_origin": "2023-11-14 22:13:20"
+    "timestamp_origin": "1970-01-01 00:00:00"
   },
   "plan_version": "synthetic-v1",
   "scope": {
@@ -30,8 +30,8 @@
       "HEAT_C:03"
     ],
     "window": {
-      "start_s": 1700000000,
-      "end_s": 1700090000,
+      "start_s": 0,
+      "end_s": 90000,
       "horizon_s": 90000
     },
     "due_rule": "synthetic plan target",
@@ -100,18 +100,10 @@
     "scope": "EF",
     "stations": [
       {
-        "station_id": "BOF_B",
-        "family": "BOF",
-        "side": "F",
-        "relative_order": 1,
-        "position_m": 10,
-        "evidence": "synthetic"
-      },
-      {
         "station_id": "LF1",
         "family": "LF",
         "side": "F",
-        "relative_order": 2,
+        "relative_order": 4,
         "position_m": 30,
         "evidence": "synthetic"
       },
@@ -119,7 +111,7 @@
         "station_id": "RH1",
         "family": "RH",
         "side": "F",
-        "relative_order": 3,
+        "relative_order": 2,
         "position_m": 40,
         "evidence": "synthetic"
       },
@@ -127,7 +119,7 @@
         "station_id": "CC1",
         "family": "CC",
         "side": "E",
-        "relative_order": 4,
+        "relative_order": 2,
         "position_m": 60,
         "evidence": "synthetic"
       },
@@ -135,24 +127,8 @@
         "station_id": "CC3",
         "family": "CC",
         "side": "E",
-        "relative_order": 5,
+        "relative_order": 4,
         "position_m": 80,
-        "evidence": "synthetic"
-      },
-      {
-        "station_id": "SLAG:1#",
-        "family": "SLAG",
-        "side": "F",
-        "relative_order": 6,
-        "position_m": 85,
-        "evidence": "synthetic"
-      },
-      {
-        "station_id": "SLAG:2#",
-        "family": "SLAG",
-        "side": "F",
-        "relative_order": 7,
-        "position_m": 90,
         "evidence": "synthetic"
       }
     ],
@@ -179,20 +155,32 @@
   },
   "resources": [
     {
+      "resource_id": "BOF_B",
+      "resource_type": "converter_process_node",
+      "capacity": null,
+      "capacity_status": "unknown",
+      "location_station": null,
+      "in_ef_topology": false,
+      "occupancy": null,
+      "evidence": "synthetic external node"
+    },
+    {
       "resource_id": "LF1",
-      "resource_type": "process_position",
+      "resource_type": "ef_process_position",
       "capacity": 1,
       "capacity_status": "synthetic",
       "location_station": "LF1",
+      "in_ef_topology": true,
       "occupancy": null,
       "evidence": "synthetic"
     },
     {
       "resource_id": "RH1",
-      "resource_type": "process_position",
+      "resource_type": "ef_process_position",
       "capacity": 1,
       "capacity_status": "synthetic",
       "location_station": "RH1",
+      "in_ef_topology": true,
       "occupancy": null,
       "evidence": "synthetic"
     },
@@ -202,6 +190,7 @@
       "capacity": 1,
       "capacity_status": "synthetic",
       "location_station": "CC1",
+      "in_ef_topology": true,
       "occupancy": null,
       "evidence": "synthetic"
     },
@@ -211,6 +200,7 @@
       "capacity": 1,
       "capacity_status": "synthetic",
       "location_station": "CC3",
+      "in_ef_topology": true,
       "occupancy": null,
       "evidence": "synthetic"
     },
@@ -219,7 +209,8 @@
       "resource_type": "slag_position",
       "capacity": null,
       "capacity_status": "unknown",
-      "location_station": "SLAG:1#",
+      "location_station": null,
+      "in_ef_topology": false,
       "occupancy": null,
       "evidence": "synthetic unknown capacity"
     },
@@ -228,7 +219,18 @@
       "resource_type": "slag_position",
       "capacity": null,
       "capacity_status": "unknown",
-      "location_station": "SLAG:2#",
+      "location_station": null,
+      "in_ef_topology": false,
+      "occupancy": null,
+      "evidence": "synthetic unknown capacity"
+    },
+    {
+      "resource_id": "REPAIR:2#",
+      "resource_type": "repair_position",
+      "capacity": null,
+      "capacity_status": "unknown",
+      "location_station": null,
+      "in_ef_topology": false,
       "occupancy": null,
       "evidence": "synthetic unknown capacity"
     },
@@ -238,6 +240,7 @@
       "capacity": null,
       "capacity_status": "unknown",
       "location_station": null,
+      "in_ef_topology": false,
       "occupancy": null,
       "evidence": "synthetic unknown capacity"
     }
@@ -1441,11 +1444,25 @@
       "task_id": "HEAT_A:01",
       "heat_id": "HEAT_A",
       "ladle_id": "LADLE_01",
+      "ladle_identity": {
+        "ladle_id": "LADLE_01",
+        "status": "unique",
+        "canonical_ids": [
+          "LADLE_01"
+        ],
+        "all_ids": [
+          "LADLE_01"
+        ],
+        "unresolved_raw_ids": [],
+        "candidates": [],
+        "approved_source_refs": []
+      },
       "campaign_id": "CAMP_X",
       "campaign_order": "1",
       "route": "L0",
       "leg": "BOF_to_LF",
       "scope": "ef_crane",
+      "scope_status": "confirmed",
       "scope_basis": "synthetic_fixture",
       "load_state": "loaded",
       "origin": "BOF_B",
@@ -1508,8 +1525,36 @@
       ],
       "eligibility_status": "synthetic_verified",
       "observed_crane": "3#450",
+      "observed_crane_candidates": [
+        "3#450"
+      ],
+      "crane_evidence_status": "confirmed",
       "observed_crane_dispatch_candidate": true,
-      "resource_requirements": [],
+      "resource_requirements": [
+        {
+          "resource_id": "BOF_B",
+          "role": "station",
+          "demand": 1,
+          "start_event_id": null,
+          "release_event_id": null,
+          "authorization": "unknown",
+          "source_status": "derived",
+          "basis": "synthetic fixture"
+        },
+        {
+          "resource_id": "LF1",
+          "role": "station",
+          "demand": 1,
+          "start_event_id": null,
+          "release_event_id": null,
+          "authorization": "unknown",
+          "source_status": "derived",
+          "basis": "synthetic fixture"
+        }
+      ],
+      "resource_requirement_status": "derived",
+      "required_in_process": true,
+      "required_in_ef_scope": true,
       "required": true,
       "admission": "A",
       "blocker_codes": [],
@@ -1528,11 +1573,25 @@
       "task_id": "HEAT_A:02",
       "heat_id": "HEAT_A",
       "ladle_id": "LADLE_01",
+      "ladle_identity": {
+        "ladle_id": "LADLE_01",
+        "status": "unique",
+        "canonical_ids": [
+          "LADLE_01"
+        ],
+        "all_ids": [
+          "LADLE_01"
+        ],
+        "unresolved_raw_ids": [],
+        "candidates": [],
+        "approved_source_refs": []
+      },
       "campaign_id": "CAMP_X",
       "campaign_order": "1",
       "route": "L0",
       "leg": "LF_to_CC",
       "scope": "ef_crane",
+      "scope_status": "confirmed",
       "scope_basis": "synthetic_fixture",
       "load_state": "loaded",
       "origin": "LF1",
@@ -1593,10 +1652,36 @@
         "5#450"
       ],
       "eligible_cranes": null,
-      "eligibility_status": "unverified",
+      "eligibility_status": "eligible_unverified",
       "observed_crane": null,
+      "observed_crane_candidates": [],
+      "crane_evidence_status": "missing",
       "observed_crane_dispatch_candidate": null,
-      "resource_requirements": [],
+      "resource_requirements": [
+        {
+          "resource_id": "LF1",
+          "role": "station",
+          "demand": 1,
+          "start_event_id": null,
+          "release_event_id": null,
+          "authorization": "unknown",
+          "source_status": "derived",
+          "basis": "synthetic fixture"
+        },
+        {
+          "resource_id": "CC3",
+          "role": "station",
+          "demand": 1,
+          "start_event_id": null,
+          "release_event_id": null,
+          "authorization": "unknown",
+          "source_status": "derived",
+          "basis": "synthetic fixture"
+        }
+      ],
+      "resource_requirement_status": "derived",
+      "required_in_process": true,
+      "required_in_ef_scope": true,
       "required": true,
       "admission": "B",
       "blocker_codes": [
@@ -1617,11 +1702,25 @@
       "task_id": "HEAT_A:03",
       "heat_id": "HEAT_A",
       "ladle_id": "LADLE_01",
+      "ladle_identity": {
+        "ladle_id": "LADLE_01",
+        "status": "unique",
+        "canonical_ids": [
+          "LADLE_01"
+        ],
+        "all_ids": [
+          "LADLE_01"
+        ],
+        "unresolved_raw_ids": [],
+        "candidates": [],
+        "approved_source_refs": []
+      },
       "campaign_id": "CAMP_X",
       "campaign_order": "1",
       "route": "L0",
       "leg": "CC_to_SLAG",
       "scope": "ef_crane",
+      "scope_status": "confirmed",
       "scope_basis": "synthetic_fixture",
       "load_state": "empty_ladle",
       "origin": "CC3",
@@ -1676,12 +1775,44 @@
         "source_status": "pending",
         "basis": "synthetic fixture"
       },
-      "capacity_candidates": null,
+      "capacity_candidates": [
+        "1#150",
+        "2#150",
+        "3#450",
+        "4#450",
+        "5#450"
+      ],
       "eligible_cranes": null,
-      "eligibility_status": "unverified",
+      "eligibility_status": "eligible_unverified",
       "observed_crane": null,
+      "observed_crane_candidates": [],
+      "crane_evidence_status": "missing",
       "observed_crane_dispatch_candidate": null,
-      "resource_requirements": [],
+      "resource_requirements": [
+        {
+          "resource_id": "CC3",
+          "role": "station",
+          "demand": 1,
+          "start_event_id": null,
+          "release_event_id": null,
+          "authorization": "unknown",
+          "source_status": "derived",
+          "basis": "synthetic fixture"
+        },
+        {
+          "resource_id": "SLAG:2#",
+          "role": "station",
+          "demand": 1,
+          "start_event_id": null,
+          "release_event_id": null,
+          "authorization": "unknown",
+          "source_status": "derived",
+          "basis": "synthetic fixture"
+        }
+      ],
+      "resource_requirement_status": "derived",
+      "required_in_process": true,
+      "required_in_ef_scope": true,
       "required": true,
       "admission": "B",
       "blocker_codes": [
@@ -1702,11 +1833,25 @@
       "task_id": "HEAT_A:04",
       "heat_id": "HEAT_A",
       "ladle_id": "LADLE_01",
+      "ladle_identity": {
+        "ladle_id": "LADLE_01",
+        "status": "unique",
+        "canonical_ids": [
+          "LADLE_01"
+        ],
+        "all_ids": [
+          "LADLE_01"
+        ],
+        "unresolved_raw_ids": [],
+        "candidates": [],
+        "approved_source_refs": []
+      },
       "campaign_id": "CAMP_X",
       "campaign_order": "1",
       "route": "L0",
       "leg": "SLAG_to_TRANSFER",
-      "scope": "pending_ef_scope",
+      "scope": "ef_crane",
+      "scope_status": "pending_ef_confirmation",
       "scope_basis": "synthetic_fixture",
       "load_state": "empty_ladle",
       "origin": "SLAG:2#",
@@ -1761,12 +1906,34 @@
         "source_status": "pending",
         "basis": "synthetic fixture"
       },
-      "capacity_candidates": null,
+      "capacity_candidates": [
+        "1#150",
+        "2#150",
+        "3#450",
+        "4#450",
+        "5#450"
+      ],
       "eligible_cranes": null,
-      "eligibility_status": "unverified",
+      "eligibility_status": "eligible_unverified",
       "observed_crane": null,
+      "observed_crane_candidates": [],
+      "crane_evidence_status": "missing",
       "observed_crane_dispatch_candidate": null,
-      "resource_requirements": [],
+      "resource_requirements": [
+        {
+          "resource_id": "SLAG:2#",
+          "role": "station",
+          "demand": 1,
+          "start_event_id": null,
+          "release_event_id": null,
+          "authorization": "unknown",
+          "source_status": "derived",
+          "basis": "synthetic fixture"
+        }
+      ],
+      "resource_requirement_status": "derived",
+      "required_in_process": true,
+      "required_in_ef_scope": null,
       "required": true,
       "admission": "C",
       "blocker_codes": [
@@ -1788,11 +1955,25 @@
       "task_id": "HEAT_A:05",
       "heat_id": "HEAT_A",
       "ladle_id": "LADLE_01",
+      "ladle_identity": {
+        "ladle_id": "LADLE_01",
+        "status": "unique",
+        "canonical_ids": [
+          "LADLE_01"
+        ],
+        "all_ids": [
+          "LADLE_01"
+        ],
+        "unresolved_raw_ids": [],
+        "candidates": [],
+        "approved_source_refs": []
+      },
       "campaign_id": "CAMP_X",
       "campaign_order": "1",
       "route": "L0",
       "leg": "TRANSFER_to_REPAIR",
       "scope": "external_service",
+      "scope_status": "external_boundary",
       "scope_basis": "synthetic_fixture",
       "load_state": "empty_ladle",
       "origin": null,
@@ -1849,11 +2030,27 @@
       },
       "capacity_candidates": null,
       "eligible_cranes": null,
-      "eligibility_status": "unverified",
+      "eligibility_status": "eligible_unverified",
       "observed_crane": null,
+      "observed_crane_candidates": [],
+      "crane_evidence_status": "missing",
       "observed_crane_dispatch_candidate": null,
-      "resource_requirements": [],
-      "required": false,
+      "resource_requirements": [
+        {
+          "resource_id": "REPAIR:2#",
+          "role": "station",
+          "demand": 1,
+          "start_event_id": null,
+          "release_event_id": null,
+          "authorization": "unknown",
+          "source_status": "derived",
+          "basis": "synthetic fixture"
+        }
+      ],
+      "resource_requirement_status": "derived",
+      "required_in_process": true,
+      "required_in_ef_scope": false,
+      "required": true,
       "admission": "B",
       "blocker_codes": [],
       "source_status": "observed",
@@ -1871,11 +2068,25 @@
       "task_id": "HEAT_B:01",
       "heat_id": "HEAT_B",
       "ladle_id": "LADLE_01",
+      "ladle_identity": {
+        "ladle_id": "LADLE_01",
+        "status": "unique",
+        "canonical_ids": [
+          "LADLE_01"
+        ],
+        "all_ids": [
+          "LADLE_01"
+        ],
+        "unresolved_raw_ids": [],
+        "candidates": [],
+        "approved_source_refs": []
+      },
       "campaign_id": "CAMP_X",
       "campaign_order": "2",
       "route": "L0",
       "leg": "BOF_to_LF",
       "scope": "ef_crane",
+      "scope_status": "confirmed",
       "scope_basis": "synthetic_fixture",
       "load_state": "loaded",
       "origin": "BOF_B",
@@ -1926,12 +2137,42 @@
         "source_status": "derived",
         "basis": "synthetic fixture"
       },
-      "capacity_candidates": null,
+      "capacity_candidates": [
+        "3#450",
+        "4#450",
+        "5#450"
+      ],
       "eligible_cranes": null,
-      "eligibility_status": "unverified",
+      "eligibility_status": "eligible_unverified",
       "observed_crane": null,
+      "observed_crane_candidates": [],
+      "crane_evidence_status": "missing",
       "observed_crane_dispatch_candidate": null,
-      "resource_requirements": [],
+      "resource_requirements": [
+        {
+          "resource_id": "BOF_B",
+          "role": "station",
+          "demand": 1,
+          "start_event_id": null,
+          "release_event_id": null,
+          "authorization": "unknown",
+          "source_status": "derived",
+          "basis": "synthetic fixture"
+        },
+        {
+          "resource_id": "LF1",
+          "role": "station",
+          "demand": 1,
+          "start_event_id": null,
+          "release_event_id": null,
+          "authorization": "unknown",
+          "source_status": "derived",
+          "basis": "synthetic fixture"
+        }
+      ],
+      "resource_requirement_status": "derived",
+      "required_in_process": true,
+      "required_in_ef_scope": true,
       "required": true,
       "admission": "B",
       "blocker_codes": [
@@ -1952,11 +2193,25 @@
       "task_id": "HEAT_B:02",
       "heat_id": "HEAT_B",
       "ladle_id": "LADLE_01",
+      "ladle_identity": {
+        "ladle_id": "LADLE_01",
+        "status": "unique",
+        "canonical_ids": [
+          "LADLE_01"
+        ],
+        "all_ids": [
+          "LADLE_01"
+        ],
+        "unresolved_raw_ids": [],
+        "candidates": [],
+        "approved_source_refs": []
+      },
       "campaign_id": "CAMP_X",
       "campaign_order": "2",
       "route": "L0",
       "leg": "LF_to_CC",
       "scope": "ef_crane",
+      "scope_status": "confirmed",
       "scope_basis": "synthetic_fixture",
       "load_state": "loaded",
       "origin": "LF1",
@@ -2011,12 +2266,42 @@
         "source_status": "derived",
         "basis": "synthetic fixture"
       },
-      "capacity_candidates": null,
+      "capacity_candidates": [
+        "3#450",
+        "4#450",
+        "5#450"
+      ],
       "eligible_cranes": null,
-      "eligibility_status": "unverified",
+      "eligibility_status": "eligible_unverified",
       "observed_crane": null,
+      "observed_crane_candidates": [],
+      "crane_evidence_status": "missing",
       "observed_crane_dispatch_candidate": null,
-      "resource_requirements": [],
+      "resource_requirements": [
+        {
+          "resource_id": "LF1",
+          "role": "station",
+          "demand": 1,
+          "start_event_id": null,
+          "release_event_id": null,
+          "authorization": "unknown",
+          "source_status": "derived",
+          "basis": "synthetic fixture"
+        },
+        {
+          "resource_id": "CC3",
+          "role": "station",
+          "demand": 1,
+          "start_event_id": null,
+          "release_event_id": null,
+          "authorization": "unknown",
+          "source_status": "derived",
+          "basis": "synthetic fixture"
+        }
+      ],
+      "resource_requirement_status": "derived",
+      "required_in_process": true,
+      "required_in_ef_scope": true,
       "required": true,
       "admission": "B",
       "blocker_codes": [
@@ -2037,11 +2322,25 @@
       "task_id": "HEAT_C:01",
       "heat_id": "HEAT_C",
       "ladle_id": "LADLE_02",
+      "ladle_identity": {
+        "ladle_id": "LADLE_02",
+        "status": "unique",
+        "canonical_ids": [
+          "LADLE_02"
+        ],
+        "all_ids": [
+          "LADLE_02"
+        ],
+        "unresolved_raw_ids": [],
+        "candidates": [],
+        "approved_source_refs": []
+      },
       "campaign_id": "CAMP_Y",
       "campaign_order": "1",
       "route": "L0",
       "leg": "BOF_to_RH",
       "scope": "ef_crane",
+      "scope_status": "confirmed",
       "scope_basis": "synthetic_fixture",
       "load_state": "loaded",
       "origin": "BOF_B",
@@ -2092,12 +2391,42 @@
         "source_status": "derived",
         "basis": "synthetic fixture"
       },
-      "capacity_candidates": null,
+      "capacity_candidates": [
+        "3#450",
+        "4#450",
+        "5#450"
+      ],
       "eligible_cranes": null,
-      "eligibility_status": "unverified",
+      "eligibility_status": "eligible_unverified",
       "observed_crane": null,
+      "observed_crane_candidates": [],
+      "crane_evidence_status": "missing",
       "observed_crane_dispatch_candidate": null,
-      "resource_requirements": [],
+      "resource_requirements": [
+        {
+          "resource_id": "BOF_B",
+          "role": "station",
+          "demand": 1,
+          "start_event_id": null,
+          "release_event_id": null,
+          "authorization": "unknown",
+          "source_status": "derived",
+          "basis": "synthetic fixture"
+        },
+        {
+          "resource_id": "RH1",
+          "role": "station",
+          "demand": 1,
+          "start_event_id": null,
+          "release_event_id": null,
+          "authorization": "unknown",
+          "source_status": "derived",
+          "basis": "synthetic fixture"
+        }
+      ],
+      "resource_requirement_status": "derived",
+      "required_in_process": true,
+      "required_in_ef_scope": true,
       "required": true,
       "admission": "B",
       "blocker_codes": [
@@ -2118,11 +2447,25 @@
       "task_id": "HEAT_C:02",
       "heat_id": "HEAT_C",
       "ladle_id": "LADLE_02",
+      "ladle_identity": {
+        "ladle_id": "LADLE_02",
+        "status": "unique",
+        "canonical_ids": [
+          "LADLE_02"
+        ],
+        "all_ids": [
+          "LADLE_02"
+        ],
+        "unresolved_raw_ids": [],
+        "candidates": [],
+        "approved_source_refs": []
+      },
       "campaign_id": "CAMP_Y",
       "campaign_order": "1",
       "route": "L0",
       "leg": "RH_to_CC",
       "scope": "ef_crane",
+      "scope_status": "confirmed",
       "scope_basis": "synthetic_fixture",
       "load_state": "loaded",
       "origin": "RH1",
@@ -2177,12 +2520,42 @@
         "source_status": "derived",
         "basis": "synthetic fixture"
       },
-      "capacity_candidates": null,
+      "capacity_candidates": [
+        "3#450",
+        "4#450",
+        "5#450"
+      ],
       "eligible_cranes": null,
-      "eligibility_status": "unverified",
+      "eligibility_status": "eligible_unverified",
       "observed_crane": null,
+      "observed_crane_candidates": [],
+      "crane_evidence_status": "missing",
       "observed_crane_dispatch_candidate": null,
-      "resource_requirements": [],
+      "resource_requirements": [
+        {
+          "resource_id": "RH1",
+          "role": "station",
+          "demand": 1,
+          "start_event_id": null,
+          "release_event_id": null,
+          "authorization": "unknown",
+          "source_status": "derived",
+          "basis": "synthetic fixture"
+        },
+        {
+          "resource_id": "CC1",
+          "role": "station",
+          "demand": 1,
+          "start_event_id": null,
+          "release_event_id": null,
+          "authorization": "unknown",
+          "source_status": "derived",
+          "basis": "synthetic fixture"
+        }
+      ],
+      "resource_requirement_status": "derived",
+      "required_in_process": true,
+      "required_in_ef_scope": true,
       "required": true,
       "admission": "B",
       "blocker_codes": [
@@ -2203,11 +2576,25 @@
       "task_id": "HEAT_C:03",
       "heat_id": "HEAT_C",
       "ladle_id": "LADLE_02",
+      "ladle_identity": {
+        "ladle_id": "LADLE_02",
+        "status": "unique",
+        "canonical_ids": [
+          "LADLE_02"
+        ],
+        "all_ids": [
+          "LADLE_02"
+        ],
+        "unresolved_raw_ids": [],
+        "candidates": [],
+        "approved_source_refs": []
+      },
       "campaign_id": "CAMP_Y",
       "campaign_order": "1",
       "route": "L0",
       "leg": "CC_to_SLAG",
       "scope": "ef_crane",
+      "scope_status": "confirmed",
       "scope_basis": "synthetic_fixture",
       "load_state": "empty_ladle",
       "origin": "CC1",
@@ -2264,14 +2651,41 @@
       },
       "capacity_candidates": [],
       "eligible_cranes": [],
-      "eligibility_status": "synthetic_verified",
+      "eligibility_status": "no_capacity_compatible_crane",
       "observed_crane": null,
+      "observed_crane_candidates": [],
+      "crane_evidence_status": "missing",
       "observed_crane_dispatch_candidate": null,
-      "resource_requirements": [],
+      "resource_requirements": [
+        {
+          "resource_id": "CC1",
+          "role": "station",
+          "demand": 1,
+          "start_event_id": null,
+          "release_event_id": null,
+          "authorization": "unknown",
+          "source_status": "derived",
+          "basis": "synthetic fixture"
+        },
+        {
+          "resource_id": "SLAG:1#",
+          "role": "station",
+          "demand": 1,
+          "start_event_id": null,
+          "release_event_id": null,
+          "authorization": "unknown",
+          "source_status": "derived",
+          "basis": "synthetic fixture"
+        }
+      ],
+      "resource_requirement_status": "derived",
+      "required_in_process": true,
+      "required_in_ef_scope": true,
       "required": true,
       "admission": "C",
       "blocker_codes": [
-        "exceeds_all_observed_ef_capacity"
+        "no_capacity_compatible_crane",
+        "no_eligible_crane"
       ],
       "source_status": "observed",
       "source_refs": {
@@ -2285,8 +2699,130 @@
       "holder_status": "complete"
     }
   ],
+  "simulator_truth": {
+    "visibility": "hidden_from_policy",
+    "now_s": 0,
+    "policy_rule": "read only events with visible_at_s <= initial_state.now_s",
+    "task_actuals": [
+      {
+        "task_id": "HEAT_A:01",
+        "historical_pickup_proxy_s": 400,
+        "observed_arrival_s": 600,
+        "process_predecessor_s": 100,
+        "plan_outer_deadline_s": 1800
+      },
+      {
+        "task_id": "HEAT_A:02",
+        "historical_pickup_proxy_s": 1200,
+        "observed_arrival_s": 1200,
+        "process_predecessor_s": 900,
+        "plan_outer_deadline_s": 1800
+      },
+      {
+        "task_id": "HEAT_A:03",
+        "historical_pickup_proxy_s": 2800,
+        "observed_arrival_s": 3400,
+        "process_predecessor_s": 2600,
+        "plan_outer_deadline_s": null
+      },
+      {
+        "task_id": "HEAT_A:04",
+        "historical_pickup_proxy_s": null,
+        "observed_arrival_s": 3600,
+        "process_predecessor_s": 2900,
+        "plan_outer_deadline_s": null
+      },
+      {
+        "task_id": "HEAT_A:05",
+        "historical_pickup_proxy_s": null,
+        "observed_arrival_s": 3600,
+        "process_predecessor_s": 3000,
+        "plan_outer_deadline_s": null
+      },
+      {
+        "task_id": "HEAT_B:01",
+        "historical_pickup_proxy_s": 2200,
+        "observed_arrival_s": 2400,
+        "process_predecessor_s": 1900,
+        "plan_outer_deadline_s": 3600
+      },
+      {
+        "task_id": "HEAT_B:02",
+        "historical_pickup_proxy_s": 3000,
+        "observed_arrival_s": 3000,
+        "process_predecessor_s": 2700,
+        "plan_outer_deadline_s": 3600
+      },
+      {
+        "task_id": "HEAT_C:01",
+        "historical_pickup_proxy_s": 86700,
+        "observed_arrival_s": 86700,
+        "process_predecessor_s": 86500,
+        "plan_outer_deadline_s": 88200
+      },
+      {
+        "task_id": "HEAT_C:02",
+        "historical_pickup_proxy_s": 87600,
+        "observed_arrival_s": 87600,
+        "process_predecessor_s": 87300,
+        "plan_outer_deadline_s": 88200
+      },
+      {
+        "task_id": "HEAT_C:03",
+        "historical_pickup_proxy_s": 89200,
+        "observed_arrival_s": 89800,
+        "process_predecessor_s": 89000,
+        "plan_outer_deadline_s": null
+      }
+    ],
+    "future_event_ids": [
+      "A:plan_start",
+      "A:plan_end",
+      "A:lf_lift",
+      "A:lf_seat",
+      "A:lf_start",
+      "A:lf_end",
+      "A:cc_seat",
+      "A:cast_start",
+      "A:cast_end",
+      "A:empty_lift",
+      "A:slag_start",
+      "A:slag_end",
+      "A:transfer_seat",
+      "B:plan_start",
+      "B:plan_end",
+      "B:tap_end",
+      "B:lf_lift",
+      "B:lf_seat",
+      "B:lf_start",
+      "B:lf_end",
+      "B:cc_seat",
+      "B:cast_start",
+      "B:cast_end",
+      "B:empty_lift",
+      "B:slag_start",
+      "B:slag_end",
+      "B:transfer_seat",
+      "C:plan_start",
+      "C:plan_end",
+      "C:tap_end",
+      "C:rh_seat",
+      "C:rh_enter",
+      "C:rh_exit",
+      "C:rh_lift",
+      "C:cc_seat",
+      "C:cast_start",
+      "C:cast_end",
+      "C:empty_lift",
+      "C:slag_start",
+      "C:slag_end",
+      "C:transfer_seat",
+      "A:repair_seat"
+    ],
+    "active_operation_actual_end_s": []
+  },
   "initial_state": {
-    "now_s": 1700000000,
+    "now_s": 0,
     "state_version": "synthetic-v1",
     "plan_version": "synthetic-v1",
     "cranes": [
@@ -2300,7 +2836,7 @@
         "carried_task_id": null,
         "held_ladle_id": null,
         "motion_or_operation_phase": "idle",
-        "phase_started_s": 1700000000,
+        "phase_started_s": 0,
         "remaining_service_s": 0,
         "dispatch_allowed": "not_dispatchable",
         "track_presence": "on_track"
@@ -2315,7 +2851,7 @@
         "carried_task_id": null,
         "held_ladle_id": null,
         "motion_or_operation_phase": "idle",
-        "phase_started_s": 1700000000,
+        "phase_started_s": 0,
         "remaining_service_s": 0,
         "dispatch_allowed": "not_dispatchable",
         "track_presence": "on_track"
@@ -2330,7 +2866,7 @@
         "carried_task_id": null,
         "held_ladle_id": null,
         "motion_or_operation_phase": "idle",
-        "phase_started_s": 1700000000,
+        "phase_started_s": 0,
         "remaining_service_s": 0,
         "dispatch_allowed": "dispatchable",
         "track_presence": "on_track"
@@ -2345,7 +2881,7 @@
         "carried_task_id": null,
         "held_ladle_id": null,
         "motion_or_operation_phase": "idle",
-        "phase_started_s": 1700000000,
+        "phase_started_s": 0,
         "remaining_service_s": 0,
         "dispatch_allowed": "dispatchable",
         "track_presence": "on_track"
@@ -2360,7 +2896,7 @@
         "carried_task_id": null,
         "held_ladle_id": null,
         "motion_or_operation_phase": "idle",
-        "phase_started_s": 1700000000,
+        "phase_started_s": 0,
         "remaining_service_s": 0,
         "dispatch_allowed": "dispatchable",
         "track_presence": "on_track"
@@ -2371,7 +2907,7 @@
         "ladle_id": "LADLE_01",
         "holder_id": "BOF_B",
         "holder_type": "station",
-        "since_s": 1699999900,
+        "since_s": -100,
         "status": "complete",
         "source_event_id": "A:tap_end"
       },
@@ -2379,7 +2915,7 @@
         "ladle_id": "LADLE_02",
         "holder_id": "BOF_B",
         "holder_type": "station",
-        "since_s": 1699999900,
+        "since_s": -100,
         "status": "complete",
         "source_event_id": "C:tap_end"
       },
@@ -2419,62 +2955,82 @@
       {
         "task_id": "HEAT_A:01",
         "status": "not_started",
-        "release_lo_s": 100,
-        "target_end_s": 1800
+        "visible_release_lo_s": null,
+        "release_visibility_basis": "synthetic future release hidden from policy",
+        "plan_target_s": 1800,
+        "plan_target_basis": "synthetic plan target"
       },
       {
         "task_id": "HEAT_A:02",
         "status": "not_started",
-        "release_lo_s": 900,
-        "target_end_s": 1800
+        "visible_release_lo_s": null,
+        "release_visibility_basis": "synthetic future release hidden from policy",
+        "plan_target_s": 1800,
+        "plan_target_basis": "synthetic plan target"
       },
       {
         "task_id": "HEAT_A:03",
         "status": "not_started",
-        "release_lo_s": 2600,
-        "target_end_s": null
+        "visible_release_lo_s": null,
+        "release_visibility_basis": "synthetic future release hidden from policy",
+        "plan_target_s": null,
+        "plan_target_basis": "synthetic plan target"
       },
       {
         "task_id": "HEAT_A:04",
         "status": "not_started",
-        "release_lo_s": 2900,
-        "target_end_s": null
+        "visible_release_lo_s": null,
+        "release_visibility_basis": "synthetic future release hidden from policy",
+        "plan_target_s": null,
+        "plan_target_basis": "synthetic plan target"
       },
       {
         "task_id": "HEAT_A:05",
         "status": "not_started",
-        "release_lo_s": 3000,
-        "target_end_s": null
+        "visible_release_lo_s": null,
+        "release_visibility_basis": "synthetic future release hidden from policy",
+        "plan_target_s": null,
+        "plan_target_basis": "synthetic plan target"
       },
       {
         "task_id": "HEAT_B:01",
         "status": "not_started",
-        "release_lo_s": 1900,
-        "target_end_s": 3600
+        "visible_release_lo_s": null,
+        "release_visibility_basis": "synthetic future release hidden from policy",
+        "plan_target_s": 3600,
+        "plan_target_basis": "synthetic plan target"
       },
       {
         "task_id": "HEAT_B:02",
         "status": "not_started",
-        "release_lo_s": 2700,
-        "target_end_s": 3600
+        "visible_release_lo_s": null,
+        "release_visibility_basis": "synthetic future release hidden from policy",
+        "plan_target_s": 3600,
+        "plan_target_basis": "synthetic plan target"
       },
       {
         "task_id": "HEAT_C:01",
         "status": "not_started",
-        "release_lo_s": 86500,
-        "target_end_s": 88200
+        "visible_release_lo_s": null,
+        "release_visibility_basis": "synthetic future release hidden from policy",
+        "plan_target_s": 88200,
+        "plan_target_basis": "synthetic plan target"
       },
       {
         "task_id": "HEAT_C:02",
         "status": "not_started",
-        "release_lo_s": 87300,
-        "target_end_s": 88200
+        "visible_release_lo_s": null,
+        "release_visibility_basis": "synthetic future release hidden from policy",
+        "plan_target_s": 88200,
+        "plan_target_basis": "synthetic plan target"
       },
       {
         "task_id": "HEAT_C:03",
         "status": "not_started",
-        "release_lo_s": 89000,
-        "target_end_s": null
+        "visible_release_lo_s": null,
+        "release_visibility_basis": "synthetic future release hidden from policy",
+        "plan_target_s": null,
+        "plan_target_basis": "synthetic plan target"
       }
     ],
     "locked_reservations": [],

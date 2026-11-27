@@ -15,6 +15,7 @@ tables, a coverage audit, a parameter-evidence table and Q1 window candidates.
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import json
 import math
@@ -27,8 +28,9 @@ import pandas as pd
 
 from q1_schema import SCHEMA, validate_instance
 
-BUILDER_VERSION = "stage03-q1-b/1.0.0"
+BUILDER_VERSION = "stage03-q1-b/1.1.0"
 ROOT = Path(__file__).resolve().parents[2]
+APPROVED_AUDIT = ROOT / "problem/data/processed/stage02_b_ladle_identity_approved/audit.json"
 
 EF_CRANES = (
     {"crane_id": "1#150", "capacity_t": 150, "dispatch_candidate": False,
@@ -45,11 +47,24 @@ EF_CRANES = (
 CRANE_BY_ID = {crane["crane_id"]: crane for crane in EF_CRANES}
 DISPATCH_IDS = {crane["crane_id"] for crane in EF_CRANES if crane["dispatch_candidate"]}
 
-DEVICE_FILES = {
-    "1#LF.xlsx": "LF", "3#LF.xlsx": "LF",
-    "1#RH.xlsx": "RH", "2#RH.xlsx": "RH",
-    "1#连铸.xlsx": "CC", "2#连铸.xlsx": "CC", "3#连铸.xlsx": "CC",
+DEVICE_STATIONS = {
+    "1#LF.xlsx": "LF1", "3#LF.xlsx": "LF3",
+    "1#RH.xlsx": "RH1", "2#RH.xlsx": "RH2",
+    "1#连铸.xlsx": "CC1", "2#连铸.xlsx": "CC2", "3#连铸.xlsx": "CC3",
 }
+
+# Figure 1 relative order only.  LF2 is documented but excluded from current
+# operations; it is left out of the EF station list rather than renumbered.
+EF_STATIONS = {
+    "LF3": {"family": "LF", "side": "E", "relative_order": 1},
+    "CC1": {"family": "CC", "side": "E", "relative_order": 2},
+    "CC2": {"family": "CC", "side": "E", "relative_order": 3},
+    "CC3": {"family": "CC", "side": "E", "relative_order": 4},
+    "RH2": {"family": "RH", "side": "F", "relative_order": 1},
+    "RH1": {"family": "RH", "side": "F", "relative_order": 2},
+    "LF1": {"family": "LF", "side": "F", "relative_order": 4},
+}
+SCOPE_STATUSES = {"confirmed", "pending_ef_confirmation", "external_boundary"}
 PLAN_FILE = "出钢计划表单.xls"
 MASTER_FILE = "工序时间信息.xlsx"
 
@@ -108,7 +123,7 @@ def station(raw: str, fallback_family: str = "") -> tuple[str | None, str, bool]
             return None, "BOF_RETURN", False
         prefix = re.match(r"(BOF|LF|RH|CC|TRANSFER|REPAIR|SLAG)", upper)
         return None, (prefix.group(1) if prefix else fallback_family), False
-    match = re.fullmatch(r"BOF\s*([ABC])", upper)
+    match = re.fullmatch(r"BOF[_\s]*([ABC])", upper)
     if match:
         return f"BOF_{match.group(1)}", "BOF", True
     match = re.fullmatch(r"(LF|RH|CC)\s*(\d+)", upper)
@@ -192,51 +207,83 @@ def parse_source_ref(ref: str) -> tuple[str, str, int | None, str]:
     return parts[0], parts[1], parse_int(parts[2]), parts[3] if len(parts) > 3 else ""
 
 
-def heat_device_rows(events: pd.DataFrame) -> dict[str, dict[str, tuple[str, str, int]]]:
-    """Map heat -> device family -> one source row, preferring canonical rows."""
-    grouped: dict[tuple[str, str], list[tuple[int, str, str, int]]] = defaultdict(list)
+def heat_device_rows(events: pd.DataFrame) -> dict[str, dict[str, list[tuple[str, str, int]]]]:
+    """Map heat -> exact station -> source rows.
+
+    LF1/LF3 and RH1/RH2 are kept separate.  A family-level lookup is not
+    sufficient and would attach the wrong device row to a task.
+    """
+    grouped: dict[tuple[str, str], set[tuple[str, str, int]]] = defaultdict(set)
     for _, event in events.iterrows():
         file = str(event.get("source_file", ""))
-        family = DEVICE_FILES.get(file)
-        if not family:
+        station_id = DEVICE_STATIONS.get(file)
+        if not station_id:
             continue
         heat = str(event.get("heat_id", ""))
         row = parse_int(event.get("source_row"))
         if not heat or row is None:
             continue
-        priority = 0 if str(event.get("event_status")) == "canonical" else 1
-        grouped[(heat, family)].append((priority, file, str(event.get("source_sheet", "")), row))
-    result: dict[str, dict[str, tuple[str, str, int]]] = defaultdict(dict)
-    for (heat, family), candidates in grouped.items():
-        candidates.sort()
-        _, file, sheet, row = candidates[0]
-        result[heat][family] = (file, sheet, row)
+        grouped[(heat, station_id)].add((file, str(event.get("source_sheet", "")), row))
+    result: dict[str, dict[str, list[tuple[str, str, int]]]] = defaultdict(dict)
+    for (heat, station_id), rows in grouped.items():
+        result[heat][station_id] = sorted(rows)
     return result
 
 
 def task_crane_evidence(
     task_row: dict,
-    device_rows: dict[str, dict[str, tuple[str, str, int]]],
+    device_rows: dict[str, dict[str, list[tuple[str, str, int]]]],
     source_index: SourceIndex,
-) -> tuple[str | None, str, str, str]:
-    """Return (observed_crane, scope_basis, device_file, device_row_label)."""
+) -> dict:
+    """Return historical crane evidence for the exact task station.
+
+    A family-level row is never used.  Multiple distinct labels at the same
+    station are a conflict, not a reason to pick one.
+    """
     heat = str(task_row.get("heat_id", ""))
     loaded = str(task_row.get("loaded_state")) == "loaded"
-    origin_family = family_of(task_row.get("origin", ""))
-    destination_family = family_of(task_row.get("destination", ""))
-    family = destination_family if loaded else origin_family
-    if family not in {"LF", "RH", "CC"}:
-        return None, "process_interface_inferred", "", ""
-    device = device_rows.get(heat, {}).get(family)
-    if not device:
-        return None, "process_interface_inferred", "", ""
-    file, sheet, row = device
-    release, lift = source_index.crane_labels(file, sheet, row)
-    observed = (lift if not loaded else release) or release or lift
-    if observed.strip().lower() in {"nan", "none"}:
-        observed = ""
-    basis = "device_crane_label" if observed else "process_interface_inferred"
-    return observed or None, basis, file, f"{file}|{sheet}|{row}"
+    origin_id, origin_family, _ = station(task_row.get("origin", ""))
+    destination_id, destination_family, _ = station(task_row.get("destination", ""))
+    target_station = destination_id if loaded else origin_id
+    target_family = destination_family if loaded else origin_family
+    if target_family not in {"LF", "RH", "CC"} or not target_station:
+        return {
+            "observed_crane": None, "observed_crane_candidates": [],
+            "crane_evidence_status": "missing", "scope_basis": "process_interface_inferred",
+            "device_refs": [],
+        }
+    rows = device_rows.get(heat, {}).get(target_station, [])
+    if not rows:
+        return {
+            "observed_crane": None, "observed_crane_candidates": [],
+            "crane_evidence_status": "missing", "scope_basis": "process_interface_inferred",
+            "device_refs": [],
+        }
+    candidates: set[str] = set()
+    refs = []
+    for file, sheet, row in rows:
+        release, lift = source_index.crane_labels(file, sheet, row)
+        refs.append(f"{file}|{sheet}|{row}")
+        # Placement labels belong to loaded arrivals; lift labels belong to
+        # empty-ladle pickups.  Do not union the two operations.
+        value = release if loaded else lift
+        cleaned = str(value or "").strip()
+        if cleaned and cleaned.lower() not in {"nan", "none"}:
+            candidates.add(cleaned)
+    if len(candidates) > 1:
+        return {
+            "observed_crane": None, "observed_crane_candidates": sorted(candidates),
+            "crane_evidence_status": "conflict", "scope_basis": "device_crane_label",
+            "device_refs": refs,
+        }
+    observed = next(iter(candidates), None)
+    return {
+        "observed_crane": observed,
+        "observed_crane_candidates": sorted(candidates),
+        "crane_evidence_status": "confirmed" if observed else "missing",
+        "scope_basis": "device_crane_label" if observed else "process_interface_inferred",
+        "device_refs": refs,
+    }
 
 
 def build_events(raw_events: pd.DataFrame, source_to_tasks: dict[str, list[str]]) -> list[dict]:
@@ -304,24 +351,131 @@ def build_events(raw_events: pd.DataFrame, source_to_tasks: dict[str, list[str]]
     return rows
 
 
-def heat_ladle_map(events: pd.DataFrame) -> dict[str, str]:
-    """Choose the most frequent actual ladle id per heat as the task-level identifier."""
-    counts: dict[str, Counter[str]] = defaultdict(Counter)
+def load_approved_corrections(path: Path) -> list[dict]:
+    if not path.exists():
+        return []
+    data = json.loads(path.read_text(encoding="utf-8"))
+    corrections = data.get("identity_corrections")
+    return corrections if isinstance(corrections, list) else []
+
+
+def heat_identity_map(events: pd.DataFrame, corrections: list[dict]) -> dict[str, dict]:
+    """Resolve heat-level ladle identity without majority voting.
+
+    The approved corrections are the only authoritative overrides.  Other
+    heats are unique only when all canonical/agreeing records point to one
+    physical ladle.  Multiple incompatible values are retained as a conflict;
+    no id is selected.
+    """
+    approved: dict[str, dict] = {}
+    approved_sources: dict[tuple[str, str, int, int], dict] = {}
+    for entry in corrections:
+        heat = str(entry.get("heat_id", ""))
+        source = entry.get("source", {})
+        key = (
+            str(source.get("workbook", "")), str(source.get("sheet", "")),
+            int(source.get("row", 0) or 0), int(source.get("column", 0) or 0),
+        )
+        approved[heat] = entry
+        approved_sources[key] = entry
+
+    by_heat: dict[str, list[dict]] = defaultdict(list)
     for _, event in events.iterrows():
         heat = str(event.get("heat_id", ""))
         ladle = str(event.get("ladle_id", "")).strip()
         if not heat or not ladle:
             continue
-        if str(event.get("event_status")) in {"canonical", "agrees"}:
-            counts[heat][ladle] += 1
-    return {heat: counter.most_common(1)[0][0] for heat, counter in counts.items() if counter}
+        by_heat[heat].append({
+            "ladle_id": ladle,
+            "temporary_ladle_id": str(event.get("temporary_ladle_id", "")).strip(),
+            "source_file": str(event.get("source_file", "")),
+            "source_sheet": str(event.get("source_sheet", "")),
+            "source_row": parse_int(event.get("source_row")),
+            "source_column": str(event.get("source_column", "")),
+            "event_status": str(event.get("event_status", "")),
+            "link_status": str(event.get("link_status", "")),
+            "approved": (
+                str(event.get("source_file", "")), str(event.get("source_sheet", "")),
+                parse_int(event.get("source_row")) or 0,
+                parse_int(event.get("source_column_index")) or 0,
+            ) in approved_sources,
+        })
+
+    result: dict[str, dict] = {}
+    for heat, rows in by_heat.items():
+        canonical = [row for row in rows if row["event_status"] in {"canonical", "agrees"}]
+        canonical_ids = sorted({row["ladle_id"] for row in canonical})
+        all_ids = sorted({row["ladle_id"] for row in rows})
+        entry = approved.get(heat)
+        candidates = []
+        for ladle in all_ids:
+            selected = [row for row in rows if row["ladle_id"] == ladle]
+            candidates.append({
+                "ladle_id": ladle,
+                "record_count": len(selected),
+                "canonical_count": sum(
+                    row["event_status"] in {"canonical", "agrees"} for row in selected
+                ),
+                "namespaces": sorted({row["source_file"] for row in selected}),
+                "source_refs": [
+                    f"{row['source_file']}|{row['source_sheet']}|{row['source_row']}|"
+                    f"{row['source_column']}"
+                    for row in selected
+                ],
+                "temporary_ladle_ids": sorted({
+                    row["temporary_ladle_id"] for row in selected if row["temporary_ladle_id"]
+                }),
+                "project_approved": any(row["approved"] for row in selected),
+            })
+        unresolved = sorted({
+            row["ladle_id"] for row in rows
+            if row["event_status"] not in {"canonical", "agrees"}
+            and row["ladle_id"] not in canonical_ids
+        })
+        if entry is not None:
+            normalized = str(entry.get("normalized_value", ""))
+            if canonical_ids == [normalized] or not canonical_ids:
+                status = "project_approved"
+                ladle_id = normalized
+            else:
+                status = "identity_conflict"
+                ladle_id = None
+        elif len(canonical_ids) == 1:
+            status = "unique"
+            ladle_id = canonical_ids[0]
+        elif len(canonical_ids) > 1:
+            status = "identity_conflict"
+            ladle_id = None
+        else:
+            status = "unknown"
+            ladle_id = None
+        result[heat] = {
+            "ladle_id": ladle_id,
+            "status": status,
+            "canonical_ids": canonical_ids,
+            "all_ids": all_ids,
+            "unresolved_raw_ids": unresolved,
+            "candidates": candidates,
+            "approved_source_refs": [
+                {
+                    "workbook": entry["source"].get("workbook"),
+                    "sheet": entry["source"].get("sheet"),
+                    "row": entry["source"].get("row"),
+                    "column": entry["source"].get("column"),
+                    "raw_value": entry.get("raw_value"),
+                    "normalized_value": entry.get("normalized_value"),
+                    "authority_ref": entry.get("authority_ref"),
+                }
+            ] if entry else [],
+        }
+    return result
 
 
 def build_tasks(
     raw_tasks: pd.DataFrame,
-    device_rows: dict[str, dict[str, tuple[str, str, int]]],
+    device_rows: dict[str, dict[str, list[tuple[str, str, int]]]],
     source_index: SourceIndex,
-    heat_ladles: dict[str, str],
+    heat_identities: dict[str, dict],
 ) -> list[dict]:
     tasks = []
     for _, row in raw_tasks.iterrows():
@@ -347,18 +501,19 @@ def build_tasks(
             flags.append("observed_arrival_before_lift")
         if old_scope == "interface":
             scope = "external_service"
-            scope_basis = "boundary_interface"
+            scope_status = "external_boundary"
         elif leg in PENDING_EF_LEGS:
-            scope = "pending_ef_scope"
-            scope_basis = "no_recorded_ef_lift"
+            scope = "ef_crane"
+            scope_status = "pending_ef_confirmation"
         else:
             scope = "ef_crane"
-            scope_basis = "process_interface_inferred"
-        observed_crane, crane_basis, device_file, device_ref = task_crane_evidence(
-            row.to_dict(), device_rows, source_index
+            scope_status = "confirmed"
+        crane_evidence = task_crane_evidence(row.to_dict(), device_rows, source_index)
+        observed_crane = crane_evidence["observed_crane"]
+        scope_basis = (
+            crane_evidence["scope_basis"] if observed_crane
+            else "process_interface_inferred"
         )
-        if observed_crane and observed_crane in CRANE_BY_ID:
-            scope_basis = crane_basis
         source_refs = {
             "plan": str(row.get("source_plan", "")),
             "process_predecessor": str(row.get("source_process_predecessor", "")),
@@ -371,11 +526,25 @@ def build_tasks(
             crane["crane_id"] for crane in EF_CRANES
             if mass <= crane["capacity_t"]
         ]
+        if mass is None:
+            eligible = None
+            eligibility_status = "mass_unverified"
+        elif capacity_ids == []:
+            eligible = []
+            eligibility_status = "no_capacity_compatible_crane"
+        else:
+            eligible = None
+            eligibility_status = "station_reachability_and_permission_unverified"
         delivery_window = {
             "hard_earliest_s": None,
             "hard_latest_s": None,
             "plan_earliest_s": None,
             "plan_latest_s": plan_outer if destination_family == "CC" else None,
+            "process_deadline_s": None,
+            "process_deadline_status": "unverified",
+            "bound_event_role": "drop_complete_or_seat_complete",
+            "bound_source_ref": source_refs.get("arrival", ""),
+            "bound_event_id": None,
             "applicability": "active" if destination_family == "CC" and plan_outer is not None else "unknown",
             "source_status": "derived" if destination_family == "CC" and plan_outer is not None else "pending",
             "basis": (
@@ -389,6 +558,11 @@ def build_tasks(
             "hard_latest_s": None,
             "plan_earliest_s": None,
             "plan_latest_s": None,
+            "process_deadline_s": None,
+            "process_deadline_status": "unverified",
+            "bound_event_role": "pickup_start",
+            "bound_source_ref": source_refs.get("lift", ""),
+            "bound_event_id": None,
             "applicability": "unknown",
             "source_status": "pending",
             "basis": "no physical pickup window evidence; release interval is separate",
@@ -410,12 +584,18 @@ def build_tasks(
         tasks.append({
             "task_id": task_id,
             "heat_id": heat,
-            "ladle_id": heat_ladles.get(heat),
+            "ladle_id": heat_identities.get(heat, {}).get("ladle_id"),
+            "ladle_identity": heat_identities.get(heat, {
+                "ladle_id": None, "status": "unknown", "canonical_ids": [],
+                "all_ids": [], "unresolved_raw_ids": [], "candidates": [],
+                "approved_source_refs": [],
+            }),
             "campaign_id": str(row.get("campaign", "")) or None,
             "campaign_order": str(row.get("plan_order", "")) or None,
             "route": str(row.get("route", "")) or None,
             "leg": leg,
             "scope": scope,
+            "scope_status": scope_status,
             "scope_basis": scope_basis,
             "load_state": "loaded" if loaded else "empty_ladle",
             "origin": origin_id,
@@ -446,14 +626,22 @@ def build_tasks(
             "pickup_window": pickup_window,
             "delivery_window": delivery_window,
             "capacity_candidates": capacity_ids,
-            "eligible_cranes": None,
-            "eligibility_status": "topology_and_window_unverified",
+            "eligible_cranes": eligible,
+            "eligibility_status": eligibility_status,
             "observed_crane": observed_crane,
+            "observed_crane_candidates": crane_evidence["observed_crane_candidates"],
+            "crane_evidence_status": crane_evidence["crane_evidence_status"],
             "observed_crane_dispatch_candidate": (
                 observed_crane in DISPATCH_IDS if observed_crane else None
             ),
-            "resource_requirements": [],
-            "required": scope in {"ef_crane", "pending_ef_scope"},
+            "resource_requirements": None,
+            "resource_requirement_status": "unverified",
+            "required_in_process": True,
+            "required_in_ef_scope": (
+                None if scope_status == "pending_ef_confirmation"
+                else scope == "ef_crane"
+            ),
+            "required": True,
             "admission": "C",
             "blocker_codes": [],
             "source_status": "pending" if flags else "observed",
@@ -464,9 +652,72 @@ def build_tasks(
             "holder_before": None,
             "holder_after": None,
             "holder_status": "unknown",
-            "_device_ref": device_ref,
+            "crane_device_refs": crane_evidence["device_refs"],
         })
     return tasks
+
+
+def attach_resource_requirements(tasks: list[dict], events: list[dict]) -> None:
+    """Attach evidenced station occupancy requirements to tasks.
+
+    Unknown requirements stay null.  A task with a known origin/destination
+    gets one requirement per station; the event links are kept when the source
+    event exists.  This is a derived requirement, not a capacity claim.
+    """
+    by_task: dict[str, list[dict]] = defaultdict(list)
+    for event in events:
+        for task_id in event.get("task_ids", []):
+            by_task[task_id].append(event)
+
+    for task in tasks:
+        stations = []
+        if task["origin"]:
+            stations.append(("origin", task["origin"], task["source_refs"].get("lift", "")))
+        if task["destination"]:
+            stations.append(("destination", task["destination"], task["source_refs"].get("arrival", "")))
+        if not stations:
+            task["resource_requirements"] = None
+            task["resource_requirement_status"] = "unverified"
+            continue
+        requirements = []
+        for role, resource_id, source_ref in stations:
+            linked = [
+                event["event_id"] for event in by_task.get(task["task_id"], [])
+                if event["source_ref"] == source_ref
+                or event["event_type"] in {"release_lower_bound", "historical_pickup_proxy"}
+                and role == "origin"
+            ]
+            requirements.append({
+                "resource_id": resource_id,
+                "role": role,
+                "demand": 1,
+                "start_event_id": linked[0] if linked else None,
+                "release_event_id": None,
+                "authorization": "unknown",
+                "source_status": "derived",
+                "basis": "task origin/destination station; capacity and release rule unverified",
+            })
+        task["resource_requirements"] = requirements
+        task["resource_requirement_status"] = "derived"
+
+
+def attach_window_bindings(tasks: list[dict], events: list[dict]) -> None:
+    """Link pickup/delivery windows to the corresponding source event when unique."""
+    by_ref: dict[tuple[str, str], list[str]] = defaultdict(list)
+    for event in events:
+        if (event.get("source_ref") and event.get("usable_for_canonical")
+                and event.get("event_category") != "derived"):
+            by_ref[(event["heat_id"], event["source_ref"])].append(event["event_id"])
+    for task in tasks:
+        for key in ("pickup_window", "delivery_window"):
+            window = task[key]
+            ref = window.get("bound_source_ref", "")
+            ids = by_ref.get((task["heat_id"], ref), [])
+            window["bound_event_id"] = ids[0] if len(ids) == 1 else None
+            if ids and len(ids) > 1:
+                window["bound_event_status"] = "multiple_source_events"
+            else:
+                window["bound_event_status"] = "bound" if len(ids) == 1 else "no_source_event"
 
 
 def add_derived_events(events: list[dict], tasks: list[dict]) -> None:
@@ -532,66 +783,131 @@ def add_derived_events(events: list[dict], tasks: list[dict]) -> None:
                 existing.add(event_id)
 
 
+HOLDER_ROLES = {
+    "bof_empty_car": ("BOF", False),
+    "bof_lift": ("EF", False),
+    "lf_seat": ("STATION", False),
+    "lf_lift": ("EF", False),
+    "rh_seat": ("STATION", False),
+    "rh_lift": ("EF", False),
+    "cc_seat": ("STATION", False),
+    "cc_empty_lift": ("EF", False),
+    "slag_start": ("STATION", True),
+    "slag_second_start": ("STATION", True),
+    "transfer_seat": ("TRANSFER", False),
+    "repair_seat": ("REPAIR", False),
+    "return_transfer_seat": ("TRANSFER", False),
+    "return_ef_lift": ("EF", False),
+    "return_bof_c_seat": ("BOF_RETURN", False),
+}
+
+
+def _holder_after(kind: str, event: dict) -> str:
+    if kind == "EF":
+        return "EF_CRANE:unknown"
+    if kind == "STATION":
+        return event["resource_id"] or "STATION:unknown"
+    if kind == "TRANSFER":
+        return event["resource_id"] or "TRANSFER:unknown"
+    if kind == "REPAIR":
+        return event["resource_id"] or "REPAIR:unknown"
+    if kind == "BOF_RETURN":
+        return event["resource_id"] or "BOF_RETURN:unknown"
+    return event["resource_id"] or "BOF:unknown"
+
+
 def build_holder_chain(events: list[dict]) -> tuple[list[dict], dict[str, str]]:
-    holder_roles = {
-        "bof_empty_car": "BOF",
-        "bof_lift": "EF",
-        "lf_seat": "STATION",
-        "lf_lift": "EF",
-        "rh_seat": "STATION",
-        "rh_lift": "EF",
-        "cc_seat": "STATION",
-        "cc_empty_lift": "EF",
-        "slag_start": "STATION",
-        "slag_second_start": "STATION",
-        "transfer_seat": "TRANSFER",
-        "repair_seat": "REPAIR",
-        "return_transfer_seat": "TRANSFER",
-        "return_ef_lift": "EF",
-        "return_bof_c_seat": "BOF_RETURN",
-    }
+    """Build holder transitions without using event_id to break same-time ties.
+
+    A same-time group with different candidate holders is recorded as
+    ambiguous.  ``slag_start`` is an operation-start proxy, not a confirmed
+    physical handoff, and is marked conditional.
+    """
     by_ladle: dict[str, list[dict]] = defaultdict(list)
     for event in events:
         if not event["ladle_id"] or not event["usable_for_canonical"]:
             continue
-        if event["event_type"] not in holder_roles:
+        if event["event_type"] not in HOLDER_ROLES:
             continue
         by_ladle[event["ladle_id"]].append(event)
+
     chain_rows = []
     statuses: dict[str, str] = {}
     for ladle, items in by_ladle.items():
-        items.sort(key=lambda item: (item["time_s"], item["event_id"]))
+        items.sort(key=lambda item: item["time_s"])
+        groups: list[list[dict]] = []
+        for event in items:
+            if groups and groups[-1][0]["time_s"] == event["time_s"]:
+                groups[-1].append(event)
+            else:
+                groups.append([event])
         holder = None
         chain_status = "complete"
-        for event in items:
-            kind = holder_roles[event["event_type"]]
-            if kind == "EF":
-                new_holder = "EF_CRANE:unknown"
-            elif kind == "STATION":
-                new_holder = event["resource_id"] or "STATION:unknown"
-            elif kind == "TRANSFER":
-                new_holder = event["resource_id"] or "TRANSFER:unknown"
-            elif kind == "REPAIR":
-                new_holder = event["resource_id"] or "REPAIR:unknown"
-            elif kind == "BOF_RETURN":
-                new_holder = event["resource_id"] or "BOF_RETURN:unknown"
+        for group in groups:
+            transitions = []
+            for event in group:
+                kind, conditional = HOLDER_ROLES[event["event_type"]]
+                transitions.append((event, _holder_after(kind, event), kind, conditional))
+            values = [value for _, value, _, _ in transitions]
+            event_types = {event["event_type"] for event in group}
+            known_values = {value for value in values if "unknown" not in value}
+            ambiguous = False
+            if len(event_types) == 1:
+                if len(known_values) > 1:
+                    ambiguous = True
+                elif len(known_values) == 1:
+                    chosen = next(iter(known_values))
+                elif len(set(values)) == 1:
+                    chosen = values[0]
+                else:
+                    ambiguous = True
+            elif len(set(values)) > 1:
+                ambiguous = True
             else:
-                new_holder = event["resource_id"] or "BOF:unknown"
-            if holder is None and event["event_type"] not in {"bof_empty_car", "bof_lift"}:
+                chosen = values[0]
+            if holder is None and group[0]["event_type"] not in {"bof_empty_car", "bof_lift"}:
                 chain_status = "partial"
-            chain_rows.append({
-                "ladle_id": ladle,
-                "heat_id": event["heat_id"],
-                "event_id": event["event_id"],
-                "event_type": event["event_type"],
-                "time_s": event["time_s"],
-                "holder_before": holder or "unknown",
-                "holder_after": new_holder,
-                "holder_type": kind,
-                "chain_status": chain_status,
-                "source_ref": event["source_ref"],
-            })
-            holder = new_holder
+            if ambiguous:
+                chain_status = "ambiguous"
+                for event, value, kind, _ in transitions:
+                    chain_rows.append({
+                        "ladle_id": ladle,
+                        "heat_id": event["heat_id"],
+                        "event_id": event["event_id"],
+                        "event_type": event["event_type"],
+                        "time_s": event["time_s"],
+                        "holder_before": holder or "unknown",
+                        "holder_after": "HOLDER:ambiguous",
+                        "holder_type": "ambiguous",
+                        "chain_status": "ambiguous",
+                        "holder_basis": "same-time conflict; no event_id tie-break",
+                        "ambiguous_event_ids": [item["event_id"] for item in group],
+                        "source_ref": event["source_ref"],
+                    })
+                holder = "HOLDER:ambiguous"
+                continue
+            for event, value, kind, conditional in transitions:
+                if conditional:
+                    chain_status = "conditional"
+                chain_rows.append({
+                    "ladle_id": ladle,
+                    "heat_id": event["heat_id"],
+                    "event_id": event["event_id"],
+                    "event_type": event["event_type"],
+                    "time_s": event["time_s"],
+                    "holder_before": holder or "unknown",
+                    "holder_after": chosen,
+                    "holder_type": kind,
+                    "chain_status": chain_status,
+                    "holder_basis": (
+                        "operation_start_proxy" if conditional
+                        else "physical_event" if len(event_types) == 1
+                        else "corroborated_same_time_group"
+                    ),
+                    "ambiguous_event_ids": [],
+                    "source_ref": event["source_ref"],
+                })
+            holder = chosen
         statuses[ladle] = chain_status
     return chain_rows, statuses
 
@@ -601,19 +917,28 @@ def attach_task_holders(tasks: list[dict], chain_rows: list[dict]) -> None:
     for row in chain_rows:
         by_ladle[row["ladle_id"]].append(row)
     for rows in by_ladle.values():
-        rows.sort(key=lambda row: (row["time_s"], row["event_id"]))
+        rows.sort(key=lambda row: row["time_s"])
     for task in tasks:
         ladle = task["ladle_id"]
         lo = task["release_interval"]["lo_s"]
         before = "unknown"
         status = "unknown"
         if ladle and ladle in by_ladle and lo is not None:
+            groups: dict[int, list[dict]] = defaultdict(list)
             for row in by_ladle[ladle]:
                 if row["time_s"] <= lo:
-                    before = row["holder_after"]
-                    status = row["chain_status"]
+                    groups[row["time_s"]].append(row)
+            if groups:
+                last_time = max(groups)
+                last_rows = groups[last_time]
+                values = {row["holder_after"] for row in last_rows}
+                statuses = {row["chain_status"] for row in last_rows}
+                if "ambiguous" in statuses or len(values) > 1:
+                    status = "ambiguous"
+                    before = "HOLDER:ambiguous"
                 else:
-                    break
+                    before = last_rows[-1]["holder_after"]
+                    status = last_rows[-1]["chain_status"]
         task["holder_before"] = before
         task["holder_after"] = task["destination"] or "unknown"
         task["holder_status"] = status
@@ -624,7 +949,12 @@ def attach_task_holders(tasks: list[dict], chain_rows: list[dict]) -> None:
 
 def task_blockers(task: dict) -> list[str]:
     blockers = []
-    if task["scope"] == "pending_ef_scope":
+    identity_status = task.get("ladle_identity", {}).get("status", "unknown")
+    if identity_status not in {"unique", "project_approved"}:
+        blockers.append("identity_conflict")
+    if "ambiguous_or_conflicting_source" in task.get("flags", []):
+        blockers.append("identity_conflict")
+    if task["scope_status"] == "pending_ef_confirmation":
         blockers.append("ef_scope_unconfirmed")
     if task["scope"] == "external_service" and not task["source_refs"].get("arrival"):
         blockers.append("boundary_receipt_unverified")
@@ -640,78 +970,113 @@ def task_blockers(task: dict) -> list[str]:
         blockers.append("release_upper_below_lower")
     if "observed_arrival_before_lift" in task["flags"]:
         blockers.append("observed_arrival_before_lift")
-    if "ambiguous_or_conflicting_source" in task["flags"]:
-        blockers.append("identity_conflict")
     if task["link_status"] not in {"unique", "resolved_by_identity", "resolved_by_temporary_ladle"}:
         blockers.append("identity_not_unique")
+    if task.get("crane_evidence_status") == "conflict":
+        blockers.append("crane_evidence_conflict")
     if task["scope"] == "ef_crane" and task["observed_crane"] is None:
         blockers.append("ef_crane_assignment_not_confirmed")
     if task["scope"] == "ef_crane" and task["observed_crane"] and task["observed_crane"] not in DISPATCH_IDS:
         blockers.append("observed_crane_not_in_dispatch_set")
-    if task["scope"] in {"ef_crane", "pending_ef_scope"} and task["eligible_cranes"] is None:
+    if task["capacity_candidates"] == []:
+        blockers.append("no_capacity_compatible_crane")
+    if task["eligible_cranes"] == []:
+        blockers.append("no_eligible_crane")
+    if task.get("holder_status") in {"unknown", "partial", "ambiguous"}:
+        blockers.append("holder_chain_unconfirmed")
+    if task.get("holder_status") == "conditional":
+        blockers.append("holder_chain_conditional")
+    if task.get("resource_requirements") is None:
+        blockers.append("resource_requirements_unverified")
+    if task["scope"] in {"ef_crane"} and task["eligible_cranes"] is None:
         blockers.append("eligible_cranes_unverified")
     return sorted(set(blockers))
 
 
 def admit(tasks: list[dict]) -> None:
+    critical = {
+        "unknown_origin_station", "unknown_destination_station", "unknown_mass",
+        "missing_release_lower_bound", "release_upper_below_lower",
+        "observed_arrival_before_lift", "identity_conflict", "identity_not_unique",
+        "ef_scope_unconfirmed", "crane_evidence_conflict", "no_capacity_compatible_crane",
+        "no_eligible_crane", "holder_chain_unconfirmed", "resource_requirements_unverified",
+    }
     for task in tasks:
         blockers = task_blockers(task)
+        task["blocker_codes"] = blockers
         if task["scope"] == "external_service":
-            task["admission"] = "C" if "boundary_receipt_unverified" in blockers else "B"
-        elif task["scope"] == "pending_ef_scope":
+            task["admission"] = "C" if any(
+                code in blockers for code in ("boundary_receipt_unverified", "holder_chain_unconfirmed")
+            ) else "B"
+            continue
+        if task["scope_status"] == "pending_ef_confirmation" or any(
+            code in critical for code in blockers
+        ):
             task["admission"] = "C"
-        elif any(code in blockers for code in (
-            "unknown_origin_station", "unknown_destination_station", "unknown_mass",
-            "missing_release_lower_bound", "release_upper_below_lower",
-            "observed_arrival_before_lift", "identity_conflict", "identity_not_unique",
-        )):
-            task["admission"] = "C"
+        elif task["eligible_cranes"]:
+            task["admission"] = "A"
         else:
             task["admission"] = "B"
-        task["blocker_codes"] = blockers
 
 
 def window_candidates(tasks: list[dict], width_s: int = 7200) -> list[dict]:
-    """Find campaign-local windows with at least two competing heats.
+    """Find campaign-local windows with evidenced overlapping task intervals.
 
-    A shop-wide 2-hour slice mixes several casters and produces a very large
-    instance.  Q1 starts from campaign-local windows; the global overlap remains
-    visible through the campaign list of each candidate.
+    A task without an evidenced end is a start-point cluster, not proof of
+    resource competition.  The candidate keeps both counts and labels the
+    evidence level.
     """
-    grouped: dict[str, list[tuple[int, int, dict]]] = defaultdict(list)
+    grouped: dict[str, list[tuple[int, int | None, str, dict]]] = defaultdict(list)
     for task in tasks:
-        if task["scope"] != "ef_crane" or task["admission"] == "C":
+        if (task["scope"] != "ef_crane" or task["scope_status"] != "confirmed"
+                or task["admission"] == "C"):
             continue
         start = task["release_interval"]["lo_s"]
         if start is None:
             continue
-        end = task["delivery_window"]["plan_latest_s"] or task["historical_pickup_proxy_s"] or start
-        grouped[task["campaign_id"] or "__none__"].append((start, max(end, start), task))
+        plan_end = task["delivery_window"]["plan_latest_s"]
+        observed_end = task["historical_pickup_proxy_s"] or task["observed_arrival_s"]
+        if plan_end is not None and plan_end > start:
+            end, basis = plan_end, "release_to_plan"
+        elif observed_end is not None and observed_end > start:
+            end, basis = observed_end, "release_to_observed"
+        else:
+            end, basis = None, "start_point_only"
+        grouped[task["campaign_id"] or "__none__"].append((start, end, basis, task))
 
     candidates = []
     for campaign, intervals in grouped.items():
-        heats_all = {task["heat_id"] for _, _, task in intervals}
+        heats_all = {task["heat_id"] for _, _, _, task in intervals}
         if len(heats_all) < 2:
             continue
-        starts = sorted({start for start, _, _ in intervals})
+        starts = sorted({start for start, _, _, _ in intervals})
         for window_start in starts:
             window_end = window_start + width_s
-            selected = [
-                task for start, end, task in intervals
-                if start < window_end and end >= window_start
-            ]
+            selected = []
+            for start, end, basis, task in intervals:
+                if end is None:
+                    hit = window_start <= start < window_end
+                else:
+                    hit = start < window_end and end >= window_start
+                if hit:
+                    selected.append((start, end, basis, task))
             if len(selected) < 2:
                 continue
-            heats = sorted({task["heat_id"] for task in selected})
+            heats = sorted({task["heat_id"] for _, _, _, task in selected})
             if len(heats) < 2:
                 continue
-            campaigns = sorted({task["campaign_id"] for task in selected if task["campaign_id"]})
-            loaded = sum(task["load_state"] == "loaded" for task in selected)
+            interval_tasks = [item for item in selected if item[1] is not None]
+            point_tasks = [item for item in selected if item[1] is None]
+            competitive = len(interval_tasks) >= 2 and len({
+                item[3]["heat_id"] for item in interval_tasks
+            }) >= 2
+            campaigns = sorted({task["campaign_id"] for _, _, _, task in selected if task["campaign_id"]})
+            loaded = sum(task["load_state"] == "loaded" for _, _, _, task in selected)
             empty = len(selected) - loaded
-            known_station = sum(task["origin_known"] and task["destination_known"] for task in selected)
-            known_mass = sum(task["mass_t"]["hi"] is not None for task in selected)
-            identity_clean = sum("identity_conflict" not in task["blocker_codes"] for task in selected)
-            c_count = sum(task["admission"] == "C" for task in selected)
+            known_station = sum(task["origin_known"] and task["destination_known"] for _, _, _, task in selected)
+            known_mass = sum(task["mass_t"]["hi"] is not None for _, _, _, task in selected)
+            identity_clean = sum("identity_conflict" not in task["blocker_codes"] for _, _, _, task in selected)
+            c_count = sum(task["admission"] == "C" for _, _, _, task in selected)
             candidates.append({
                 "window_id": "",
                 "window_type": "campaign_local",
@@ -719,16 +1084,30 @@ def window_candidates(tasks: list[dict], width_s: int = 7200) -> list[dict]:
                 "end_s": window_end,
                 "campaigns": campaigns,
                 "heats": heats,
-                "task_ids": [task["task_id"] for task in selected],
+                "task_ids": [task["task_id"] for _, _, _, task in selected],
+                "interval_task_count": len(interval_tasks),
+                "point_only_task_count": len(point_tasks),
+                "interval_basis_counts": dict(sorted(Counter(
+                    basis for _, _, basis, _ in interval_tasks
+                ).items())),
                 "loaded_task_count": loaded,
                 "empty_task_count": empty,
                 "known_station_count": known_station,
                 "known_mass_count": known_mass,
                 "identity_clean_count": identity_clean,
                 "c_blocked_count": c_count,
-                "competition_basis": "overlapping release-to-delivery intervals inside one campaign",
-                "evidence_level": "B_conditional" if c_count == 0 else "C_blocked",
-                "score": len(selected) * 10 + len(heats) * 5 + loaded * 2 + known_mass,
+                "competition_basis": (
+                    "overlapping evidenced release-to-plan/observed intervals"
+                    if competitive else "start-time cluster only"
+                ),
+                "evidence_level": (
+                    "competitive_interval" if competitive and c_count == 0
+                    else "B_conditional" if competitive else "time_cluster_only"
+                ),
+                "score": (
+                    len(interval_tasks) * 12 + len(heats) * 5 + loaded * 2 + known_mass
+                    + (5 if competitive else 0) + len(point_tasks)
+                ),
             })
 
     candidates.sort(key=lambda item: (-item["score"], item["start_s"]))
@@ -748,36 +1127,55 @@ def window_candidates(tasks: list[dict], width_s: int = 7200) -> list[dict]:
 
 
 def station_catalog(tasks: list[dict]) -> list[dict]:
+    """EF topology nodes only.  BOF, slag, transfer and repair are external."""
     seen: dict[str, dict] = {}
     for task in tasks:
-        for station_id, family, label in (
-            (task["origin"], task["origin_family"], task["origin_label"]),
-            (task["destination"], task["destination_family"], task["destination_label"]),
+        for station_id, label in (
+            (task["origin"], task["origin_label"]),
+            (task["destination"], task["destination_label"]),
         ):
-            if station_id and station_id not in seen:
+            if station_id in EF_STATIONS and station_id not in seen:
+                meta = EF_STATIONS[station_id]
                 seen[station_id] = {
                     "station_id": station_id,
-                    "family": family,
+                    "family": meta["family"],
                     "source_label": label,
-                    "side": "E" if family in {"LF", "CC"} else "F" if family in {"RH", "BOF"} else None,
-                    "relative_order": None,
+                    "side": meta["side"],
+                    "relative_order": meta["relative_order"],
                     "position_m": None,
+                    "in_ef_topology": True,
                     "evidence": "figure 1 relative order only; no scale or coordinate evidence",
                 }
-    return sorted(seen.values(), key=lambda item: item["station_id"])
+    return sorted(seen.values(), key=lambda item: (item["side"], item["relative_order"]))
 
 
-def resource_catalog(tasks: list[dict]) -> list[dict]:
+def resource_catalog(tasks: list[dict], events: list[dict] | None = None) -> list[dict]:
     resources = []
-    for station_id in sorted({item["station_id"] for item in station_catalog(tasks)}):
+    seen: set[str] = set()
+    station_ids = {
+        value for task in tasks for value in (task["origin"], task["destination"])
+        if value
+    }
+    if events:
+        station_ids |= {
+            event["resource_id"] for event in events if event.get("resource_id")
+        }
+    for station_id in sorted(station_ids):
+        seen.add(station_id)
         family = station_id.split(":")[0] if ":" in station_id else re.sub(r"\d+$", "", station_id)
+        is_ef = station_id in EF_STATIONS
         is_seat = family == "CC"
         resources.append({
             "resource_id": station_id,
-            "resource_type": "caster_receiving_seat" if is_seat else "process_or_handoff_position",
+            "resource_type": (
+                "caster_receiving_seat" if is_seat
+                else "ef_process_position" if is_ef
+                else "external_process_or_handoff_position"
+            ),
             "capacity": 1 if is_seat else None,
             "capacity_status": "derived_structural" if is_seat else "unknown",
-            "location_station": station_id,
+            "location_station": station_id if is_ef else None,
+            "in_ef_topology": is_ef,
             "occupancy": None,
             "evidence": (
                 "one ladle receiving seat per caster (structural); no schedule-level occupancy record"
@@ -785,19 +1183,25 @@ def resource_catalog(tasks: list[dict]) -> list[dict]:
             ),
         })
     for resource_id, resource_type in (
+        ("BOF_A", "converter_process_node"),
+        ("BOF_B", "converter_process_node"),
+        ("BOF_C", "converter_process_node"),
         ("TRANSFER:unknown", "transfer_receipt"),
         ("REPAIR:unknown", "repair_position"),
         ("SLAG:unknown", "slag_position"),
         ("BOF_RETURN:unknown", "converter_return"),
     ):
+        if resource_id in seen:
+            continue
         resources.append({
             "resource_id": resource_id,
             "resource_type": resource_type,
             "capacity": None,
             "capacity_status": "unknown",
             "location_station": None,
+            "in_ef_topology": False,
             "occupancy": None,
-            "evidence": "source label lacks a stable equipment id; capacity and release rule unverified",
+            "evidence": "external node; capacity and release rule unverified",
         })
     return resources
 
@@ -848,6 +1252,23 @@ def build_instance(
                 selected_ids.add(predecessor)
                 changed = True
     target_tasks.sort(key=lambda task: (task["heat_id"], task["task_id"]))
+    task_actuals = [
+        {
+            "task_id": task["task_id"],
+            "historical_pickup_proxy_s": task["historical_pickup_proxy_s"],
+            "observed_arrival_s": task["observed_arrival_s"],
+            "process_predecessor_s": task["release_interval"]["lo_s"],
+            "plan_outer_deadline_s": task["source_plan_outer_deadline"],
+        }
+        for task in target_tasks
+    ]
+    # The policy-visible task records keep only plan and derived bounds.  Actual
+    # historical pickup/arrival values live in simulator_truth.
+    target_tasks = [copy.deepcopy(task) for task in target_tasks]
+    for task in target_tasks:
+        task["historical_pickup_proxy_s"] = None
+        task["observed_arrival_s"] = None
+        task["release_interval"]["hi_s"] = None
     target_ids = {task["task_id"] for task in target_tasks}
     target_events = []
     for event in events:
@@ -860,22 +1281,40 @@ def build_instance(
             event["visible_at_s"] = min(event["time_s"], start_s) if event["time_s"] is not None else start_s
             event["visibility_assumption"] = "plan assumed known by window start"
     for task in target_tasks:
-        task["required"] = task["scope"] in {"ef_crane", "pending_ef_scope"}
+        task["required_in_process"] = True
+        task["required_in_ef_scope"] = (
+            None if task["scope_status"] == "pending_ef_confirmation"
+            else task["scope"] == "ef_crane"
+        )
+        task["required"] = True
     holder_rows, holder_status = build_holder_chain(target_events)
     attach_task_holders(target_tasks, holder_rows)
+    attach_resource_requirements(target_tasks, target_events)
     holders = []
     for ladle, status in sorted(holder_status.items()):
+        visible = [row for row in holder_rows
+                   if row["ladle_id"] == ladle and row["time_s"] <= start_s]
         last = None
-        for row in holder_rows:
-            if row["ladle_id"] == ladle and row["time_s"] <= start_s:
-                last = row
+        ambiguous = False
+        if visible:
+            last_time = max(row["time_s"] for row in visible)
+            at_time = [row for row in visible if row["time_s"] == last_time]
+            values = {row["holder_after"] for row in at_time}
+            if "ambiguous" in {row["chain_status"] for row in at_time} or len(values) > 1:
+                ambiguous = True
+            else:
+                last = at_time[-1]
         holders.append({
             "ladle_id": ladle,
-            "holder_id": last["holder_after"] if last else None,
-            "holder_type": last["holder_type"] if last else "unknown",
-            "since_s": last["time_s"] if last else None,
-            "status": status if last else "unknown",
-            "source_event_id": last["event_id"] if last else None,
+            "holder_id": None if ambiguous else (last["holder_after"] if last else None),
+            "holder_type": "ambiguous" if ambiguous else (last["holder_type"] if last else "unknown"),
+            "since_s": None if ambiguous else (last["time_s"] if last else None),
+            "status": "ambiguous" if ambiguous else (status if last else "unknown"),
+            "holder_basis": (
+                "same-time conflict" if ambiguous
+                else (last["holder_basis"] if last else "no visible transition before window start")
+            ),
+            "source_event_id": None if ambiguous else (last["event_id"] if last else None),
         })
     known_ladles = {item["ladle_id"] for item in holders}
     for task in target_tasks:
@@ -887,6 +1326,7 @@ def build_instance(
                 "holder_type": "derived_from_task_origin",
                 "since_s": None,
                 "status": task["holder_status"],
+                "holder_basis": "task origin; conditional assumption, not A-class evidence",
                 "source_event_id": None,
             })
             known_ladles.add(ladle)
@@ -911,6 +1351,7 @@ def build_instance(
             "evidence": "no window-level crane position or occupancy record; figure order only",
         })
     active_operations = []
+    actual_operation_ends = []
     for heat in sorted(heats):
         heat_events = [event for event in target_events if event["heat_id"] == heat]
         times = {event["event_type"]: event for event in heat_events if event["usable_for_canonical"]}
@@ -921,17 +1362,29 @@ def build_instance(
         ):
             start = times.get(start_type)
             end = times.get(end_type)
-            if start and end and start["time_s"] <= start_s <= end["time_s"]:
-                active_operations.append({
+            if not start or start["time_s"] > start_s:
+                continue
+            if end is not None and end["visible_at_s"] is not None and end["visible_at_s"] <= start_s:
+                continue
+            active_operations.append({
+                "heat_id": heat,
+                "operation": operation,
+                "start_s": start["time_s"],
+                "status": "in_progress",
+                "source_event_ids": [start["event_id"]],
+                "end_s": None,
+                "end_s_visible": False,
+                "remaining_service_s": None,
+            })
+            if end is not None:
+                actual_operation_ends.append({
                     "heat_id": heat,
                     "operation": operation,
-                    "start_s": start["time_s"],
-                    "end_s": end["time_s"],
-                    "status": "in_progress",
-                    "source_event_ids": [start["event_id"], end["event_id"]],
+                    "actual_end_s": end["time_s"],
+                    "end_event_id": end["event_id"],
                 })
     occupancy = []
-    for resource in resource_catalog(target_tasks):
+    for resource in resource_catalog(target_tasks, target_events):
         if resource["resource_id"].startswith("CC") and not resource["resource_id"].startswith("CC:"):
             occupancy.append({
                 "resource_id": resource["resource_id"],
@@ -972,24 +1425,51 @@ def build_instance(
         elif state["heats"]:
             state["next_heat"] = state["heats"][0]
         del state["orders"]
+    visible_events = [
+        event for event in target_events
+        if event.get("visible_at_s") is not None and event["visible_at_s"] <= start_s
+    ]
     task_states = []
     for task in target_tasks:
-        lo = task["release_interval"]["lo_s"]
-        end = task["delivery_window"]["plan_latest_s"] or task["historical_pickup_proxy_s"]
-        if lo is None:
-            status = "unknown"
-        elif start_s < lo:
-            status = "not_started"
-        elif end is not None and start_s > end:
-            status = "possibly_completed"
+        task_events = [
+            event for event in visible_events
+            if task["task_id"] in event.get("task_ids", [])
+        ]
+        seat_events = {
+            "lf_seat", "rh_seat", "cc_seat", "transfer_seat", "repair_seat",
+            "return_transfer_seat", "return_bof_c_seat",
+        }
+        lift_events = {"bof_lift", "lf_lift", "rh_lift", "cc_empty_lift", "return_ef_lift"}
+        if any(event["event_type"] in seat_events for event in task_events):
+            status = "completed_visible"
+        elif any(event["event_type"] in lift_events for event in task_events):
+            status = "in_progress_visible"
         else:
-            status = "in_window"
+            status = "not_started"
+        lo = task["release_interval"]["lo_s"]
         task_states.append({
             "task_id": task["task_id"],
             "status": status,
-            "release_lo_s": lo,
-            "target_end_s": end,
+            "visible_release_lo_s": lo if lo is not None and lo <= start_s else None,
+            "release_visibility_basis": (
+                "release lower bound at or before window start"
+                if lo is not None and lo <= start_s
+                else "future actual release is hidden from the policy"
+            ),
+            "plan_target_s": task["delivery_window"]["plan_latest_s"],
+            "plan_target_basis": "plan cast start; visible as a plan commitment",
         })
+    simulator_truth = {
+        "visibility": "hidden_from_policy",
+        "now_s": start_s,
+        "policy_rule": "read only events with visible_at_s <= initial_state.now_s",
+        "task_actuals": task_actuals,
+        "future_event_ids": [
+            event["event_id"] for event in target_events
+            if event.get("visible_at_s") is not None and event["visible_at_s"] > start_s
+        ],
+        "active_operation_actual_end_s": actual_operation_ends,
+    }
     instance = {
         "schema": SCHEMA,
         "instance_id": f"stage03-q1-b-{primary['window_id']}",
@@ -1010,8 +1490,13 @@ def build_instance(
             "due_rule": "plan cast start as outer target; seat lead not evidenced",
             "process_mode": "deterministic",
             "recovery_authorization": "none",
+            "policy_visibility_rule": "only events with visible_at_s <= initial_state.now_s are policy-visible",
             "included_external_tasks": [
                 task["task_id"] for task in target_tasks if task["scope"] == "external_service"
+            ],
+            "pending_ef_confirmation_tasks": [
+                task["task_id"] for task in target_tasks
+                if task["scope_status"] == "pending_ef_confirmation"
             ],
         },
         "evidence": {
@@ -1022,6 +1507,11 @@ def build_instance(
             "identity_corrections_applied": 3,
             "assumptions": assumptions,
             "blocking": blocking,
+            "contract_extensions": [
+                "scope_status: confirmed | pending_ef_confirmation | external_boundary",
+                "required_in_process and required_in_ef_scope split",
+                "simulator_truth separated from initial_state",
+            ],
         },
         "device_catalog": [
             {
@@ -1046,9 +1536,10 @@ def build_instance(
             "geometry_status": "unverified",
             "evidence": "figure 1 gives relative station order only; no scale, coordinate, clearance or speed evidence",
         },
-        "resources": resource_catalog(target_tasks),
+        "resources": resource_catalog(target_tasks, target_events),
         "events": target_events,
         "tasks": target_tasks,
+        "simulator_truth": simulator_truth,
         "initial_state": {
             "now_s": start_s,
             "state_version": f"stage03-q1-b:{primary['window_id']}",
@@ -1104,8 +1595,9 @@ def coverage_audit(
     source_audit: dict,
 ) -> dict:
     by_scope = Counter(task["scope"] for task in tasks)
+    by_scope_status = Counter(task["scope_status"] for task in tasks)
     by_admission = Counter(task["admission"] for task in tasks)
-    by_leg_scope = Counter(f"{task['leg']}:{task['scope']}" for task in tasks)
+    by_leg_scope = Counter(f"{task['leg']}:{task['scope']}:{task['scope_status']}" for task in tasks)
     blockers = Counter(code for task in tasks for code in task["blocker_codes"])
     heats_with_tasks = {task["heat_id"] for task in tasks}
     all_heats = set(str(value) for value in raw_tasks["heat_id"].unique())
@@ -1133,7 +1625,13 @@ def coverage_audit(
             "campaigns_with_tasks": len({task["campaign_id"] for task in tasks if task["campaign_id"]}),
         },
         "scope_counts": dict(sorted(by_scope.items())),
+        "scope_status_counts": dict(sorted(by_scope_status.items())),
         "admission_counts": dict(sorted(by_admission.items())),
+        "required_in_ef_scope_counts": {
+            "true": sum(task["required_in_ef_scope"] is True for task in tasks),
+            "false": sum(task["required_in_ef_scope"] is False for task in tasks),
+            "null": sum(task["required_in_ef_scope"] is None for task in tasks),
+        },
         "leg_scope_counts": dict(sorted(by_leg_scope.items())),
         "blocker_counts": dict(sorted(blockers.items())),
         "field_coverage": {
@@ -1146,10 +1644,29 @@ def coverage_audit(
             "pickup_window": sum(task["pickup_window"]["hard_earliest_s"] is not None for task in tasks),
             "delivery_plan_latest": sum(task["delivery_window"]["plan_latest_s"] is not None for task in tasks),
             "eligible_cranes_verified": sum(task["eligible_cranes"] is not None for task in tasks),
+            "eligible_cranes_confirmed_empty": sum(task["eligible_cranes"] == [] for task in tasks),
+            "resource_requirements_derived": sum(
+                task["resource_requirement_status"] == "derived" for task in tasks
+            ),
+            "resource_requirements_unverified": sum(
+                task["resource_requirement_status"] == "unverified" for task in tasks
+            ),
+            "crane_evidence_confirmed": sum(
+                task["crane_evidence_status"] == "confirmed" for task in tasks
+            ),
+            "crane_evidence_conflict": sum(
+                task["crane_evidence_status"] == "conflict" for task in tasks
+            ),
         },
         "windows": {
             "candidate_count": len(candidates),
             "candidate_ids": [item["window_id"] for item in candidates],
+            "competitive_interval_candidates": sum(
+                item["evidence_level"] == "competitive_interval" for item in candidates
+            ),
+            "time_cluster_only_candidates": sum(
+                item["evidence_level"] == "time_cluster_only" for item in candidates
+            ),
             "primary": instance["instance_id"],
             "primary_task_count": len(instance["tasks"]),
             "primary_event_count": len(instance["events"]),
@@ -1163,6 +1680,9 @@ def coverage_audit(
             "unknown_holders": sum(
                 item["status"] == "unknown" for item in instance["initial_state"]["holders"]
             ),
+            "task_holder_status_counts": dict(sorted(
+                Counter(task["holder_status"] for task in tasks).items()
+            )),
         },
         "denominators": {
             "all_candidate_legs": len(tasks),
@@ -1197,6 +1717,12 @@ def parameter_evidence() -> list[dict]:
         ("release_rule", "process predecessor completion", "s", "Stage 02 audit", "derived", "used as lower bound; historical lift kept as upper proxy"),
         ("delivery_rule", "plan cast start", "s", "plan table", "derived", "outer target only; seat lead not evidenced"),
         ("mass_rule", "observed endpoint gross mass", "t", "Stage 02 audit", "observed", "point proxy; unknown remains null"),
+        ("scope_status", "confirmed|pending_ef_confirmation|external_boundary", "", "contract extension proposal", "assumed", "keeps pending EF scope out of dispatch without adding a new scope enum"),
+        ("required_split", "required_in_process; required_in_ef_scope", "", "contract extension proposal", "assumed", "separates production necessity from EF dispatch necessity"),
+        ("simulator_truth", "hidden_from_policy", "", "contract extension proposal", "assumed", "keeps actual future values out of initial_state"),
+        ("eligible_cranes", "null unless station and permission verified", "", "model contract", "pending", "null is unknown; [] is confirmed no legal crane"),
+        ("resource_requirements", "null unless evidenced", "", "model contract", "pending", "unknown is not an empty requirement list"),
+        ("holder_chain_status", "complete|conditional|partial|ambiguous|unknown", "", "event evidence", "derived", "conditional and incomplete states are recorded, not promoted to A"),
     ):
         rows.append({
             "parameter": name,
@@ -1256,12 +1782,15 @@ def main() -> None:
 
     source_index = SourceIndex(raw)
     device_rows = heat_device_rows(raw_events)
-    heat_ladles = heat_ladle_map(raw_events)
+    corrections = load_approved_corrections(APPROVED_AUDIT)
+    heat_identities = heat_identity_map(raw_events, corrections)
     events = build_events(raw_events, source_to_tasks)
-    tasks = build_tasks(raw_tasks, device_rows, source_index, heat_ladles)
+    tasks = build_tasks(raw_tasks, device_rows, source_index, heat_identities)
     add_derived_events(events, tasks)
+    attach_window_bindings(tasks, events)
     chain_rows, _ = build_holder_chain(events)
     attach_task_holders(tasks, chain_rows)
+    attach_resource_requirements(tasks, events)
     admit(tasks)
     candidates = window_candidates(tasks)
     if not candidates:
@@ -1317,9 +1846,15 @@ def main() -> None:
     for task in tasks:
         flat_tasks.append({
             "task_id": task["task_id"], "heat_id": task["heat_id"],
-            "ladle_id": task["ladle_id"], "campaign_id": task["campaign_id"],
+            "ladle_id": task["ladle_id"],
+            "identity_status": task["ladle_identity"]["status"],
+            "identity_candidates": ";".join(
+                item["ladle_id"] for item in task["ladle_identity"]["candidates"]
+            ),
+            "campaign_id": task["campaign_id"],
             "campaign_order": task["campaign_order"], "route": task["route"],
-            "leg": task["leg"], "scope": task["scope"], "scope_basis": task["scope_basis"],
+            "leg": task["leg"], "scope": task["scope"],
+            "scope_status": task["scope_status"], "scope_basis": task["scope_basis"],
             "load_state": task["load_state"], "origin": task["origin"],
             "destination": task["destination"], "origin_label": task["origin_label"],
             "destination_label": task["destination_label"],
@@ -1332,9 +1867,24 @@ def main() -> None:
             "historical_pickup_proxy_s": task["historical_pickup_proxy_s"],
             "observed_arrival_s": task["observed_arrival_s"],
             "plan_outer_deadline_s": task["source_plan_outer_deadline"],
-            "capacity_candidates": ";".join(task["capacity_candidates"] or []),
-            "eligible_cranes": "null" if task["eligible_cranes"] is None else ";".join(task["eligible_cranes"]),
-            "observed_crane": task["observed_crane"], "required": task["required"],
+            "capacity_candidates": (
+                "null" if task["capacity_candidates"] is None
+                else ";".join(task["capacity_candidates"])
+            ),
+            "eligible_cranes": (
+                "null" if task["eligible_cranes"] is None
+                else ";".join(task["eligible_cranes"])
+            ),
+            "observed_crane": task["observed_crane"],
+            "observed_crane_candidates": ";".join(task["observed_crane_candidates"]),
+            "crane_evidence_status": task["crane_evidence_status"],
+            "required": task["required"],
+            "required_in_process": task["required_in_process"],
+            "required_in_ef_scope": (
+                "null" if task["required_in_ef_scope"] is None
+                else task["required_in_ef_scope"]
+            ),
+            "resource_requirement_status": task["resource_requirement_status"],
             "admission": task["admission"], "blocker_codes": ";".join(task["blocker_codes"]),
             "link_status": task["link_status"], "flags": ";".join(task["flags"]),
             "holder_before": task["holder_before"], "holder_after": task["holder_after"],
@@ -1344,7 +1894,8 @@ def main() -> None:
     write_csv(
         output / "holder_chain.csv", chain_rows,
         ["ladle_id", "heat_id", "event_id", "event_type", "time_s", "holder_before",
-         "holder_after", "holder_type", "chain_status", "source_ref"],
+         "holder_after", "holder_type", "chain_status", "holder_basis",
+         "ambiguous_event_ids", "source_ref"],
     )
     write_csv(
         output / "parameter_evidence.csv", parameter_evidence(),

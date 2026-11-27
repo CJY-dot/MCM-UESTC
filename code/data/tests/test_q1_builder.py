@@ -16,13 +16,28 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "code/data"))
 
+import pandas as pd  # noqa: E402
+
 from q1_builder import (  # noqa: E402
+    SourceIndex,
+    add_derived_events,
+    admit,
+    attach_resource_requirements,
+    attach_task_holders,
+    build_events,
+    build_holder_chain,
     build_instance,
+    build_tasks,
+    heat_device_rows,
+    heat_identity_map,
+    resource_catalog,
     station,
+    station_catalog,
+    task_crane_evidence,
     task_graph_acyclic,
     window_candidates,
 )
-from q1_schema import validate_instance  # noqa: E402
+from q1_schema import validate_event, validate_instance  # noqa: E402
 
 FIXTURE = ROOT / "stages/03_implementation/B/fixtures/q1_synthetic_fixture.json"
 
@@ -65,7 +80,8 @@ class SyntheticFixtureTests(unittest.TestCase):
     def test_external_service_boundary(self):
         external = [task for task in self.instance["tasks"] if task["scope"] == "external_service"]
         self.assertTrue(external)
-        self.assertTrue(all(not task["required"] for task in external))
+        self.assertTrue(all(not task["required_in_ef_scope"] for task in external))
+        self.assertTrue(all(task["required_in_process"] for task in external))
 
     def test_task_graph_is_acyclic(self):
         acyclic, missing = task_graph_acyclic(self.instance["tasks"])
@@ -100,8 +116,8 @@ class SyntheticFixtureTests(unittest.TestCase):
         resources = {item["resource_id"]: item for item in self.instance["resources"]}
         self.assertIsNone(resources["TRANSFER:unknown"]["capacity"])
         self.assertEqual(resources["TRANSFER:unknown"]["capacity_status"], "unknown")
-        scopes = {task["scope"] for task in self.instance["tasks"]}
-        self.assertIn("pending_ef_scope", scopes)
+        statuses = {task["scope_status"] for task in self.instance["tasks"]}
+        self.assertIn("pending_ef_confirmation", statuses)
 
 
 class BuilderHelperTests(unittest.TestCase):
