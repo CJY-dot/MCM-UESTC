@@ -31,7 +31,7 @@
 
 **与 B 预处理对接。** 读其 `events.csv, tasks.csv, calibration.csv, audit.json`。保留 `source_*`、计划与实测、缺失标志、身份匹配和原候选腿键。从 `process_predecessor_s` 建待核的工艺前序，从 `release_proxy_s`/`observed_lift_s` 取得历史对照，从 `observed_arrival_s` 找该腿对应的到卸点/放下代理，从 `plan_outer_deadline_s` 找计划外界。`gross_weight_t` 与 `weight_status` 按原毛重口径映射。`cranes_by_capacity` 仅映射 `capacity_candidates`。不自动填 B 留空的 `physical_release_s/window_open_s/window_close_s/eligible_cranes`。原同炉次链不自动生成跨炉强制运输边。同浇次计划由规范炉序、转台和供钢规则另行连接。判定 A 级需要的证据缺失时，有完整授权情景才置 B，否则置 C 并保留需求，不悄悄删行。
 
-**行级身份处理。** 在授权本机记录 `workbook_sha256, sheet, row_1based, column, field, raw_value, normalized_value, correction_reason, authority_ref, status`，区分 `identity_conflict`、`ambiguous` 与已批准更正。用熔炼号收集关联行，核对记号、真实包号与临时罐号、设备及跨日时间，禁止用全局字符串替换。在确认前 `normalized_value=null`，原观测照存，使用该身份的候选腿及不能独立确立持有者的后继都标 C 并保留依赖。批准后逐条核对工作簿版本、原值和唯一坐标，在入模映射应用，不改原表。对目标炉次重做行匹配、规范事件、候选腿、校准和前序，核对相邻持有链；其他炉次做无变化检查。若用现有预处理全表重跑，变化范围仍限定在批准记录及受影响链。输出选择状态与各级计数前后差，并保留原记录及修正规则，未批准的 RH/CC 行不得随 LF 自动重写。
+**行级身份处理。** 在授权本机记录 `workbook_sha256, sheet, row_1based, column, field, raw_value, normalized_value, correction_reason, authority_ref, status`，区分 `identity_conflict`、`ambiguous`、数据方勘误与项目批准（`project_approved`）。用熔炼号收集关联行，核对记号、真实包号与临时罐号、设备及跨日时间，禁止用全局字符串替换。在确认前 `normalized_value=null`，原观测照存，使用该身份的候选腿及不能独立确立持有者的后继都标 C 并保留依赖。批准后逐条核对工作簿版本、原值和唯一坐标，在入模映射应用，不改原表。对目标炉次重做行匹配、规范事件、候选腿、校准和前序，核对相邻持有链；其他炉次做无变化检查。若用现有预处理全表重跑，变化范围仍限定在批准记录及受影响链。输出选择状态与各级计数前后差，并保留原记录及修正规则，未批准的 RH/CC 行不得随 LF 自动重写。3#LF 本次已批准的映射及前后差写入本机纠错版 `audit.json`，现有 B 预处理脚本和原有派生目录保持原样。
 
 ### 渡车网络输入
 
