@@ -1,0 +1,3257 @@
+{
+  "schema": "mcm-uestc.q1-summary/1",
+  "source": "Q1W06 frozen replay roster",
+  "information_mode": "batch_planning",
+  "unit": "normalized",
+  "assumption_config_sha256": "5712d7ac3bedc11eeb1d9386ef6517ba1662fa1a2c081a213c8253758b2161bc",
+  "count_basis": {
+    "heats": 7,
+    "all_requirements": 23,
+    "confirmed_ef": 17
+  },
+  "runs": [
+    {
+      "scenario": "base",
+      "policy": "fcfs",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 2382.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4902.0
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 1400.0,
+        "loaded_run_s": 1430.0,
+        "idle_crane_s": 123380.0,
+        "empty_assigned_wait_s": 1090.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24340.0,
+            "empty_move": 310.0,
+            "loaded_move": 570.0,
+            "yield": 240.0,
+            "utilization": 0.04399057344854674
+          },
+          "3#450": {
+            "empty_move": 670.0,
+            "wait_empty": 1090.0,
+            "loaded_move": 860.0,
+            "idle": 22840.0,
+            "utilization": 0.10290652003142184
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 179,
+        "candidate_gap_rejections": 334,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "scenario": "base",
+      "policy": "tight_margin",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 2382.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4902.0
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 1400.0,
+        "loaded_run_s": 1430.0,
+        "idle_crane_s": 123380.0,
+        "empty_assigned_wait_s": 1090.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24340.0,
+            "empty_move": 310.0,
+            "loaded_move": 570.0,
+            "yield": 240.0,
+            "utilization": 0.04399057344854674
+          },
+          "3#450": {
+            "empty_move": 670.0,
+            "wait_empty": 1090.0,
+            "loaded_move": 860.0,
+            "idle": 22840.0,
+            "utilization": 0.10290652003142184
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 179,
+        "candidate_gap_rejections": 334,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "scenario": "optimistic",
+      "policy": "fcfs",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 1518.4615384615374,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 7190.7692307692305
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 915.3846153846137,
+        "loaded_run_s": 935.0000000000001,
+        "idle_crane_s": 124328.07692307692,
+        "empty_assigned_wait_s": 1121.538461538462,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24727.69230769231,
+            "empty_move": 202.69230769230717,
+            "loaded_move": 372.6923076923081,
+            "yield": 156.92307692307622,
+            "utilization": 0.02876306725481899
+          },
+          "3#450": {
+            "empty_move": 438.07692307692264,
+            "loaded_move": 562.307692307692,
+            "idle": 23338.076923076922,
+            "wait_empty": 1121.538461538462,
+            "utilization": 0.08334340443531335
+          },
+          "5#450": {
+            "idle": 25342.30769230769,
+            "yield": 117.69230769230762,
+            "utilization": 0.004622635808810233
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 3.4000000000000057,
+        "min_margin": 0.4000000000000057,
+        "gap_threshold": 3,
+        "candidate_capacity_rejections": 293,
+        "candidate_gap_rejections": 499,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "scenario": "optimistic",
+      "policy": "tight_margin",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 1518.4615384615374,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 7190.7692307692305
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 915.3846153846137,
+        "loaded_run_s": 935.0000000000001,
+        "idle_crane_s": 124328.07692307692,
+        "empty_assigned_wait_s": 1121.538461538462,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24727.69230769231,
+            "empty_move": 202.69230769230717,
+            "loaded_move": 372.6923076923081,
+            "yield": 156.92307692307622,
+            "utilization": 0.02876306725481899
+          },
+          "3#450": {
+            "empty_move": 438.07692307692264,
+            "loaded_move": 562.307692307692,
+            "idle": 23338.076923076922,
+            "wait_empty": 1121.538461538462,
+            "utilization": 0.08334340443531335
+          },
+          "5#450": {
+            "idle": 25342.30769230769,
+            "yield": 117.69230769230762,
+            "utilization": 0.004622635808810233
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 3.4000000000000057,
+        "min_margin": 0.4000000000000057,
+        "gap_threshold": 3,
+        "candidate_capacity_rejections": 293,
+        "candidate_gap_rejections": 499,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "scenario": "conservative",
+      "policy": "fcfs",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 3,
+        "completion_rate": 0.17647058823529413,
+        "plan_targets": 6,
+        "on_time": 1,
+        "on_time_rate": 0.16666666666666666,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 5,
+        "waiting_s": {
+          "pickup": 0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 1279.3333333333335
+        },
+        "censored_wait_count": 1,
+        "empty_run_s": 444.66666666666663,
+        "loaded_run_s": 659.3333333333334,
+        "idle_crane_s": 125584.66666666666,
+        "empty_assigned_wait_s": 611.3333333333334,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "3#450": {
+            "empty_move": 168.66666666666666,
+            "wait_empty": 611.3333333333334,
+            "loaded_move": 659.3333333333334,
+            "idle": 24020.666666666664,
+            "utilization": 0.05653312385441225
+          },
+          "5#450": {
+            "idle": 25184.0,
+            "yield": 276.0,
+            "utilization": 0.010840534171249017
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 6.8999999999999915,
+        "min_margin": 0.8999999999999915,
+        "gap_threshold": 6,
+        "candidate_capacity_rejections": 6,
+        "candidate_gap_rejections": 14,
+        "shifted_supply_count": 0,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 3,
+          "input_blocked": 7,
+          "candidate_exhausted": 1,
+          "dependency_blocked": 12
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "scenario": "conservative",
+      "policy": "tight_margin",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 3,
+        "completion_rate": 0.17647058823529413,
+        "plan_targets": 6,
+        "on_time": 1,
+        "on_time_rate": 0.16666666666666666,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 5,
+        "waiting_s": {
+          "pickup": 0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 1279.3333333333335
+        },
+        "censored_wait_count": 1,
+        "empty_run_s": 444.66666666666663,
+        "loaded_run_s": 659.3333333333334,
+        "idle_crane_s": 125584.66666666666,
+        "empty_assigned_wait_s": 611.3333333333334,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "3#450": {
+            "empty_move": 168.66666666666666,
+            "wait_empty": 611.3333333333334,
+            "loaded_move": 659.3333333333334,
+            "idle": 24020.666666666664,
+            "utilization": 0.05653312385441225
+          },
+          "5#450": {
+            "idle": 25184.0,
+            "yield": 276.0,
+            "utilization": 0.010840534171249017
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 6.8999999999999915,
+        "min_margin": 0.8999999999999915,
+        "gap_threshold": 6,
+        "candidate_capacity_rejections": 6,
+        "candidate_gap_rejections": 14,
+        "shifted_supply_count": 0,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 3,
+          "input_blocked": 7,
+          "candidate_exhausted": 1,
+          "dependency_blocked": 12
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    }
+  ],
+  "strict_plan_targets": [
+    {
+      "policy": "fcfs",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 2382.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4902.0
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 1400.0,
+        "loaded_run_s": 1430.0,
+        "idle_crane_s": 123380.0,
+        "empty_assigned_wait_s": 1090.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24340.0,
+            "empty_move": 310.0,
+            "loaded_move": 570.0,
+            "yield": 240.0,
+            "utilization": 0.04399057344854674
+          },
+          "3#450": {
+            "empty_move": 670.0,
+            "wait_empty": 1090.0,
+            "loaded_move": 860.0,
+            "idle": 22840.0,
+            "utilization": 0.10290652003142184
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 171,
+        "candidate_gap_rejections": 289,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "policy": "tight_margin",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 2382.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4902.0
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 1400.0,
+        "loaded_run_s": 1430.0,
+        "idle_crane_s": 123380.0,
+        "empty_assigned_wait_s": 1090.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24340.0,
+            "empty_move": 310.0,
+            "loaded_move": 570.0,
+            "yield": 240.0,
+            "utilization": 0.04399057344854674
+          },
+          "3#450": {
+            "empty_move": 670.0,
+            "wait_empty": 1090.0,
+            "loaded_move": 860.0,
+            "idle": 22840.0,
+            "utilization": 0.10290652003142184
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 171,
+        "candidate_gap_rejections": 289,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    }
+  ],
+  "sensitivity": [
+    {
+      "parameter": "Speed (u/s)",
+      "level": "optimistic",
+      "value": 0.13,
+      "policy": "fcfs",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 3,
+        "completion_rate": 0.17647058823529413,
+        "plan_targets": 6,
+        "on_time": 1,
+        "on_time_rate": 0.16666666666666666,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 5,
+        "waiting_s": {
+          "pickup": 0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 2012.769230769231
+        },
+        "censored_wait_count": 1,
+        "empty_run_s": 223.07692307692318,
+        "loaded_run_s": 330.76923076923094,
+        "idle_crane_s": 126110.76923076923,
+        "empty_assigned_wait_s": 635.3846153846154,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "3#450": {
+            "empty_move": 84.61538461538461,
+            "wait_empty": 635.3846153846154,
+            "loaded_move": 330.76923076923094,
+            "idle": 24409.23076923077,
+            "utilization": 0.041271375913952496
+          },
+          "5#450": {
+            "idle": 25321.53846153846,
+            "yield": 138.46153846153857,
+            "utilization": 0.005438395069188493
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 11,
+        "candidate_gap_rejections": 30,
+        "shifted_supply_count": 0,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 3,
+          "input_blocked": 7,
+          "candidate_exhausted": 1,
+          "dependency_blocked": 12
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Speed (u/s)",
+      "level": "optimistic",
+      "value": 0.13,
+      "policy": "tight_margin",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 3,
+        "completion_rate": 0.17647058823529413,
+        "plan_targets": 6,
+        "on_time": 1,
+        "on_time_rate": 0.16666666666666666,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 5,
+        "waiting_s": {
+          "pickup": 0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 2012.769230769231
+        },
+        "censored_wait_count": 1,
+        "empty_run_s": 223.07692307692318,
+        "loaded_run_s": 330.76923076923094,
+        "idle_crane_s": 126110.76923076923,
+        "empty_assigned_wait_s": 635.3846153846154,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "3#450": {
+            "empty_move": 84.61538461538461,
+            "wait_empty": 635.3846153846154,
+            "loaded_move": 330.76923076923094,
+            "idle": 24409.23076923077,
+            "utilization": 0.041271375913952496
+          },
+          "5#450": {
+            "idle": 25321.53846153846,
+            "yield": 138.46153846153857,
+            "utilization": 0.005438395069188493
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 11,
+        "candidate_gap_rejections": 30,
+        "shifted_supply_count": 0,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 3,
+          "input_blocked": 7,
+          "candidate_exhausted": 1,
+          "dependency_blocked": 12
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Speed (u/s)",
+      "level": "base",
+      "value": 0.1,
+      "policy": "fcfs",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 2382.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4902.0
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 1400.0,
+        "loaded_run_s": 1430.0,
+        "idle_crane_s": 123380.0,
+        "empty_assigned_wait_s": 1090.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24340.0,
+            "empty_move": 310.0,
+            "loaded_move": 570.0,
+            "yield": 240.0,
+            "utilization": 0.04399057344854674
+          },
+          "3#450": {
+            "empty_move": 670.0,
+            "wait_empty": 1090.0,
+            "loaded_move": 860.0,
+            "idle": 22840.0,
+            "utilization": 0.10290652003142184
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 179,
+        "candidate_gap_rejections": 334,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Speed (u/s)",
+      "level": "base",
+      "value": 0.1,
+      "policy": "tight_margin",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 2382.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4902.0
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 1400.0,
+        "loaded_run_s": 1430.0,
+        "idle_crane_s": 123380.0,
+        "empty_assigned_wait_s": 1090.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24340.0,
+            "empty_move": 310.0,
+            "loaded_move": 570.0,
+            "yield": 240.0,
+            "utilization": 0.04399057344854674
+          },
+          "3#450": {
+            "empty_move": 670.0,
+            "wait_empty": 1090.0,
+            "loaded_move": 860.0,
+            "idle": 22840.0,
+            "utilization": 0.10290652003142184
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 179,
+        "candidate_gap_rejections": 334,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Speed (u/s)",
+      "level": "conservative",
+      "value": 0.075,
+      "policy": "fcfs",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 8,
+        "completion_rate": 0.47058823529411764,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 1981.9999999999993,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4092.0000000000005
+        },
+        "censored_wait_count": 2,
+        "empty_run_s": 1773.3333333333314,
+        "loaded_run_s": 1653.3333333333333,
+        "idle_crane_s": 122760.0,
+        "empty_assigned_wait_s": 1113.333333333334,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24313.333333333336,
+            "empty_move": 319.99999999999955,
+            "loaded_move": 506.6666666666665,
+            "yield": 320.0,
+            "utilization": 0.045037968054464424
+          },
+          "3#450": {
+            "empty_move": 893.3333333333319,
+            "loaded_move": 1146.6666666666667,
+            "idle": 22306.666666666668,
+            "wait_empty": 1113.333333333334,
+            "utilization": 0.12385441214977738
+          },
+          "5#450": {
+            "idle": 25220.0,
+            "yield": 240.0,
+            "utilization": 0.009426551453260016
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 104,
+        "candidate_gap_rejections": 167,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 8,
+          "input_blocked": 7,
+          "candidate_exhausted": 2,
+          "dependency_blocked": 6
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Speed (u/s)",
+      "level": "conservative",
+      "value": 0.075,
+      "policy": "tight_margin",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 8,
+        "completion_rate": 0.47058823529411764,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 1981.9999999999993,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4092.0000000000005
+        },
+        "censored_wait_count": 2,
+        "empty_run_s": 1773.3333333333314,
+        "loaded_run_s": 1653.3333333333333,
+        "idle_crane_s": 122760.0,
+        "empty_assigned_wait_s": 1113.333333333334,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24313.333333333336,
+            "empty_move": 319.99999999999955,
+            "loaded_move": 506.6666666666665,
+            "yield": 320.0,
+            "utilization": 0.045037968054464424
+          },
+          "3#450": {
+            "empty_move": 893.3333333333319,
+            "loaded_move": 1146.6666666666667,
+            "idle": 22306.666666666668,
+            "wait_empty": 1113.333333333334,
+            "utilization": 0.12385441214977738
+          },
+          "5#450": {
+            "idle": 25220.0,
+            "yield": 240.0,
+            "utilization": 0.009426551453260016
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 104,
+        "candidate_gap_rejections": 167,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 8,
+          "input_blocked": 7,
+          "candidate_exhausted": 2,
+          "dependency_blocked": 6
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Distance factor",
+      "level": "optimistic",
+      "value": 0.85,
+      "policy": "fcfs",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 3,
+        "completion_rate": 0.17647058823529413,
+        "plan_targets": 6,
+        "on_time": 1,
+        "on_time_rate": 0.16666666666666666,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 5,
+        "waiting_s": {
+          "pickup": 0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 1984.5
+        },
+        "censored_wait_count": 1,
+        "empty_run_s": 246.5,
+        "loaded_run_s": 365.5,
+        "idle_crane_s": 126061.5,
+        "empty_assigned_wait_s": 626.5,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "3#450": {
+            "empty_move": 93.50000000000001,
+            "wait_empty": 626.5,
+            "loaded_move": 365.5,
+            "idle": 24374.5,
+            "utilization": 0.04263550667714061
+          },
+          "5#450": {
+            "idle": 25307.0,
+            "yield": 153.0,
+            "utilization": 0.00600942655145326
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 5.1000000000000085,
+        "min_margin": 1.1000000000000085,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 11,
+        "candidate_gap_rejections": 23,
+        "shifted_supply_count": 0,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 3,
+          "input_blocked": 7,
+          "candidate_exhausted": 1,
+          "dependency_blocked": 12
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Distance factor",
+      "level": "optimistic",
+      "value": 0.85,
+      "policy": "tight_margin",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 3,
+        "completion_rate": 0.17647058823529413,
+        "plan_targets": 6,
+        "on_time": 1,
+        "on_time_rate": 0.16666666666666666,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 5,
+        "waiting_s": {
+          "pickup": 0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 1984.5
+        },
+        "censored_wait_count": 1,
+        "empty_run_s": 246.5,
+        "loaded_run_s": 365.5,
+        "idle_crane_s": 126061.5,
+        "empty_assigned_wait_s": 626.5,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "3#450": {
+            "empty_move": 93.50000000000001,
+            "wait_empty": 626.5,
+            "loaded_move": 365.5,
+            "idle": 24374.5,
+            "utilization": 0.04263550667714061
+          },
+          "5#450": {
+            "idle": 25307.0,
+            "yield": 153.0,
+            "utilization": 0.00600942655145326
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 5.1000000000000085,
+        "min_margin": 1.1000000000000085,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 11,
+        "candidate_gap_rejections": 23,
+        "shifted_supply_count": 0,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 3,
+          "input_blocked": 7,
+          "candidate_exhausted": 1,
+          "dependency_blocked": 12
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Distance factor",
+      "level": "base",
+      "value": 1.0,
+      "policy": "fcfs",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 2382.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4902.0
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 1400.0,
+        "loaded_run_s": 1430.0,
+        "idle_crane_s": 123380.0,
+        "empty_assigned_wait_s": 1090.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24340.0,
+            "empty_move": 310.0,
+            "loaded_move": 570.0,
+            "yield": 240.0,
+            "utilization": 0.04399057344854674
+          },
+          "3#450": {
+            "empty_move": 670.0,
+            "wait_empty": 1090.0,
+            "loaded_move": 860.0,
+            "idle": 22840.0,
+            "utilization": 0.10290652003142184
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 179,
+        "candidate_gap_rejections": 334,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Distance factor",
+      "level": "base",
+      "value": 1.0,
+      "policy": "tight_margin",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 2382.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4902.0
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 1400.0,
+        "loaded_run_s": 1430.0,
+        "idle_crane_s": 123380.0,
+        "empty_assigned_wait_s": 1090.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24340.0,
+            "empty_move": 310.0,
+            "loaded_move": 570.0,
+            "yield": 240.0,
+            "utilization": 0.04399057344854674
+          },
+          "3#450": {
+            "empty_move": 670.0,
+            "wait_empty": 1090.0,
+            "loaded_move": 860.0,
+            "idle": 22840.0,
+            "utilization": 0.10290652003142184
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 179,
+        "candidate_gap_rejections": 334,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Distance factor",
+      "level": "conservative",
+      "value": 1.15,
+      "policy": "fcfs",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 8,
+        "completion_rate": 0.47058823529411764,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 1712.5,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4554.0
+        },
+        "censored_wait_count": 2,
+        "empty_run_s": 1529.5,
+        "loaded_run_s": 1426.0,
+        "idle_crane_s": 123260.5,
+        "empty_assigned_wait_s": 1084.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24471.0,
+            "empty_move": 276.0,
+            "loaded_move": 437.0,
+            "yield": 276.0,
+            "utilization": 0.03884524744697565
+          },
+          "3#450": {
+            "empty_move": 770.5,
+            "loaded_move": 989.0,
+            "idle": 22616.5,
+            "wait_empty": 1084.0,
+            "utilization": 0.11168499607227023
+          },
+          "5#450": {
+            "idle": 25253.0,
+            "yield": 207.0,
+            "utilization": 0.008130400628436764
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.6000000000000085,
+        "min_margin": 0.6000000000000085,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 105,
+        "candidate_gap_rejections": 193,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 8,
+          "input_blocked": 7,
+          "candidate_exhausted": 2,
+          "dependency_blocked": 6
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Distance factor",
+      "level": "conservative",
+      "value": 1.15,
+      "policy": "tight_margin",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 8,
+        "completion_rate": 0.47058823529411764,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 1712.5,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4554.0
+        },
+        "censored_wait_count": 2,
+        "empty_run_s": 1529.5,
+        "loaded_run_s": 1426.0,
+        "idle_crane_s": 123260.5,
+        "empty_assigned_wait_s": 1084.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24471.0,
+            "empty_move": 276.0,
+            "loaded_move": 437.0,
+            "yield": 276.0,
+            "utilization": 0.03884524744697565
+          },
+          "3#450": {
+            "empty_move": 770.5,
+            "loaded_move": 989.0,
+            "idle": 22616.5,
+            "wait_empty": 1084.0,
+            "utilization": 0.11168499607227023
+          },
+          "5#450": {
+            "idle": 25253.0,
+            "yield": 207.0,
+            "utilization": 0.008130400628436764
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.6000000000000085,
+        "min_margin": 0.6000000000000085,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 105,
+        "candidate_gap_rejections": 193,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 8,
+          "input_blocked": 7,
+          "candidate_exhausted": 2,
+          "dependency_blocked": 6
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Safety gap (u)",
+      "level": "optimistic",
+      "value": 3,
+      "policy": "fcfs",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 8,
+        "completion_rate": 0.47058823529411764,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 1682.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4742.0
+        },
+        "censored_wait_count": 2,
+        "empty_run_s": 1720.0,
+        "loaded_run_s": 1240.0,
+        "idle_crane_s": 123130.0,
+        "empty_assigned_wait_s": 1210.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24440.0,
+            "empty_move": 240.0,
+            "loaded_move": 380.0,
+            "yield": 400.0,
+            "utilization": 0.04006284367635507
+          },
+          "3#450": {
+            "empty_move": 270.0,
+            "wait_empty": 450.0,
+            "loaded_move": 510.0,
+            "idle": 23920.0,
+            "yield": 310.0,
+            "utilization": 0.060487038491751764
+          },
+          "5#450": {
+            "idle": 23850.0,
+            "yield": 60.0,
+            "wait_empty": 760.0,
+            "empty_move": 440.0,
+            "loaded_move": 350.0,
+            "utilization": 0.06323644933228594
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 3.0,
+        "min_margin": 0.0,
+        "gap_threshold": 3,
+        "candidate_capacity_rejections": 192,
+        "candidate_gap_rejections": 281,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 8,
+          "input_blocked": 7,
+          "candidate_exhausted": 2,
+          "dependency_blocked": 6
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Safety gap (u)",
+      "level": "optimistic",
+      "value": 3,
+      "policy": "tight_margin",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 8,
+        "completion_rate": 0.47058823529411764,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 1682.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4742.0
+        },
+        "censored_wait_count": 2,
+        "empty_run_s": 1720.0,
+        "loaded_run_s": 1240.0,
+        "idle_crane_s": 123130.0,
+        "empty_assigned_wait_s": 1210.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24440.0,
+            "empty_move": 240.0,
+            "loaded_move": 380.0,
+            "yield": 400.0,
+            "utilization": 0.04006284367635507
+          },
+          "3#450": {
+            "empty_move": 270.0,
+            "wait_empty": 450.0,
+            "loaded_move": 510.0,
+            "idle": 23920.0,
+            "yield": 310.0,
+            "utilization": 0.060487038491751764
+          },
+          "5#450": {
+            "idle": 23850.0,
+            "yield": 60.0,
+            "wait_empty": 760.0,
+            "empty_move": 440.0,
+            "loaded_move": 350.0,
+            "utilization": 0.06323644933228594
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 3.0,
+        "min_margin": 0.0,
+        "gap_threshold": 3,
+        "candidate_capacity_rejections": 192,
+        "candidate_gap_rejections": 281,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 8,
+          "input_blocked": 7,
+          "candidate_exhausted": 2,
+          "dependency_blocked": 6
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Safety gap (u)",
+      "level": "base",
+      "value": 4,
+      "policy": "fcfs",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 2382.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4902.0
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 1400.0,
+        "loaded_run_s": 1430.0,
+        "idle_crane_s": 123380.0,
+        "empty_assigned_wait_s": 1090.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24340.0,
+            "empty_move": 310.0,
+            "loaded_move": 570.0,
+            "yield": 240.0,
+            "utilization": 0.04399057344854674
+          },
+          "3#450": {
+            "empty_move": 670.0,
+            "wait_empty": 1090.0,
+            "loaded_move": 860.0,
+            "idle": 22840.0,
+            "utilization": 0.10290652003142184
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 179,
+        "candidate_gap_rejections": 334,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Safety gap (u)",
+      "level": "base",
+      "value": 4,
+      "policy": "tight_margin",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 2382.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4902.0
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 1400.0,
+        "loaded_run_s": 1430.0,
+        "idle_crane_s": 123380.0,
+        "empty_assigned_wait_s": 1090.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24340.0,
+            "empty_move": 310.0,
+            "loaded_move": 570.0,
+            "yield": 240.0,
+            "utilization": 0.04399057344854674
+          },
+          "3#450": {
+            "empty_move": 670.0,
+            "wait_empty": 1090.0,
+            "loaded_move": 860.0,
+            "idle": 22840.0,
+            "utilization": 0.10290652003142184
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 179,
+        "candidate_gap_rejections": 334,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Safety gap (u)",
+      "level": "conservative",
+      "value": 6,
+      "policy": "fcfs",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 6,
+        "completion_rate": 0.35294117647058826,
+        "plan_targets": 6,
+        "on_time": 2,
+        "on_time_rate": 0.3333333333333333,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 4,
+        "waiting_s": {
+          "pickup": 842.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 3396.0
+        },
+        "censored_wait_count": 1,
+        "empty_run_s": 1100.0,
+        "loaded_run_s": 890.0,
+        "idle_crane_s": 124360.0,
+        "empty_assigned_wait_s": 950.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24980.0,
+            "empty_move": 170.0,
+            "loaded_move": 190.0,
+            "yield": 120.0,
+            "utilization": 0.018853102906520033
+          },
+          "3#450": {
+            "empty_move": 270.0,
+            "wait_empty": 750.0,
+            "loaded_move": 590.0,
+            "idle": 23650.0,
+            "yield": 200.0,
+            "utilization": 0.07109190887666929
+          },
+          "5#450": {
+            "idle": 24810.0,
+            "yield": 180.0,
+            "wait_empty": 200.0,
+            "empty_move": 160.0,
+            "loaded_move": 110.0,
+            "utilization": 0.025530243519245877
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 6.0,
+        "min_margin": 0.0,
+        "gap_threshold": 6,
+        "candidate_capacity_rejections": 20,
+        "candidate_gap_rejections": 95,
+        "shifted_supply_count": 1,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 6,
+          "input_blocked": 7,
+          "candidate_exhausted": 1,
+          "dependency_blocked": 9
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Safety gap (u)",
+      "level": "conservative",
+      "value": 6,
+      "policy": "tight_margin",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 6,
+        "completion_rate": 0.35294117647058826,
+        "plan_targets": 6,
+        "on_time": 2,
+        "on_time_rate": 0.3333333333333333,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 4,
+        "waiting_s": {
+          "pickup": 842.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 3396.0
+        },
+        "censored_wait_count": 1,
+        "empty_run_s": 1100.0,
+        "loaded_run_s": 890.0,
+        "idle_crane_s": 124360.0,
+        "empty_assigned_wait_s": 950.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24980.0,
+            "empty_move": 170.0,
+            "loaded_move": 190.0,
+            "yield": 120.0,
+            "utilization": 0.018853102906520033
+          },
+          "3#450": {
+            "empty_move": 270.0,
+            "wait_empty": 750.0,
+            "loaded_move": 590.0,
+            "idle": 23650.0,
+            "yield": 200.0,
+            "utilization": 0.07109190887666929
+          },
+          "5#450": {
+            "idle": 24810.0,
+            "yield": 180.0,
+            "wait_empty": 200.0,
+            "empty_move": 160.0,
+            "loaded_move": 110.0,
+            "utilization": 0.025530243519245877
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 6.0,
+        "min_margin": 0.0,
+        "gap_threshold": 6,
+        "candidate_capacity_rejections": 20,
+        "candidate_gap_rejections": 95,
+        "shifted_supply_count": 1,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 6,
+          "input_blocked": 7,
+          "candidate_exhausted": 1,
+          "dependency_blocked": 9
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Preparation (s)",
+      "level": "optimistic",
+      "value": 60,
+      "policy": "fcfs",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 2282.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 5272.0
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 1400.0,
+        "loaded_run_s": 1430.0,
+        "idle_crane_s": 123390.0,
+        "empty_assigned_wait_s": 1080.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24340.0,
+            "empty_move": 310.0,
+            "loaded_move": 570.0,
+            "yield": 240.0,
+            "utilization": 0.04399057344854674
+          },
+          "3#450": {
+            "empty_move": 670.0,
+            "loaded_move": 860.0,
+            "idle": 22850.0,
+            "wait_empty": 1080.0,
+            "utilization": 0.10251374705420267
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 195,
+        "candidate_gap_rejections": 357,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Preparation (s)",
+      "level": "optimistic",
+      "value": 60,
+      "policy": "tight_margin",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 2282.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 5272.0
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 1400.0,
+        "loaded_run_s": 1430.0,
+        "idle_crane_s": 123390.0,
+        "empty_assigned_wait_s": 1080.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24340.0,
+            "empty_move": 310.0,
+            "loaded_move": 570.0,
+            "yield": 240.0,
+            "utilization": 0.04399057344854674
+          },
+          "3#450": {
+            "empty_move": 670.0,
+            "loaded_move": 860.0,
+            "idle": 22850.0,
+            "wait_empty": 1080.0,
+            "utilization": 0.10251374705420267
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 195,
+        "candidate_gap_rejections": 357,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Preparation (s)",
+      "level": "base",
+      "value": 120,
+      "policy": "fcfs",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 2382.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4902.0
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 1400.0,
+        "loaded_run_s": 1430.0,
+        "idle_crane_s": 123380.0,
+        "empty_assigned_wait_s": 1090.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24340.0,
+            "empty_move": 310.0,
+            "loaded_move": 570.0,
+            "yield": 240.0,
+            "utilization": 0.04399057344854674
+          },
+          "3#450": {
+            "empty_move": 670.0,
+            "wait_empty": 1090.0,
+            "loaded_move": 860.0,
+            "idle": 22840.0,
+            "utilization": 0.10290652003142184
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 179,
+        "candidate_gap_rejections": 334,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Preparation (s)",
+      "level": "base",
+      "value": 120,
+      "policy": "tight_margin",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 2382.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4902.0
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 1400.0,
+        "loaded_run_s": 1430.0,
+        "idle_crane_s": 123380.0,
+        "empty_assigned_wait_s": 1090.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24340.0,
+            "empty_move": 310.0,
+            "loaded_move": 570.0,
+            "yield": 240.0,
+            "utilization": 0.04399057344854674
+          },
+          "3#450": {
+            "empty_move": 670.0,
+            "wait_empty": 1090.0,
+            "loaded_move": 860.0,
+            "idle": 22840.0,
+            "utilization": 0.10290652003142184
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 179,
+        "candidate_gap_rejections": 334,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Preparation (s)",
+      "level": "conservative",
+      "value": 180,
+      "policy": "fcfs",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 8,
+        "completion_rate": 0.47058823529411764,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 1582.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4482.0
+        },
+        "censored_wait_count": 2,
+        "empty_run_s": 1330.0,
+        "loaded_run_s": 1240.0,
+        "idle_crane_s": 123580.0,
+        "empty_assigned_wait_s": 1150.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24600.0,
+            "empty_move": 240.0,
+            "loaded_move": 380.0,
+            "yield": 240.0,
+            "utilization": 0.03377847604084839
+          },
+          "3#450": {
+            "empty_move": 670.0,
+            "wait_empty": 1150.0,
+            "loaded_move": 860.0,
+            "idle": 22780.0,
+            "utilization": 0.10526315789473684
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 93,
+        "candidate_gap_rejections": 181,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 8,
+          "input_blocked": 7,
+          "candidate_exhausted": 2,
+          "dependency_blocked": 6
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Preparation (s)",
+      "level": "conservative",
+      "value": 180,
+      "policy": "tight_margin",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 8,
+        "completion_rate": 0.47058823529411764,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 1582.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4482.0
+        },
+        "censored_wait_count": 2,
+        "empty_run_s": 1330.0,
+        "loaded_run_s": 1240.0,
+        "idle_crane_s": 123580.0,
+        "empty_assigned_wait_s": 1150.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24600.0,
+            "empty_move": 240.0,
+            "loaded_move": 380.0,
+            "yield": 240.0,
+            "utilization": 0.03377847604084839
+          },
+          "3#450": {
+            "empty_move": 670.0,
+            "wait_empty": 1150.0,
+            "loaded_move": 860.0,
+            "idle": 22780.0,
+            "utilization": 0.10526315789473684
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 93,
+        "candidate_gap_rejections": 181,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 8,
+          "input_blocked": 7,
+          "candidate_exhausted": 2,
+          "dependency_blocked": 6
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Pickup wait limit (s)",
+      "level": "optimistic",
+      "value": 1200,
+      "policy": "fcfs",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 2382.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4902.0
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 1400.0,
+        "loaded_run_s": 1430.0,
+        "idle_crane_s": 123380.0,
+        "empty_assigned_wait_s": 1090.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24340.0,
+            "empty_move": 310.0,
+            "loaded_move": 570.0,
+            "yield": 240.0,
+            "utilization": 0.04399057344854674
+          },
+          "3#450": {
+            "empty_move": 670.0,
+            "wait_empty": 1090.0,
+            "loaded_move": 860.0,
+            "idle": 22840.0,
+            "utilization": 0.10290652003142184
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 208,
+        "candidate_gap_rejections": 351,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Pickup wait limit (s)",
+      "level": "optimistic",
+      "value": 1200,
+      "policy": "tight_margin",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 2382.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4902.0
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 1400.0,
+        "loaded_run_s": 1430.0,
+        "idle_crane_s": 123380.0,
+        "empty_assigned_wait_s": 1090.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24340.0,
+            "empty_move": 310.0,
+            "loaded_move": 570.0,
+            "yield": 240.0,
+            "utilization": 0.04399057344854674
+          },
+          "3#450": {
+            "empty_move": 670.0,
+            "wait_empty": 1090.0,
+            "loaded_move": 860.0,
+            "idle": 22840.0,
+            "utilization": 0.10290652003142184
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 208,
+        "candidate_gap_rejections": 351,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Pickup wait limit (s)",
+      "level": "base",
+      "value": 900,
+      "policy": "fcfs",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 2382.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4902.0
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 1400.0,
+        "loaded_run_s": 1430.0,
+        "idle_crane_s": 123380.0,
+        "empty_assigned_wait_s": 1090.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24340.0,
+            "empty_move": 310.0,
+            "loaded_move": 570.0,
+            "yield": 240.0,
+            "utilization": 0.04399057344854674
+          },
+          "3#450": {
+            "empty_move": 670.0,
+            "wait_empty": 1090.0,
+            "loaded_move": 860.0,
+            "idle": 22840.0,
+            "utilization": 0.10290652003142184
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 179,
+        "candidate_gap_rejections": 334,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Pickup wait limit (s)",
+      "level": "base",
+      "value": 900,
+      "policy": "tight_margin",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 2382.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4902.0
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 1400.0,
+        "loaded_run_s": 1430.0,
+        "idle_crane_s": 123380.0,
+        "empty_assigned_wait_s": 1090.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24340.0,
+            "empty_move": 310.0,
+            "loaded_move": 570.0,
+            "yield": 240.0,
+            "utilization": 0.04399057344854674
+          },
+          "3#450": {
+            "empty_move": 670.0,
+            "wait_empty": 1090.0,
+            "loaded_move": 860.0,
+            "idle": 22840.0,
+            "utilization": 0.10290652003142184
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 179,
+        "candidate_gap_rejections": 334,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Pickup wait limit (s)",
+      "level": "conservative",
+      "value": 600,
+      "policy": "fcfs",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 3,
+        "completion_rate": 0.17647058823529413,
+        "plan_targets": 6,
+        "on_time": 1,
+        "on_time_rate": 0.16666666666666666,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 5,
+        "waiting_s": {
+          "pickup": 0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 1932.0
+        },
+        "censored_wait_count": 1,
+        "empty_run_s": 290.0,
+        "loaded_run_s": 430.0,
+        "idle_crane_s": 125970.0,
+        "empty_assigned_wait_s": 610.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "3#450": {
+            "empty_move": 110.0,
+            "wait_empty": 610.0,
+            "loaded_move": 430.0,
+            "idle": 24310.0,
+            "utilization": 0.045168892380204245
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 7,
+        "candidate_gap_rejections": 18,
+        "shifted_supply_count": 0,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 3,
+          "input_blocked": 7,
+          "candidate_exhausted": 1,
+          "dependency_blocked": 12
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Pickup wait limit (s)",
+      "level": "conservative",
+      "value": 600,
+      "policy": "tight_margin",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 3,
+        "completion_rate": 0.17647058823529413,
+        "plan_targets": 6,
+        "on_time": 1,
+        "on_time_rate": 0.16666666666666666,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 5,
+        "waiting_s": {
+          "pickup": 0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 1932.0
+        },
+        "censored_wait_count": 1,
+        "empty_run_s": 290.0,
+        "loaded_run_s": 430.0,
+        "idle_crane_s": 125970.0,
+        "empty_assigned_wait_s": 610.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "3#450": {
+            "empty_move": 110.0,
+            "wait_empty": 610.0,
+            "loaded_move": 430.0,
+            "idle": 24310.0,
+            "utilization": 0.045168892380204245
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 7,
+        "candidate_gap_rejections": 18,
+        "shifted_supply_count": 0,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 3,
+          "input_blocked": 7,
+          "candidate_exhausted": 1,
+          "dependency_blocked": 12
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Initial layout",
+      "level": "dispersed",
+      "value": "dispersed",
+      "policy": "fcfs",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 2382.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4902.0
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 1400.0,
+        "loaded_run_s": 1430.0,
+        "idle_crane_s": 123380.0,
+        "empty_assigned_wait_s": 1090.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24340.0,
+            "empty_move": 310.0,
+            "loaded_move": 570.0,
+            "yield": 240.0,
+            "utilization": 0.04399057344854674
+          },
+          "3#450": {
+            "empty_move": 670.0,
+            "wait_empty": 1090.0,
+            "loaded_move": 860.0,
+            "idle": 22840.0,
+            "utilization": 0.10290652003142184
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 179,
+        "candidate_gap_rejections": 334,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Initial layout",
+      "level": "dispersed",
+      "value": "dispersed",
+      "policy": "tight_margin",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 2382.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4902.0
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 1400.0,
+        "loaded_run_s": 1430.0,
+        "idle_crane_s": 123380.0,
+        "empty_assigned_wait_s": 1090.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "idle": 24340.0,
+            "empty_move": 310.0,
+            "loaded_move": 570.0,
+            "yield": 240.0,
+            "utilization": 0.04399057344854674
+          },
+          "3#450": {
+            "empty_move": 670.0,
+            "wait_empty": 1090.0,
+            "loaded_move": 860.0,
+            "idle": 22840.0,
+            "utilization": 0.10290652003142184
+          },
+          "5#450": {
+            "idle": 25280.0,
+            "yield": 180.0,
+            "utilization": 0.007069913589945012
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 179,
+        "candidate_gap_rejections": 334,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Initial layout",
+      "level": "crowded",
+      "value": "crowded",
+      "policy": "fcfs",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 2522.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4782.0
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 1750.0,
+        "loaded_run_s": 1430.0,
+        "idle_crane_s": 122940.0,
+        "empty_assigned_wait_s": 1180.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "wait_empty": 140.0,
+            "empty_move": 270.0,
+            "loaded_move": 760.0,
+            "idle": 23930.0,
+            "yield": 360.0,
+            "utilization": 0.0600942655145326
+          },
+          "3#450": {
+            "yield": 140.0,
+            "idle": 23010.0,
+            "wait_empty": 1040.0,
+            "empty_move": 600.0,
+            "loaded_move": 670.0,
+            "utilization": 0.096229379418696
+          },
+          "5#450": {
+            "yield": 380.0,
+            "idle": 25080.0,
+            "utilization": 0.014925373134328358
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 178,
+        "candidate_gap_rejections": 338,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    },
+    {
+      "parameter": "Initial layout",
+      "level": "crowded",
+      "value": "crowded",
+      "policy": "tight_margin",
+      "metrics": {
+        "target_ef": 17,
+        "completed_ef": 9,
+        "completion_rate": 0.5294117647058824,
+        "plan_targets": 6,
+        "on_time": 3,
+        "on_time_rate": 0.5,
+        "late_count": 0,
+        "late_total_s": 0,
+        "late_max_s": 0,
+        "unserved_targets": 3,
+        "waiting_s": {
+          "pickup": 2522.0,
+          "path": 0,
+          "drop": 0.0,
+          "seat": 4782.0
+        },
+        "censored_wait_count": 3,
+        "empty_run_s": 1750.0,
+        "loaded_run_s": 1430.0,
+        "idle_crane_s": 122940.0,
+        "empty_assigned_wait_s": 1180.0,
+        "utilization_by_crane": {
+          "2#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          },
+          "4#450": {
+            "wait_empty": 140.0,
+            "empty_move": 270.0,
+            "loaded_move": 760.0,
+            "idle": 23930.0,
+            "yield": 360.0,
+            "utilization": 0.0600942655145326
+          },
+          "3#450": {
+            "yield": 140.0,
+            "idle": 23010.0,
+            "wait_empty": 1040.0,
+            "empty_move": 600.0,
+            "loaded_move": 670.0,
+            "utilization": 0.096229379418696
+          },
+          "5#450": {
+            "yield": 380.0,
+            "idle": 25080.0,
+            "utilization": 0.014925373134328358
+          },
+          "1#150": {
+            "idle": 25460.0,
+            "utilization": 0.0
+          }
+        },
+        "min_gap": 4.0,
+        "min_margin": 0.0,
+        "gap_threshold": 4,
+        "candidate_capacity_rejections": 178,
+        "candidate_gap_rejections": 338,
+        "shifted_supply_count": 2,
+        "accepted_capacity_violations": 0,
+        "task_statuses": {
+          "completed": 9,
+          "input_blocked": 7,
+          "candidate_exhausted": 3,
+          "dependency_blocked": 4
+        },
+        "supply_continuity": "unknown_without_buffer_evidence"
+      }
+    }
+  ],
+  "common_completed": {
+    "base": {
+      "count": 9,
+      "wait_s_by_policy": {
+        "fcfs": 7284.0,
+        "tight_margin": 7284.0
+      }
+    },
+    "optimistic": {
+      "count": 9,
+      "wait_s_by_policy": {
+        "fcfs": 8709.230769230768,
+        "tight_margin": 8709.230769230768
+      }
+    },
+    "conservative": {
+      "count": 3,
+      "wait_s_by_policy": {
+        "fcfs": 1279.3333333333335,
+        "tight_margin": 1279.3333333333335
+      }
+    }
+  },
+  "online_entry_snapshot": {
+    "information_mode": "online_policy_replay",
+    "target_tasks": 23,
+    "visible_events": 85,
+    "visible_admission": {
+      "C": 23
+    },
+    "qualified_and_released_count": 0,
+    "dispatch_count": 0,
+    "scope": "entry_snapshot_only"
+  },
+  "online_notice_audit": {
+    "audited_seconds": 7200,
+    "events_publishable_after_entry": 0,
+    "scope": "simulator_notice_rules_only"
+  },
+  "legacy_regressions": {
+    "scope": "original_conditioned_short_window",
+    "stage01": {
+      "all_five": {
+        "outcomes": {
+          "verified_conditional_schedule": 27,
+          "travel_lower_bound_failed": 8,
+          "no_serialized_candidate": 1
+        },
+        "nominal_deliveries": 4
+      },
+      "heavy_only": {
+        "outcomes": {
+          "verified_conditional_schedule": 27,
+          "travel_lower_bound_failed": 8,
+          "no_serialized_candidate": 1
+        },
+        "nominal_deliveries": 4
+      }
+    },
+    "stage02_q1": {
+      "fcfs": {
+        "served": 4,
+        "on_time": 3,
+        "min_gap": 3.0
+      },
+      "margin": {
+        "served": 4,
+        "on_time": 3,
+        "min_gap": 3.0
+      }
+    }
+  },
+  "fixed_plan_overlap_count": 2,
+  "fixed_plan_max_overlap_s": 42,
+  "base_policy_trace_equal": true,
+  "secondary_window": {
+    "source": "Q1W01",
+    "shared_heats_with_primary": 5,
+    "fixed_plan_overlap_count": 1,
+    "fixed_plan_max_overlap_s": 42,
+    "online_entry_snapshot": {
+      "information_mode": "online_policy_replay",
+      "target_tasks": 23,
+      "visible_events": 82,
+      "visible_admission": {
+        "C": 23
+      },
+      "qualified_and_released_count": 0,
+      "dispatch_count": 0,
+      "scope": "entry_snapshot_only"
+    },
+    "online_notice_audit": {
+      "audited_seconds": 7200,
+      "events_publishable_after_entry": 0,
+      "scope": "simulator_notice_rules_only"
+    },
+    "runs": [
+      {
+        "policy": "fcfs",
+        "metrics": {
+          "target_ef": 17,
+          "completed_ef": 6,
+          "completion_rate": 0.35294117647058826,
+          "plan_targets": 6,
+          "on_time": 2,
+          "on_time_rate": 0.3333333333333333,
+          "late_count": 0,
+          "late_total_s": 0,
+          "late_max_s": 0,
+          "unserved_targets": 4,
+          "waiting_s": {
+            "pickup": 998.0,
+            "path": 0,
+            "drop": 0.0,
+            "seat": 4098.0
+          },
+          "censored_wait_count": 3,
+          "empty_run_s": 810.0,
+          "loaded_run_s": 1000.0,
+          "idle_crane_s": 126225.0,
+          "empty_assigned_wait_s": 750.0,
+          "utilization_by_crane": {
+            "2#150": {
+              "idle": 25757.0,
+              "utilization": 0.0
+            },
+            "4#450": {
+              "idle": 25017.0,
+              "empty_move": 240.0,
+              "loaded_move": 380.0,
+              "yield": 120.0,
+              "utilization": 0.02873005396591218
+            },
+            "3#450": {
+              "empty_move": 270.0,
+              "wait_empty": 750.0,
+              "loaded_move": 620.0,
+              "idle": 24117.0,
+              "utilization": 0.06367201149202159
+            },
+            "5#450": {
+              "idle": 25577.0,
+              "yield": 180.0,
+              "utilization": 0.006988391505221882
+            },
+            "1#150": {
+              "idle": 25757.0,
+              "utilization": 0.0
+            }
+          },
+          "min_gap": 4.0,
+          "min_margin": 0.0,
+          "gap_threshold": 4,
+          "candidate_capacity_rejections": 125,
+          "candidate_gap_rejections": 196,
+          "shifted_supply_count": 1,
+          "accepted_capacity_violations": 0,
+          "task_statuses": {
+            "completed": 6,
+            "input_blocked": 10,
+            "candidate_exhausted": 3,
+            "dependency_blocked": 4
+          },
+          "supply_continuity": "unknown_without_buffer_evidence"
+        }
+      },
+      {
+        "policy": "tight_margin",
+        "metrics": {
+          "target_ef": 17,
+          "completed_ef": 6,
+          "completion_rate": 0.35294117647058826,
+          "plan_targets": 6,
+          "on_time": 2,
+          "on_time_rate": 0.3333333333333333,
+          "late_count": 0,
+          "late_total_s": 0,
+          "late_max_s": 0,
+          "unserved_targets": 4,
+          "waiting_s": {
+            "pickup": 998.0,
+            "path": 0,
+            "drop": 0.0,
+            "seat": 4098.0
+          },
+          "censored_wait_count": 3,
+          "empty_run_s": 810.0,
+          "loaded_run_s": 1000.0,
+          "idle_crane_s": 126225.0,
+          "empty_assigned_wait_s": 750.0,
+          "utilization_by_crane": {
+            "2#150": {
+              "idle": 25757.0,
+              "utilization": 0.0
+            },
+            "4#450": {
+              "idle": 25017.0,
+              "empty_move": 240.0,
+              "loaded_move": 380.0,
+              "yield": 120.0,
+              "utilization": 0.02873005396591218
+            },
+            "3#450": {
+              "empty_move": 270.0,
+              "wait_empty": 750.0,
+              "loaded_move": 620.0,
+              "idle": 24117.0,
+              "utilization": 0.06367201149202159
+            },
+            "5#450": {
+              "idle": 25577.0,
+              "yield": 180.0,
+              "utilization": 0.006988391505221882
+            },
+            "1#150": {
+              "idle": 25757.0,
+              "utilization": 0.0
+            }
+          },
+          "min_gap": 4.0,
+          "min_margin": 0.0,
+          "gap_threshold": 4,
+          "candidate_capacity_rejections": 125,
+          "candidate_gap_rejections": 196,
+          "shifted_supply_count": 1,
+          "accepted_capacity_violations": 0,
+          "task_statuses": {
+            "completed": 6,
+            "input_blocked": 10,
+            "candidate_exhausted": 3,
+            "dependency_blocked": 4
+          },
+          "supply_continuity": "unknown_without_buffer_evidence"
+        }
+      }
+    ]
+  }
+}
