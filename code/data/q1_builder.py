@@ -26,9 +26,12 @@ from pathlib import Path
 
 import pandas as pd
 
-from q1_schema import SCHEMA, validate_instance
+from q1_schema import (
+    POLICY_SCHEMA, SCHEMA, SIMULATOR_SCHEMA,
+    validate_instance, validate_policy_view, validate_simulator_truth,
+)
 
-BUILDER_VERSION = "stage03-q1-b/1.1.0"
+BUILDER_VERSION = "stage03-q1-b/1.2.0"
 ROOT = Path(__file__).resolve().parents[2]
 APPROVED_AUDIT = ROOT / "problem/data/processed/stage02_b_ladle_identity_approved/audit.json"
 
@@ -1507,11 +1510,26 @@ def build_instance(
             "identity_corrections_applied": 3,
             "assumptions": assumptions,
             "blocking": blocking,
-            "contract_extensions": [
-                "scope_status: confirmed | pending_ef_confirmation | external_boundary",
-                "required_in_process and required_in_ef_scope split",
-                "simulator_truth separated from initial_state",
-            ],
+            "interface_extensions": {
+                "status": "adopted",
+                "decision_date": "2026-11-27",
+                "scope_status": {
+                    "values": ["confirmed", "pending_ef_confirmation", "external_boundary"],
+                    "semantics": "pending EF scope is not a dispatch decision",
+                },
+                "required_split": {
+                    "required_in_process": "production process requires the leg",
+                    "required_in_ef_scope": "EF dispatch requires the leg; null for pending EF scope",
+                    "legacy_required": "must equal required_in_process",
+                },
+                "simulator_truth": {
+                    "visibility": "hidden_from_policy",
+                    "policy_input": "q1_policy_view.json",
+                    "hidden_truth": "q1_simulator_truth.json",
+                },
+            },
+            "policy_view_file": "q1_policy_view.json",
+            "simulator_truth_file": "q1_simulator_truth.json",
         },
         "device_catalog": [
             {
@@ -1560,6 +1578,80 @@ def build_instance(
     if errors:
         raise SystemExit("instance schema validation failed:\n" + "\n".join(errors))
     return instance
+
+
+def build_policy_view(instance: dict) -> dict:
+    """Return the policy-visible subset; reject hidden truth and future events."""
+    now_s = instance["initial_state"]["now_s"]
+    visible_events = [
+        copy.deepcopy(event) for event in instance["events"]
+        if event.get("visible_at_s") is not None and event["visible_at_s"] <= now_s
+    ]
+    policy_tasks = []
+    for task in instance["tasks"]:
+        item = copy.deepcopy(task)
+        item["historical_pickup_proxy_s"] = None
+        item["observed_arrival_s"] = None
+        item["release_interval"]["hi_s"] = None
+        policy_tasks.append(item)
+    policy = {
+        "schema": POLICY_SCHEMA,
+        "instance_id": instance["instance_id"],
+        "scenario": instance["scenario"],
+        "mode": instance["mode"],
+        "clock": copy.deepcopy(instance["clock"]),
+        "plan_version": instance["plan_version"],
+        "scope": copy.deepcopy(instance["scope"]),
+        "evidence": copy.deepcopy(instance["evidence"]),
+        "device_catalog": copy.deepcopy(instance["device_catalog"]),
+        "topology": copy.deepcopy(instance["topology"]),
+        "resources": copy.deepcopy(instance["resources"]),
+        "events": visible_events,
+        "tasks": policy_tasks,
+        "initial_state": copy.deepcopy(instance["initial_state"]),
+        "visibility": {
+            "now_s": now_s,
+            "rule": "only events with visible_at_s <= now_s are policy-visible",
+            "excluded_fields": [
+                "simulator_truth",
+                "historical_pickup_proxy_s",
+                "observed_arrival_s",
+                "release_interval.hi_s",
+            ],
+            "future_event_count": sum(
+                1 for event in instance["events"]
+                if event.get("visible_at_s") is None or event["visible_at_s"] > now_s
+            ),
+        },
+    }
+    errors = validate_policy_view(policy)
+    if errors:
+        raise SystemExit("policy view validation failed:\n" + "\n".join(errors))
+    return policy
+
+
+def build_simulator_truth(instance: dict) -> dict:
+    now_s = instance["initial_state"]["now_s"]
+    future_events = [
+        copy.deepcopy(event) for event in instance["events"]
+        if event.get("visible_at_s") is None or event["visible_at_s"] > now_s
+    ]
+    truth = {
+        "schema": SIMULATOR_SCHEMA,
+        "instance_id": instance["instance_id"],
+        "visibility": "hidden_from_policy",
+        "now_s": now_s,
+        "policy_rule": "never expose this file to the scheduling policy",
+        "task_actuals": copy.deepcopy(instance["simulator_truth"]["task_actuals"]),
+        "future_events": future_events,
+        "active_operation_actual_end_s": copy.deepcopy(
+            instance["simulator_truth"]["active_operation_actual_end_s"]
+        ),
+    }
+    errors = validate_simulator_truth(truth)
+    if errors:
+        raise SystemExit("simulator truth validation failed:\n" + "\n".join(errors))
+    return truth
 
 
 def task_graph_acyclic(tasks: list[dict]) -> tuple[bool, int]:
@@ -1717,9 +1809,9 @@ def parameter_evidence() -> list[dict]:
         ("release_rule", "process predecessor completion", "s", "Stage 02 audit", "derived", "used as lower bound; historical lift kept as upper proxy"),
         ("delivery_rule", "plan cast start", "s", "plan table", "derived", "outer target only; seat lead not evidenced"),
         ("mass_rule", "observed endpoint gross mass", "t", "Stage 02 audit", "observed", "point proxy; unknown remains null"),
-        ("scope_status", "confirmed|pending_ef_confirmation|external_boundary", "", "contract extension proposal", "assumed", "keeps pending EF scope out of dispatch without adding a new scope enum"),
-        ("required_split", "required_in_process; required_in_ef_scope", "", "contract extension proposal", "assumed", "separates production necessity from EF dispatch necessity"),
-        ("simulator_truth", "hidden_from_policy", "", "contract extension proposal", "assumed", "keeps actual future values out of initial_state"),
+        ("scope_status", "confirmed|pending_ef_confirmation|external_boundary", "", "project interface decision 2026-11-27", "derived", "adopted; keeps pending EF scope out of dispatch without adding a new scope enum"),
+        ("required_split", "required_in_process; required_in_ef_scope", "", "project interface decision 2026-11-27", "derived", "adopted; required must equal required_in_process"),
+        ("simulator_truth", "hidden_from_policy", "", "project interface decision 2026-11-27", "derived", "adopted; policy view and hidden truth are separate files"),
         ("eligible_cranes", "null unless station and permission verified", "", "model contract", "pending", "null is unknown; [] is confirmed no legal crane"),
         ("resource_requirements", "null unless evidenced", "", "model contract", "pending", "unknown is not an empty requirement list"),
         ("holder_chain_status", "complete|conditional|partial|ambiguous|unknown", "", "event evidence", "derived", "conditional and incomplete states are recorded, not promoted to A"),
@@ -1824,9 +1916,31 @@ def main() -> None:
         tasks, events, candidates, args.primary_window, source_hashes, assumptions, blocking
     )
     audit = coverage_audit(raw_events, raw_tasks, tasks, events, candidates, instance, source_audit)
+    policy_view = build_policy_view(instance)
+    simulator_truth = build_simulator_truth(instance)
+    audit["policy_isolation"] = {
+        "policy_view": "q1_policy_view.json",
+        "hidden_truth": "q1_simulator_truth.json",
+        "policy_event_count": len(policy_view["events"]),
+        "hidden_event_count": len(simulator_truth["future_events"]),
+        "policy_task_count": len(policy_view["tasks"]),
+        "hidden_action_count": len(simulator_truth["task_actuals"]),
+        "policy_actual_fields_null": all(
+            task["historical_pickup_proxy_s"] is None
+            and task["observed_arrival_s"] is None
+            and task["release_interval"]["hi_s"] is None
+            for task in policy_view["tasks"]
+        ),
+    }
 
     (output / "q1_instance.json").write_text(
         json.dumps(instance, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
+    (output / "q1_policy_view.json").write_text(
+        json.dumps(policy_view, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
+    (output / "q1_simulator_truth.json").write_text(
+        json.dumps(simulator_truth, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     (output / "window_candidates.json").write_text(
         json.dumps(candidates, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"

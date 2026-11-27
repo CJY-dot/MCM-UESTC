@@ -20,6 +20,8 @@ from q1_builder import (  # noqa: E402
     build_events,
     build_holder_chain,
     build_instance,
+    build_policy_view,
+    build_simulator_truth,
     build_tasks,
     heat_device_rows,
     heat_identity_map,
@@ -28,7 +30,12 @@ from q1_builder import (  # noqa: E402
     task_crane_evidence,
     window_candidates,
 )
-from q1_schema import validate_event, validate_instance  # noqa: E402
+from q1_schema import (  # noqa: E402
+    validate_event,
+    validate_instance,
+    validate_policy_view,
+    validate_simulator_truth,
+)
 
 FIXTURE = ROOT / "stages/03_implementation/B/fixtures/q1_synthetic_fixture.json"
 
@@ -284,6 +291,54 @@ class EndToEndSyntheticTests(unittest.TestCase):
         self.assertEqual(validate_instance(instance), [])
         self.assertGreaterEqual(len(instance["tasks"]), 2)
         self.assertIn("simulator_truth", instance)
+
+
+class PolicyIsolationTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.instance = json.loads(FIXTURE.read_text(encoding="utf-8"))
+        cls.policy = build_policy_view(cls.instance)
+        cls.truth = build_simulator_truth(cls.instance)
+
+    def test_policy_view_is_valid_and_hidden_truth_is_separate(self):
+        self.assertEqual(validate_policy_view(self.policy), [])
+        self.assertEqual(validate_simulator_truth(self.truth), [])
+        self.assertNotIn("simulator_truth", self.policy)
+        self.assertEqual(self.truth["visibility"], "hidden_from_policy")
+
+    def test_policy_view_has_no_future_events(self):
+        now_s = self.policy["initial_state"]["now_s"]
+        for event in self.policy["events"]:
+            self.assertIsNotNone(event["visible_at_s"])
+            self.assertLessEqual(event["visible_at_s"], now_s)
+        self.assertTrue(self.truth["future_events"])
+
+    def test_policy_view_has_no_actual_task_fields(self):
+        for task in self.policy["tasks"]:
+            self.assertIsNone(task["historical_pickup_proxy_s"])
+            self.assertIsNone(task["observed_arrival_s"])
+            self.assertIsNone(task["release_interval"]["hi_s"])
+        self.assertTrue(self.truth["task_actuals"])
+
+    def test_policy_view_rejects_simulator_truth(self):
+        broken = copy.deepcopy(self.policy)
+        broken["simulator_truth"] = self.truth
+        self.assertTrue(validate_policy_view(broken))
+
+    def test_policy_view_rejects_future_event(self):
+        broken = copy.deepcopy(self.policy)
+        future = copy.deepcopy(self.instance["events"][0])
+        future["visible_at_s"] = broken["initial_state"]["now_s"] + 100
+        broken["events"].append(future)
+        self.assertTrue(validate_policy_view(broken))
+
+    def test_required_matches_required_in_process(self):
+        for task in self.instance["tasks"]:
+            self.assertEqual(task["required"], task["required_in_process"])
+
+    def test_formal_scope_status_values(self):
+        statuses = {task["scope_status"] for task in self.instance["tasks"]}
+        self.assertTrue(statuses <= {"confirmed", "pending_ef_confirmation", "external_boundary"})
 
 
 if __name__ == "__main__":

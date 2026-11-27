@@ -11,6 +11,8 @@ import json
 from typing import Any
 
 SCHEMA = "mcm-uestc.dispatch/1"
+POLICY_SCHEMA = "mcm-uestc.dispatch.policy-view/1"
+SIMULATOR_SCHEMA = "mcm-uestc.dispatch.simulator-truth/1"
 
 SCENARIOS = {"Q1", "Q2", "Q3"}
 MODES = {"strict_plan", "authorized_recovery"}
@@ -194,6 +196,9 @@ def validate_task(task: dict, index: int = 0) -> list[str]:
         errors.append(f"{label}: required must be boolean")
     if not isinstance(task["required_in_process"], bool):
         errors.append(f"{label}: required_in_process must be boolean")
+    if isinstance(task["required"], bool) and isinstance(task["required_in_process"], bool):
+        if task["required"] != task["required_in_process"]:
+            errors.append(f"{label}: required must equal required_in_process")
     if task["required_in_ef_scope"] is not None and not isinstance(task["required_in_ef_scope"], bool):
         errors.append(f"{label}: required_in_ef_scope must be boolean or null")
     if not isinstance(task["predecessors"], list):
@@ -415,6 +420,95 @@ def validate_instance(instance: dict) -> list[str]:
         json.dumps(instance, ensure_ascii=False, allow_nan=False)
     except (TypeError, ValueError) as exc:
         errors.append(f"instance is not strict JSON: {exc}")
+    return errors
+
+
+POLICY_KEYS = (
+    "schema", "instance_id", "scenario", "mode", "clock", "plan_version",
+    "scope", "evidence", "device_catalog", "topology", "resources",
+    "events", "tasks", "initial_state", "visibility",
+)
+
+
+def validate_policy_view(policy: dict) -> list[str]:
+    """Validate the policy-visible subset and reject hidden truth."""
+    errors: list[str] = []
+    _require_keys(errors, "policy_view", policy, POLICY_KEYS)
+    if errors:
+        return errors
+    if policy["schema"] != POLICY_SCHEMA:
+        errors.append(f"schema must be {POLICY_SCHEMA!r}")
+    if "simulator_truth" in policy:
+        errors.append("policy_view must not contain simulator_truth")
+    _require_keys(errors, "initial_state", policy["initial_state"], INITIAL_STATE_KEYS)
+    now_s = policy["initial_state"].get("now_s")
+    if not _is_int(now_s):
+        errors.append("policy_view.initial_state.now_s must be an int")
+        return errors
+    visibility = policy["visibility"]
+    _require_keys(errors, "visibility", visibility,
+                  ("now_s", "rule", "excluded_fields", "future_event_count"))
+    if visibility.get("now_s") != now_s:
+        errors.append("policy_view.visibility.now_s must equal initial_state.now_s")
+    task_ids, event_ids = set(), set()
+    for index, task in enumerate(policy["tasks"]):
+        errors.extend(validate_task(task, index))
+        if task.get("task_id") in task_ids:
+            errors.append(f"duplicate task_id {task.get('task_id')!r}")
+        task_ids.add(task.get("task_id"))
+        if task.get("historical_pickup_proxy_s") is not None:
+            errors.append(f"tasks[{index}]: historical pickup leaked into policy view")
+        if task.get("observed_arrival_s") is not None:
+            errors.append(f"tasks[{index}]: observed arrival leaked into policy view")
+        if task.get("release_interval", {}).get("hi_s") is not None:
+            errors.append(f"tasks[{index}]: historical release upper proxy leaked into policy view")
+    for index, event in enumerate(policy["events"]):
+        errors.extend(validate_event(event, index))
+        if event.get("event_id") in event_ids:
+            errors.append(f"duplicate event_id {event.get('event_id')!r}")
+        event_ids.add(event.get("event_id"))
+        visible = event.get("visible_at_s")
+        if visible is None or visible > now_s:
+            errors.append(f"events[{index}]: future or invisible event leaked into policy view")
+    if policy.get("scenario") not in SCENARIOS:
+        errors.append(f"invalid scenario {policy.get('scenario')!r}")
+    if policy.get("mode") not in MODES:
+        errors.append(f"invalid mode {policy.get('mode')!r}")
+    try:
+        json.dumps(policy, ensure_ascii=False, allow_nan=False)
+    except (TypeError, ValueError) as exc:
+        errors.append(f"policy_view is not strict JSON: {exc}")
+    return errors
+
+
+def validate_simulator_truth(truth: dict) -> list[str]:
+    errors: list[str] = []
+    _require_keys(
+        errors, "simulator_truth", truth,
+        ("schema", "visibility", "now_s", "policy_rule", "task_actuals",
+         "future_events", "active_operation_actual_end_s"),
+    )
+    if errors:
+        return errors
+    if truth["schema"] != SIMULATOR_SCHEMA:
+        errors.append(f"schema must be {SIMULATOR_SCHEMA!r}")
+    if truth["visibility"] != "hidden_from_policy":
+        errors.append("simulator truth must be marked hidden_from_policy")
+    if not _is_int(truth["now_s"]):
+        errors.append("simulator_truth.now_s must be an int")
+    if not isinstance(truth["task_actuals"], list):
+        errors.append("simulator_truth.task_actuals must be a list")
+    if not isinstance(truth["future_events"], list):
+        errors.append("simulator_truth.future_events must be a list")
+    for index, event in enumerate(truth["future_events"]):
+        errors.extend(validate_event(event, index))
+        if event.get("visible_at_s") is not None and _is_int(truth["now_s"]):
+            if event["visible_at_s"] <= truth["now_s"]:
+                errors.append(f"future_events[{index}]: event is already visible")
+    try:
+        json.dumps(truth, ensure_ascii=False, allow_nan=False)
+    except (TypeError, ValueError) as exc:
+        errors.append(f"simulator_truth is not strict JSON: {exc}")
     return errors
 
 
