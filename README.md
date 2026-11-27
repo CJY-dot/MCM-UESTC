@@ -2,11 +2,11 @@
 
 **先找到自己的交付目录 `stages/<阶段>/<A|B|C>/`。** A 在聊天软件发布阶段提示词、基线提交和交付文件名。三人从同一基线开工，分别推送各自的分支，由 A 收齐并合入 `main`。
 
-> **当前进度** · 已选定 B 题《炼钢厂钢包周转与排产优化问题》，正在独立建模。[选题决定](stages/01_topic_selection/topic_decision.md)和已有建模交付已归入 `stages/`。
+> **当前进度** · B 题《炼钢厂钢包周转与排产优化问题》已完成 Stage 02 模型收敛，待团队审查。下一阶段按[统一模型](stages/02_modeling/model_spec.md)和[实现契约](stages/02_modeling/implementation_contract.md)开展。[模型交接](stages/02_modeling/MODEL_HANDOFF.md) · [选题决定](stages/01_topic_selection/topic_decision.md)
 
-## GitHub 私有仓库目录树
+## GitHub 共享目录树
 
-`stages/` 存放成员交付和阶段定稿。Workbench 继续使用根目录中的正式产物。`A/ B/ C/` 是三个并列目录，随阶段交付创建。
+GitHub 仓库当前公开，仅提交获准公开的内容。`stages/` 存放成员交付和阶段定稿，`A/ B/ C/` 是三个并列目录。Workbench 继续使用根目录中的正式产物。
 
 ```text
 美赛/
@@ -20,9 +20,12 @@
 │   │   ├── A/ B/ C/
 │   │   ├── topic_decision.md
 │   │   └── validation/               # 短验证的共享代码和证据
-│   ├── 02_modeling/                  # 独立建模
+│   ├── 02_modeling/                  # 独立交付与模型收敛
 │   │   ├── A/ B/ C/
-│   │   └── model_spec.md              # 团队采纳的统一模型
+│   │   ├── model_spec.md              # 统一模型
+│   │   ├── implementation_contract.md
+│   │   ├── convergence_report.md
+│   │   └── MODEL_HANDOFF.md
 │   ├── 03_implementation/            # 实现与验证
 │   │   └── A/ B/ C/
 │   ├── 04_paper_plan/                # 论文结构与图表规划
