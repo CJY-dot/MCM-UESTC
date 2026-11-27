@@ -48,17 +48,17 @@ schema 会校验 `required == required_in_process`；不允许再把两种语义
 
 | 文件 | 用途 | 读取方 |
 | --- | --- | --- |
-| `q1_policy_view.json` | 策略可见输入；只含 `visible_at_s <= now_s` 的事件和已去除历史实际值的任务 | A 的策略/调度代码 |
-| `q1_simulator_truth.json` | 隐藏真值；含实际起吊、到达、工序结束和未来事件 | 仿真器，不得给策略 |
+| `q1_policy_view.json` | 策略可见输入，任务与状态按已公开计划和已发生且已公告的事件重建 | A 的策略/调度代码 |
+| `q1_simulator_truth.json` | 仿真隐藏真值，含实际起吊、到达、工序结束、实际吊放车及所有策略不可见事件 | 仿真器 |
 | `q1_instance.json` | 完整数据包；含完整事件/任务和 `simulator_truth`，用于审计和仿真配置 | 数据/仿真管理，不作策略输入 |
 
 策略可见性不靠文档提醒，而由接口和测试落实：
 
 - `q1_policy_view.json` 顶层没有 `simulator_truth`；
-- `q1_policy_view.json` 的事件全部满足 `visible_at_s <= initial_state.now_s`；
+- 计划需要 `visible_at_s <= now_s`，实际还需要 `time_s <= now_s`。源表作业时间不能证明公告时间；
 - 策略任务的 `historical_pickup_proxy_s`、`observed_arrival_s`、`release_interval.hi_s` 全部为 `null`；
-- `q1_schema.validate_policy_view` 会拒绝隐藏真值、未来事件和泄漏的历史实际字段；
-- `q1_schema.validate_simulator_truth` 校验隐藏文件的 `hidden_from_policy` 标记、未来事件和实际动作。
+- 策略视图以可见事件支持的来源链接校验释放、实际吊放车和初始状态。预先给出的静态资格与历史实际行车另行记录。
+- 隐藏真值校验包括事件的可见性分类、任务实际字段和工序实际结束事件的引用。
 
 ## 3. 输入包结构
 
@@ -152,9 +152,9 @@ EF 拓扑只含上述七个工位：LF1 F 侧第 4 位、LF3 E 侧第 1 位、RH
 `initial_state` 只包含窗口起点可见信息：
 
 - 五台 EF 行车均登记；`x`、`v`、`gear`、`carried_task_id` 为 `null`，`track_presence` 与 `dispatch_allowed` 为 `unknown`；
-- 持有者只使用窗口起点前可见的持有链转移；同刻冲突记 `ambiguous`；
+- 持有者只使用在窗口起点前已经发生且已经公告的持有链转移，同刻冲突记 `ambiguous`，无证据记 `unknown`；
 - 进行中的工序只记录 `start_s` 和 `source_event_ids`，`end_s=null`、`end_s_visible=false`、`remaining_service_s=null`；
-- 任务状态只用可见事件判断，`visible_release_lo_s` 在释放时点晚于窗口起点时为 `null`；`plan_target_s` 是计划值，不是历史实际；
+- 任务状态只用可见事件判断。`visible_release_lo_s` 需要已发生且已公告的前序依据。按公开计划保留的预定释放另用 `planned_release` 标记，`plan_target_s` 来自可见计划；
 - `locked_reservations`、`visible_notices` 为空，因为没有已确认的锁定预约或公告。
 
 策略隔离由文件与校验器共同落实：
@@ -162,10 +162,10 @@ EF 拓扑只含上述七个工位：LF1 F 侧第 4 位、LF3 E 侧第 1 位、RH
 - A 只加载 `q1_policy_view.json`，先调用 `validate_policy_view`；
 - 仿真器单独加载 `q1_simulator_truth.json`，不得把该对象传入策略；
 - `q1_instance.json` 是完整数据包，不作为策略输入；
-- `scope.policy_visibility_rule` 要求策略只读取 `visible_at_s <= initial_state.now_s` 的事件；
-- `validate_policy_view` 拒绝 `simulator_truth`、未来事件和任何非空历史实际字段。
+- 策略事件使用自身的 ID 和顺序号，相关来源引用也使用同一策略视图。全量输入哈希及隐藏事件数留在审计侧。
+- 已选的 Q1 输入计划在窗口起点公开。没有公告依据的实际日志及其派生副本留在仿真/审计侧。
 
-本轮主实例：策略视图含 238 条可见事件、23 条任务；隐藏文件含 532 条未来事件、23 条任务实际值；策略任务的历史实际字段全部为 `null`。
+授权附表复核的主窗口有 85 条可见计划事件和 23 条任务。实际日志缺少公告时间，685 条其余事件保留在隐藏文件，任务实际记录仍有 23 条。全数据准入与窗口统计仍按完整版审计。策略在缺少可见前序、持有等依据时将本窗任务标为 C。
 
 ## 9. A/B/C 准入与覆盖
 

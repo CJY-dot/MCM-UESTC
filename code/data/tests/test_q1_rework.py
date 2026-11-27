@@ -15,6 +15,7 @@ from q1_builder import (  # noqa: E402
     SourceIndex,
     add_derived_events,
     admit,
+    attach_crane_observations,
     attach_resource_requirements,
     attach_task_holders,
     build_events,
@@ -339,6 +340,223 @@ class PolicyIsolationTests(unittest.TestCase):
     def test_formal_scope_status_values(self):
         statuses = {task["scope_status"] for task in self.instance["tasks"]}
         self.assertTrue(statuses <= {"confirmed", "pending_ef_confirmation", "external_boundary"})
+
+
+class DecisionTimeIsolationTests(unittest.TestCase):
+    def setUp(self):
+        self.instance = json.loads(FIXTURE.read_text(encoding="utf-8"))
+        self.template = copy.deepcopy(self.instance["events"][0])
+        self.instance["events"] = []
+        self.task = self.instance["tasks"][0]
+
+    def event(self, role, when, known_at, *, category="actual", station="LF1", ref=None):
+        record = {
+            **self.template, "event_id": str(len(self.instance["events"])),
+            "event_type": role, "event_category": category, "heat_id": self.task["heat_id"],
+            "ladle_id": self.task["ladle_id"], "time_s": when, "visible_at_s": known_at,
+            "resource_id": station, "source_ref": ref or f"synthetic:{role}",
+            "task_ids": [self.task["task_id"]], "source_status": "observed",
+            "usable_for_canonical": True,
+        }
+        self.instance["events"].append(record)
+        return record
+
+    def release(self, when, known_at):
+        source = self.event("lf_process_end", when, known_at)
+        self.task["source_refs"]["process_predecessor"] = source["source_ref"]
+        self.task["release_interval"]["lo_s"] = when
+        self.task["applied_release_s"] = {
+            "value_s": when, "type": "process_predecessor_lower_bound", "source_status": "derived",
+        }
+        return source
+
+    def policy(self):
+        return build_policy_view(self.instance)
+
+    def test_future_predecessor_does_not_leak_through_derived_bounds(self):
+        self.release(10, -2)
+        self.event("release_lower_bound", 10, -2, category="derived")
+        policy = self.policy()
+        self.assertIsNone(policy["tasks"][0]["release_interval"]["lo_s"])
+        self.assertIsNone(policy["tasks"][0]["applied_release_s"])
+        self.assertIsNone(policy["initial_state"]["task_states"][0]["visible_release_lo_s"])
+        self.assertNotIn("process_predecessor", policy["tasks"][0]["source_refs"])
+        truth = build_simulator_truth(self.instance)
+        self.assertEqual({e["event_type"] for e in truth["future_events"]},
+                         {"lf_process_end", "release_lower_bound"})
+        self.assertEqual(self.task["release_interval"]["lo_s"], 10)
+
+    def test_published_predecessor_preserves_known_release_bound(self):
+        self.release(-12, -3)
+        policy = self.policy()
+        self.assertEqual(policy["tasks"][0]["release_interval"]["lo_s"], -12)
+        self.assertEqual(policy["tasks"][0]["applied_release_s"], self.task["applied_release_s"])
+        self.assertEqual(policy["initial_state"]["task_states"][0]["visible_release_lo_s"], -12)
+
+    def test_future_actual_crane_is_hidden_but_eligibility_is_preserved(self):
+        event = self.event("lf_seat", 12, 12, ref="synthetic.xlsx|s|2|seat")
+        self.task.update(observed_crane="5#450", observed_crane_candidates=["5#450"],
+                         observed_crane_dispatch_candidate=True, crane_device_refs=["synthetic.xlsx|s|2"],
+                         crane_observations=[{"row_ref": "synthetic.xlsx|s|2", "crane_id": "5#450"}])
+        attach_crane_observations([self.task], [event])
+        projected = self.policy()["tasks"][0]
+        self.assertIsNone(projected["observed_crane"])
+        self.assertEqual(projected["observed_crane_candidates"], [])
+        self.assertIsNone(projected["observed_crane_dispatch_candidate"])
+        self.assertEqual(projected["crane_device_refs"], [])
+        for key in ("eligible_cranes", "capacity_candidates"):
+            self.assertEqual(projected[key], self.task[key])
+        self.assertEqual(build_simulator_truth(self.instance)["future_events"][0]["crane_observations"],
+                         [{"task_id": self.task["task_id"], "crane_id": "5#450"}])
+
+    def test_published_past_crane_is_retained_without_unpublished_labels(self):
+        first = self.event("lf_seat", -4, -2, ref="synthetic.xlsx|s|2|seat")
+        second = self.event("lf_seat", -3, None, ref="synthetic.xlsx|s|3|seat")
+        self.task["crane_observations"] = [
+            {"row_ref": "synthetic.xlsx|s|2", "crane_id": "3#450"},
+            {"row_ref": "synthetic.xlsx|s|3", "crane_id": "5#450"},
+        ]
+        self.task["crane_evidence_status"] = "conflict"
+        attach_crane_observations([self.task], [first, second])
+        projected = self.policy()["tasks"][0]
+        self.assertEqual(projected["observed_crane"], "3#450")
+        self.assertEqual(projected["observed_crane_candidates"], ["3#450"])
+        self.assertTrue(projected["observed_crane_dispatch_candidate"])
+        self.assertEqual(projected["crane_device_refs"], ["synthetic.xlsx|s|2"])
+        self.assertEqual(projected["crane_evidence_status"], "confirmed")
+
+    def test_future_same_time_transfer_cannot_change_initial_holder(self):
+        prior = self.event("bof_empty_car", -5, -4, station="BOF_B")
+        self.event("lf_seat", 8, 8)
+        self.event("transfer_seat", 8, 8, station="TRANSFER:1#")
+        self.assertEqual(build_holder_chain(self.instance["events"])[1][prior["ladle_id"]], "ambiguous")
+        policy = self.policy()
+        holder, = policy["initial_state"]["holders"]
+        self.assertEqual((holder["holder_id"], holder["status"]), ("BOF_B", "complete"))
+        self.assertEqual(policy["tasks"][0]["holder_before"], "BOF_B")
+
+    def test_delayed_announcements_cannot_start_or_end_visible_operations(self):
+        self.release(-10, 25)
+        self.event("bof_empty_car", -30, -20, station="BOF_B")
+        self.event("lf_seat", -5, 10)
+        self.event("cast_start", -25, 4, station="CC3")
+        start = self.event("lf_process_start", -18, -14)
+        end = self.event("lf_process_end", -10, 25)
+        first = self.policy()
+        self.assertIsNone(first["tasks"][0]["applied_release_s"])
+        self.assertEqual(first["initial_state"]["holders"][0]["holder_id"], "BOF_B")
+        self.assertEqual([op["operation"] for op in first["initial_state"]["active_operations"]], ["LF"])
+        self.assertEqual(first["initial_state"]["active_operations"][0]["start_s"], start["time_s"])
+        self.assertIsNone(first["initial_state"]["active_operations"][0]["end_s"])
+        end["visible_at_s"] = 0
+        self.assertEqual(self.policy()["initial_state"]["active_operations"], [])
+
+    def test_public_future_plan_is_distinct_from_hidden_actuals(self):
+        task = self.instance["tasks"][1]
+        self.task = task
+        deadline = self.event("plan_cast_start", 200, -12, category="plan", station="CC3")
+        planned = self.event("plan_refine_slot_1", 50, -12, category="plan")
+        self.event("cast_start", 300, 300, station="CC3")
+        task["source_refs"].update(plan_deadline=deadline["source_ref"],
+                                   process_predecessor=planned["source_ref"])
+        policy = self.policy()
+        projected = policy["tasks"][1]
+        self.assertEqual(projected["delivery_window"]["plan_latest_s"], 200)
+        self.assertEqual(projected["applied_release_s"]["type"], "planned_release")
+        self.assertEqual(projected["applied_release_s"]["value_s"], 50)
+        self.assertIsNone(policy["initial_state"]["task_states"][1]["visible_release_lo_s"])
+        self.assertEqual({e["time_s"] for e in policy["events"]}, {50, 200})
+
+    def test_unknown_holder_does_not_use_task_origin_or_full_chain(self):
+        self.event("tap_end", -10, -10)
+        self.task.update(holder_before="LF1", holder_status="complete")
+        policy = self.policy()
+        self.assertEqual(policy["tasks"][0]["holder_before"], "unknown")
+        self.assertEqual(policy["tasks"][0]["holder_status"], "unknown")
+        self.assertIsNone(policy["initial_state"]["holders"][0]["holder_id"])
+
+    def test_visible_same_time_holder_conflict_stays_ambiguous(self):
+        self.event("lf_seat", -1, -1)
+        self.event("transfer_seat", -1, -1, station="TRANSFER:1#")
+        before = self.policy()
+        self.instance["events"].reverse()
+        after = self.policy()
+        self.assertEqual(before, after)
+        holder = after["initial_state"]["holders"][0]
+        self.assertEqual(holder["status"], "ambiguous")
+        self.assertIsNone(holder["holder_id"])
+
+    def test_published_weight_not_replaced_by_a_future_endpoint_weight(self):
+        known = self.event("lf_seat", -5, -2, ref="synthetic.xlsx|s|2|seat")
+        known["weight_t"] = 110
+        self.task["source_refs"]["weight"] = "synthetic.xlsx|s|2|mass"
+        self.task["mass_t"]["lo"] = self.task["mass_t"]["hi"] = 110
+        before = self.policy()
+        hidden = self.event("lf_lift", 20, 30, ref="synthetic.xlsx|s|3|lift")
+        hidden["weight_t"] = 999
+        self.task["source_refs"]["weight"] += ";synthetic.xlsx|s|3|mass"
+        self.task["mass_t"]["lo"] = self.task["mass_t"]["hi"] = 999
+        self.task["capacity_candidates"] = []
+        self.assertEqual(before, self.policy())
+
+    def test_schema_rejects_hidden_task_event_and_state_tampering(self):
+        self.event("lf_process_start", -5, -5)
+        self.event("bof_empty_car", -5, -5, station="BOF_B")
+        policy = self.policy()
+        mutations = (
+            lambda p: p["tasks"][0]["release_interval"].update(lo_s=100),
+            lambda p: p["tasks"][0].update(observed_crane="5#450"),
+            lambda p: p["tasks"][0].update(process_predecessor_s=100),
+            lambda p: p["events"][0].update(time_s=100),
+            lambda p: p["events"][0]["raw"].update(actual_end_s=100),
+            lambda p: p["initial_state"]["task_states"][0].update(visible_release_lo_s=100),
+            lambda p: p["initial_state"]["active_operations"][0].update(end_s=100),
+            lambda p: p["initial_state"]["holders"][0].update(since_s=100),
+        )
+        for index, tamper in enumerate(mutations):
+            with self.subTest(index=index):
+                broken = copy.deepcopy(policy)
+                tamper(broken)
+                self.assertTrue(validate_policy_view(broken))
+        truth = build_simulator_truth(self.instance)
+        truth["future_events"].append(copy.deepcopy(self.instance["events"][0]))
+        self.assertTrue(validate_simulator_truth(truth))
+
+    def test_future_information_invariance_in_serialized_policy(self):
+        known = self.event("bof_empty_car", -10, -9, station="BOF_B")
+        self.event("plan_cast_start", 90, -1, category="plan", station="CC3")
+        hidden = self.release(20, 20)
+        pickup = self.event("bof_lift", 21, 21, station="BOF_B")
+        pickup["crane_observations"] = [{"task_id": self.task["task_id"], "crane_id": "3#450"}]
+        self.event("lf_seat", 30, 30)
+        original = json.dumps(self.policy(), ensure_ascii=False, indent=2)
+
+        hidden.update(time_s=200, visible_at_s=200)
+        pickup.update(time_s=205, visible_at_s=None)
+        pickup["crane_observations"][0]["crane_id"] = "5#450"
+        self.event("transfer_seat", 290, 290, station="TRANSFER:unknown")
+        known.update(event_id="audit-renumbered", sequence=999)
+        self.task.update(observed_crane="5#450", observed_crane_candidates=["5#450"],
+                         holder_before="LF1", holder_status="ambiguous",
+                         observed_arrival_s=290, flags=["release_upper_below_lower"])
+        self.task["release_interval"].update(lo_s=200, hi_s=205)
+        self.task["applied_release_s"]["value_s"] = 200
+        self.instance["simulator_truth"]["task_actuals"][0]["process_predecessor_s"] = 200
+        self.instance["evidence"]["source_hashes"] = {"events_csv": "changed"}
+        self.instance["initial_state"]["holders"][0]["status"] = "ambiguous"
+        modified = json.dumps(self.policy(), ensure_ascii=False, indent=2)
+        self.assertEqual(original.encode("utf-8"), modified.encode("utf-8"))
+
+    def test_raw_actual_timestamp_is_not_an_announcement(self):
+        raw = pd.DataFrame([
+            {"heat_id": "S1", "record_type": "actual", "event": "tap_end",
+             "time_s": "-20", "visible_at_s": ""},
+            {"heat_id": "S1", "record_type": "actual", "event": "bof_lift",
+             "time_s": "-10", "visible_at_s": "-3"},
+        ])
+        events = build_events(raw, {})
+        self.assertIsNone(events[0]["visible_at_s"])
+        self.assertEqual(events[1]["visible_at_s"], -3)
 
 
 if __name__ == "__main__":
