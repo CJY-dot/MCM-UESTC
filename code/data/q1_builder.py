@@ -1594,6 +1594,8 @@ def build_policy_view(instance: dict) -> dict:
         item["observed_arrival_s"] = None
         item["release_interval"]["hi_s"] = None
         policy_tasks.append(item)
+    policy_evidence = copy.deepcopy(instance["evidence"])
+    policy_evidence.pop("simulator_truth_file", None)
     policy = {
         "schema": POLICY_SCHEMA,
         "instance_id": instance["instance_id"],
@@ -1602,7 +1604,7 @@ def build_policy_view(instance: dict) -> dict:
         "clock": copy.deepcopy(instance["clock"]),
         "plan_version": instance["plan_version"],
         "scope": copy.deepcopy(instance["scope"]),
-        "evidence": copy.deepcopy(instance["evidence"]),
+        "evidence": policy_evidence,
         "device_catalog": copy.deepcopy(instance["device_catalog"]),
         "topology": copy.deepcopy(instance["topology"]),
         "resources": copy.deepcopy(instance["resources"]),
