@@ -290,7 +290,7 @@ class Dispatch:
                     at = route[-1]["t1_s"]
         return at, segments
 
-    def future_gap(self, additions):
+    def future_gap(self, additions, *, horizon_s=None):
         suffix = {}
         initial = {}
         for cid, path in self.paths.items():
@@ -311,7 +311,21 @@ class Dispatch:
                                       "v0": first["v0"] + first["a"] * step}
             initial[cid] = previous_x
             suffix[cid] = pending + additions.get(cid, [])
-        return check_gap(suffix, self.ids, self.gaps, initial_positions=initial, start_s=self.now)["ok"]
+        return check_gap(suffix, self.ids, self.gaps, initial_positions=initial,
+                         start_s=self.now, horizon_s=horizon_s)["ok"]
+
+    def parking_after_drop(self, crane, destination, dropped, additions):
+        parking = sorted(self.profile["parking_positions_m"],
+                         key=lambda point: (abs(point - destination), point))
+        for point in parking:
+            move = self.move(crane, destination, point, dropped, "no_load", "creep", "yield")
+            end = move[-1]["t1_s"] if move else dropped
+            if end > self.horizon:
+                continue
+            proposal = additions | {crane: additions[crane] + move}
+            if self.future_gap(proposal):
+                return proposal, point, end
+        return None
 
     def candidate(self, t, crane, source, receiver, yield_first):
         now, tid = self.now, t["id"]
@@ -356,14 +370,19 @@ class Dispatch:
         if dropped > drop_start + EPS:
             path.append(stationary(crane, drop_start, dropped, dest, "drop", t, t["load_state"]))
         additions[crane] = path
-        if not self.future_gap(additions):
+        if not self.future_gap(additions, horizon_s=dropped):
             return None, "continuous_gap"
+        parking = self.parking_after_drop(crane, dest, dropped, additions)
+        if parking is None:
+            return None, "post_drop_parking_unavailable"
+        additions, parking_position, parking_end = parking
         target, expected_downstream, buffer = self.deadline[tid]
         return {"task_id": tid, "crane_id": crane, "source": source, "receiver": receiver,
                 "released_s": self.released[tid], "pickup_s": pickup, "lift_s": lifted,
                 "arrival_s": arrival, "drop_start_s": drop_start, "drop_s": dropped,
                 "margin_s": target - dropped - expected_downstream, "buffer_s": buffer,
-                "reserved_at_s": now, "additions": additions}, None
+                "reserved_at_s": now, "additions": additions,
+                "parking_position_m": parking_position, "parking_end_s": parking_end}, None
 
     def candidates(self):
         options = []
@@ -390,8 +409,11 @@ class Dispatch:
                         or self.catalog[cid]["capacity_t"] < t["mass_upper_t"]):
                     continue
                 option, reason = self.candidate(t, cid, source, receiver, False)
-                if reason == "continuous_gap":
-                    option, reason = self.candidate(t, cid, source, receiver, True)
+                if reason in {"continuous_gap", "post_drop_parking_unavailable"}:
+                    retry, secondary_reason = self.candidate(t, cid, source, receiver, True)
+                    option = retry
+                    if reason != "post_drop_parking_unavailable" or retry is not None:
+                        reason = secondary_reason
                 if option:
                     options.append(option)
                 else:
@@ -446,6 +468,9 @@ class Dispatch:
     def result(self):
         for cid, path in self.paths.items():
             stop, pos = (path[-1]["t1_s"], path[-1]["x1"]) if path else (0., self.positions[cid])
+            if path and cid in self.movable and not any(
+                    abs(pos - point) <= EPS for point in self.profile["parking_positions_m"]):
+                raise RuntimeError("An accepted Q2 action ends outside registered parking.")
             if stop < self.horizon - EPS:
                 path.append(stationary(cid, stop, self.horizon, pos,
                                        "idle" if cid in self.movable else "parked"))
