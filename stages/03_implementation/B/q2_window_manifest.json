@@ -1,0 +1,515 @@
+{
+  "conditional_disjoint_pair_candidates": [
+    {
+      "both_have_historical_same_crane_and_shared_endpoint_pair": true,
+      "conditional_comparison_pair_count": 9,
+      "window_ids": [
+        "Q1W01",
+        "Q1W07"
+      ]
+    },
+    {
+      "both_have_historical_same_crane_and_shared_endpoint_pair": false,
+      "conditional_comparison_pair_count": 12,
+      "window_ids": [
+        "Q1W06",
+        "Q1W07"
+      ]
+    }
+  ],
+  "conditional_review_pair": [
+    "Q1W01",
+    "Q1W07"
+  ],
+  "enabled_for_online_comparison": false,
+  "historical_event_visibility": {
+    "q1_full_actual_events": 49653,
+    "with_visible_at": 0
+  },
+  "publication_class": "public_summary_only",
+  "schema": "mcm-uestc.q2-window-manifest/1",
+  "screen": {
+    "disjoint_screen": "no shared heats, no shared campaign identifiers, no overlap in window times",
+    "geometry_use": "Q1 normalized topology; footprint intersection is no clearance certificate",
+    "preparation_seconds": {
+      "base": 120,
+      "conservative": 180,
+      "optimistic": 60
+    },
+    "proxy_end_use": "offline diagnostic only; never a release time or a policy feature",
+    "proxy_ready_interval": "[canonical actual process completion + assumed preparation, canonical actual lift)",
+    "shared_crane_use": "assumed mass upper bound, dispatch class and registered conditional route only",
+    "strict_competition_requires": [
+      "physical availability for distinct ladles at a common time",
+      "audited crane qualification and occupancy",
+      "resource or trajectory constraints limiting simultaneous service",
+      "time-stamped plan and announcement evidence"
+    ]
+  },
+  "source_sha256": {
+    "approved_stage02_events": "617cff628b275a17ac182b8020ce7d44d1751c5c2e613c543fb627e7e6f35fe0",
+    "approved_stage02_tasks": "ad1d01c1ad8e73552c8e91ace9b7e49b0790467e9e6a1191e42f321935aeafda",
+    "q1_full_event_index": "50e4b9278ef80d0e1b71341b713214cf2f58915a7344826fe23d0a4d989f5699",
+    "q1_full_task_index": "9e6bc72e225bea65acc75fd85a5a13b174737021359f30c27a2a1b441b46e544",
+    "q1_window_index": "eadfc152ab5a0dddd14a65f9613af59344184bfdb99d5a82288805f139a4bfd7"
+  },
+  "source_status": "derived",
+  "strict_field_evidence_status": "not_verified",
+  "verified_independent_competition_windows": [],
+  "window_pair_overlap_review": [
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W01",
+        "Q1W02"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W01",
+        "Q1W03"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W01",
+        "Q1W04"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W01",
+        "Q1W05"
+      ]
+    },
+    {
+      "overlapping_time_ranges": true,
+      "shared_campaigns": 1,
+      "shared_heats": 5,
+      "window_ids": [
+        "Q1W01",
+        "Q1W06"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W01",
+        "Q1W07"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W01",
+        "Q1W08"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 1,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W02",
+        "Q1W03"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W02",
+        "Q1W04"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W02",
+        "Q1W05"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W02",
+        "Q1W06"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W02",
+        "Q1W07"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W02",
+        "Q1W08"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W03",
+        "Q1W04"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W03",
+        "Q1W05"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W03",
+        "Q1W06"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W03",
+        "Q1W07"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W03",
+        "Q1W08"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W04",
+        "Q1W05"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W04",
+        "Q1W06"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W04",
+        "Q1W07"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W04",
+        "Q1W08"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W05",
+        "Q1W06"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W05",
+        "Q1W07"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W05",
+        "Q1W08"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W06",
+        "Q1W07"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W06",
+        "Q1W08"
+      ]
+    },
+    {
+      "overlapping_time_ranges": false,
+      "shared_campaigns": 0,
+      "shared_heats": 0,
+      "window_ids": [
+        "Q1W07",
+        "Q1W08"
+      ]
+    }
+  ],
+  "window_reviews": [
+    {
+      "candidate_task_count": 12,
+      "common_conditionally_qualified_crane_pairs_at_base": 6,
+      "conditional_pairs_inside_rail_and_parked_end_crane_bounds_at_base": 6,
+      "exact_physical_release_fields": 0,
+      "freeze_role": "competitive_interval",
+      "heat_count": 7,
+      "overlapping_conditional_rail_footprint_pairs_at_base": 4,
+      "positive_proxy_ready_pair_counts": {
+        "base": 12,
+        "conservative": 11,
+        "optimistic": 12
+      },
+      "proxy_task_exclusions": {},
+      "same_historical_crane_and_shared_conditional_endpoint_pairs_at_base": 1,
+      "same_historical_crane_assignment_pairs_at_base": 5,
+      "same_historical_crane_with_conditional_route_pairs_at_base": 2,
+      "shared_conditional_endpoint_resource_pairs_at_base": 4,
+      "simultaneous_direct_template_gap_conflict_pairs_at_base": 0,
+      "source_checked_proxy_tasks": 12,
+      "status": "conditional_screen_only",
+      "verified_full_qualification_fields": 0,
+      "window_id": "Q1W01"
+    },
+    {
+      "candidate_task_count": 12,
+      "common_conditionally_qualified_crane_pairs_at_base": 0,
+      "conditional_pairs_inside_rail_and_parked_end_crane_bounds_at_base": 0,
+      "exact_physical_release_fields": 0,
+      "freeze_role": "competitive_interval",
+      "heat_count": 7,
+      "overlapping_conditional_rail_footprint_pairs_at_base": 0,
+      "positive_proxy_ready_pair_counts": {
+        "base": 10,
+        "conservative": 9,
+        "optimistic": 10
+      },
+      "proxy_task_exclusions": {
+        "same_heat_holder_path_not_verified": 1
+      },
+      "same_historical_crane_and_shared_conditional_endpoint_pairs_at_base": 0,
+      "same_historical_crane_assignment_pairs_at_base": 1,
+      "same_historical_crane_with_conditional_route_pairs_at_base": 0,
+      "shared_conditional_endpoint_resource_pairs_at_base": 0,
+      "simultaneous_direct_template_gap_conflict_pairs_at_base": 0,
+      "source_checked_proxy_tasks": 11,
+      "status": "insufficient_conditional_route_evidence",
+      "verified_full_qualification_fields": 0,
+      "window_id": "Q1W02"
+    },
+    {
+      "candidate_task_count": 12,
+      "common_conditionally_qualified_crane_pairs_at_base": 0,
+      "conditional_pairs_inside_rail_and_parked_end_crane_bounds_at_base": 0,
+      "exact_physical_release_fields": 0,
+      "freeze_role": "competitive_interval",
+      "heat_count": 7,
+      "overlapping_conditional_rail_footprint_pairs_at_base": 0,
+      "positive_proxy_ready_pair_counts": {
+        "base": 5,
+        "conservative": 4,
+        "optimistic": 5
+      },
+      "proxy_task_exclusions": {
+        "ambiguous_or_conflicting_times": 1,
+        "same_heat_holder_path_not_verified": 1
+      },
+      "same_historical_crane_and_shared_conditional_endpoint_pairs_at_base": 0,
+      "same_historical_crane_assignment_pairs_at_base": 1,
+      "same_historical_crane_with_conditional_route_pairs_at_base": 0,
+      "shared_conditional_endpoint_resource_pairs_at_base": 0,
+      "simultaneous_direct_template_gap_conflict_pairs_at_base": 0,
+      "source_checked_proxy_tasks": 10,
+      "status": "insufficient_conditional_route_evidence",
+      "verified_full_qualification_fields": 0,
+      "window_id": "Q1W03"
+    },
+    {
+      "candidate_task_count": 12,
+      "common_conditionally_qualified_crane_pairs_at_base": 0,
+      "conditional_pairs_inside_rail_and_parked_end_crane_bounds_at_base": 0,
+      "exact_physical_release_fields": 0,
+      "freeze_role": "competitive_interval",
+      "heat_count": 6,
+      "overlapping_conditional_rail_footprint_pairs_at_base": 0,
+      "positive_proxy_ready_pair_counts": {
+        "base": 3,
+        "conservative": 3,
+        "optimistic": 3
+      },
+      "proxy_task_exclusions": {
+        "ambiguous_or_conflicting_times": 2,
+        "same_heat_holder_path_not_verified": 2
+      },
+      "same_historical_crane_and_shared_conditional_endpoint_pairs_at_base": 0,
+      "same_historical_crane_assignment_pairs_at_base": 0,
+      "same_historical_crane_with_conditional_route_pairs_at_base": 0,
+      "shared_conditional_endpoint_resource_pairs_at_base": 0,
+      "simultaneous_direct_template_gap_conflict_pairs_at_base": 0,
+      "source_checked_proxy_tasks": 8,
+      "status": "insufficient_conditional_route_evidence",
+      "verified_full_qualification_fields": 0,
+      "window_id": "Q1W04"
+    },
+    {
+      "candidate_task_count": 11,
+      "common_conditionally_qualified_crane_pairs_at_base": 0,
+      "conditional_pairs_inside_rail_and_parked_end_crane_bounds_at_base": 0,
+      "exact_physical_release_fields": 0,
+      "freeze_role": "competitive_interval",
+      "heat_count": 7,
+      "overlapping_conditional_rail_footprint_pairs_at_base": 0,
+      "positive_proxy_ready_pair_counts": {
+        "base": 8,
+        "conservative": 7,
+        "optimistic": 8
+      },
+      "proxy_task_exclusions": {},
+      "same_historical_crane_and_shared_conditional_endpoint_pairs_at_base": 0,
+      "same_historical_crane_assignment_pairs_at_base": 2,
+      "same_historical_crane_with_conditional_route_pairs_at_base": 0,
+      "shared_conditional_endpoint_resource_pairs_at_base": 0,
+      "simultaneous_direct_template_gap_conflict_pairs_at_base": 0,
+      "source_checked_proxy_tasks": 11,
+      "status": "insufficient_conditional_route_evidence",
+      "verified_full_qualification_fields": 0,
+      "window_id": "Q1W05"
+    },
+    {
+      "candidate_task_count": 11,
+      "common_conditionally_qualified_crane_pairs_at_base": 9,
+      "conditional_pairs_inside_rail_and_parked_end_crane_bounds_at_base": 9,
+      "exact_physical_release_fields": 0,
+      "freeze_role": "competitive_interval",
+      "heat_count": 7,
+      "overlapping_conditional_rail_footprint_pairs_at_base": 6,
+      "positive_proxy_ready_pair_counts": {
+        "base": 9,
+        "conservative": 9,
+        "optimistic": 9
+      },
+      "proxy_task_exclusions": {},
+      "same_historical_crane_and_shared_conditional_endpoint_pairs_at_base": 0,
+      "same_historical_crane_assignment_pairs_at_base": 3,
+      "same_historical_crane_with_conditional_route_pairs_at_base": 3,
+      "shared_conditional_endpoint_resource_pairs_at_base": 6,
+      "simultaneous_direct_template_gap_conflict_pairs_at_base": 0,
+      "source_checked_proxy_tasks": 11,
+      "status": "conditional_screen_only",
+      "verified_full_qualification_fields": 0,
+      "window_id": "Q1W06"
+    },
+    {
+      "candidate_task_count": 11,
+      "common_conditionally_qualified_crane_pairs_at_base": 3,
+      "conditional_pairs_inside_rail_and_parked_end_crane_bounds_at_base": 3,
+      "exact_physical_release_fields": 0,
+      "freeze_role": "competitive_interval",
+      "heat_count": 7,
+      "overlapping_conditional_rail_footprint_pairs_at_base": 3,
+      "positive_proxy_ready_pair_counts": {
+        "base": 11,
+        "conservative": 9,
+        "optimistic": 13
+      },
+      "proxy_task_exclusions": {},
+      "same_historical_crane_and_shared_conditional_endpoint_pairs_at_base": 1,
+      "same_historical_crane_assignment_pairs_at_base": 4,
+      "same_historical_crane_with_conditional_route_pairs_at_base": 1,
+      "shared_conditional_endpoint_resource_pairs_at_base": 3,
+      "simultaneous_direct_template_gap_conflict_pairs_at_base": 0,
+      "source_checked_proxy_tasks": 11,
+      "status": "conditional_screen_only",
+      "verified_full_qualification_fields": 0,
+      "window_id": "Q1W07"
+    },
+    {
+      "candidate_task_count": 11,
+      "common_conditionally_qualified_crane_pairs_at_base": 0,
+      "conditional_pairs_inside_rail_and_parked_end_crane_bounds_at_base": 0,
+      "exact_physical_release_fields": 0,
+      "freeze_role": "competitive_interval",
+      "heat_count": 7,
+      "overlapping_conditional_rail_footprint_pairs_at_base": 0,
+      "positive_proxy_ready_pair_counts": {
+        "base": 5,
+        "conservative": 5,
+        "optimistic": 6
+      },
+      "proxy_task_exclusions": {},
+      "same_historical_crane_and_shared_conditional_endpoint_pairs_at_base": 0,
+      "same_historical_crane_assignment_pairs_at_base": 0,
+      "same_historical_crane_with_conditional_route_pairs_at_base": 0,
+      "shared_conditional_endpoint_resource_pairs_at_base": 0,
+      "simultaneous_direct_template_gap_conflict_pairs_at_base": 0,
+      "source_checked_proxy_tasks": 11,
+      "status": "insufficient_conditional_route_evidence",
+      "verified_full_qualification_fields": 0,
+      "window_id": "Q1W08"
+    }
+  ]
+}
