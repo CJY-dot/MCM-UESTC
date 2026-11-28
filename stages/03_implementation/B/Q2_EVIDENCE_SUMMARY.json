@@ -1,0 +1,81 @@
+{
+  "schema": "mcm-uestc.q2-evidence-summary/1",
+  "date": "2026-11-29",
+  "baseline": "788c2676d6adb86bd241f267cb32417305dffbdb",
+  "sources": {
+    "workbooks": 12,
+    "source_rows": 6758,
+    "approved_calibration_sha256": "f95f02095b1dfb6343fadcffb4f7babf8edd8fed151cbfb23db00d731c4e4733",
+    "stage02_events_sha256": "617cff628b275a17ac182b8020ce7d44d1751c5c2e613c543fb627e7e6f35fe0",
+    "stage02_tasks_sha256": "ad1d01c1ad8e73552c8e91ace9b7e49b0790467e9e6a1191e42f321935aeafda",
+    "q2_final1_bundle_available_locally": false
+  },
+  "samples": {
+    "total": 8870,
+    "partitions": {
+      "train": 4765,
+      "validation": 1148,
+      "final_holdout": 1647,
+      "excluded": 1310
+    },
+    "included_in_model": {
+      "train": 2258,
+      "validation": 556,
+      "final_holdout": 774
+    },
+    "source_reference_matches": {
+      "both": 8870,
+      "start_only": 0,
+      "end_only": 0,
+      "neither": 0
+    },
+    "duplicate_heat_metric": 0,
+    "duplicate_sample_id": 0,
+    "max_heat_partitions": 1,
+    "max_campaign_block_partitions": 1,
+    "training_strata_matching_public_policy": 38,
+    "training_strata_mismatches": 0
+  },
+  "service_paths": {
+    "Q1W01": {
+      "roster": 23,
+      "confirmed_ef": 17,
+      "undeclared": 4,
+      "station_pairs": {
+        "CC3->SLAG:1#": 2,
+        "BOF_C->LF1": 2
+      }
+    },
+    "Q1W07": {
+      "roster": 28,
+      "confirmed_ef": 18,
+      "undeclared": 4,
+      "station_pairs": {
+        "CC3->SLAG:1#": 1,
+        "BOF_C->LF1": 3
+      }
+    },
+    "authorized_ef_legs": [
+      "BOF_B->LF1",
+      "LF1->CC3",
+      "CC3->SLAG:2#",
+      "CC3->SLAG:3#"
+    ]
+  },
+  "status": {
+    "c_q2_02_sample_ledger": "reconstructed_and_source_matched",
+    "c_q2_02_exact_final1_bundle": "not_verified",
+    "c_q2_03_source_admission": "not_verified",
+    "historical_event_visibility": "not_verified",
+    "verified_independent_competition_windows": [],
+    "motion_parameters": "conditional_simulation_only",
+    "field_applicability": "not_verified"
+  },
+  "limitations": [
+    "No per-heat source-position arrival or occupancy event.",
+    "Q2 window manifest reports 49653 actual Q1 events with zero visible_at records.",
+    "Four confirmed EF tasks per conditional window are outside the authorized EF leg list.",
+    "External transfer, repair and return capacity/release remain unverified.",
+    "Motion scale, envelope, gaps, speed, parking and crane initial state remain assumed."
+  ]
+}
