@@ -1,0 +1,4430 @@
+{
+  "basis": "56736cff4905914e11287253eac5a06cca15587c",
+  "external_boundary": {
+    "boundaries": [
+      {
+        "actual_event_counts": {
+          "bof_lift": 1112,
+          "tap_end": 1296,
+          "tap_start": 1276
+        },
+        "duration_evidence": {
+          "calibration_schema": "mcm-uestc.q2-calibration/1",
+          "historical_positive_rows": 1272,
+          "metric": "tap_duration",
+          "use": "service_duration_only_if_supported_by_q2_calibration_profile"
+        },
+        "fallback": "Use the Q1 declared plan anchor and preparation scenario. If the converter operation is modeled, propagate its simulated finish into readiness.",
+        "handoff_capacity": null,
+        "handoff_time_model": null,
+        "hard_release": null,
+        "interpretation": "Observed tapping phase starts and stops are support for tapping service only. The planned converter phase does not establish a same-semantic tapping start.",
+        "planned_event_counts": {
+          "plan_bof_end": 1266,
+          "plan_bof_start": 1266
+        },
+        "sensitivity": {
+          "combine_with_independent_finish_residual": false,
+          "q1_preparation_seconds": [
+            60,
+            120,
+            180
+          ]
+        },
+        "separate_duration_metric": "tap_duration",
+        "source_status": "derived",
+        "stage": "converter_upstream"
+      },
+      {
+        "actual_event_counts": {
+          "slag_end": 836,
+          "slag_second_end": 1,
+          "slag_second_start": 1,
+          "slag_start": 817
+        },
+        "duration_evidence": {
+          "calibration_schema": "mcm-uestc.q2-calibration/1",
+          "historical_positive_rows": 817,
+          "metric": "slag_duration",
+          "use": "service_duration_only_if_supported_by_q2_calibration_profile"
+        },
+        "fallback": "Keep Q1 conditional slag occupancy and retain the holder until a legal downstream transfer. Start the declared operation on arrival; its finish is endogenous.",
+        "handoff_capacity": null,
+        "handoff_time_model": null,
+        "hard_release": null,
+        "interpretation": "Same-stage first slag start and end support separate service duration. Neither timestamp identifies crane drop completion or external receiving availability.",
+        "planned_event_counts": {},
+        "sensitivity": {
+          "q1_service_duration_scenario_keys": [
+            "optimistic",
+            "base",
+            "conservative"
+          ]
+        },
+        "separate_duration_metric": "slag_duration",
+        "source_status": "observed",
+        "stage": "slag_service"
+      },
+      {
+        "actual_event_counts": {
+          "transfer_arrive_repair_area": 817,
+          "transfer_at_ef": 848,
+          "transfer_seat": 1148
+        },
+        "fallback": "Preserve pending EF confirmation or the Q1 blocked boundary until receiving point, next holder and legal release are approved.",
+        "handoff_capacity": null,
+        "handoff_time_model": null,
+        "hard_release": null,
+        "interpretation": "Arrival and seat records evidence observed actions. They do not identify the release of an individually authorized transfer resource.",
+        "planned_event_counts": {},
+        "sensitivity": {
+          "case_levels": [
+            "blocked",
+            "approved_fixed_external_release"
+          ],
+          "enabled": false,
+          "numeric_seconds_range": null
+        },
+        "separate_duration_metric": null,
+        "source_status": "pending",
+        "stage": "transfer_truck_receipt_release"
+      },
+      {
+        "actual_event_counts": {
+          "repair_lift": 1095,
+          "repair_seat": 1091,
+          "return_bof_c_seat": 354,
+          "return_ef_lift": 905,
+          "return_transfer_seat": 370
+        },
+        "fallback": "Retain blocked or an approved fixed external handoff; preserve real same-ladle dependencies, previous occupancy and known routes.",
+        "handoff_capacity": null,
+        "handoff_time_model": null,
+        "hard_release": null,
+        "interpretation": "Repair seat-to-lift can mix occupied service, queues and transfer waits. A historical return action does not prove availability in a future decision.",
+        "planned_event_counts": {},
+        "sensitivity": {
+          "case_levels": [
+            "blocked",
+            "approved_fixed_external_release"
+          ],
+          "enabled": false,
+          "numeric_seconds_range": null
+        },
+        "separate_duration_metric": null,
+        "source_status": "pending",
+        "stage": "repair_and_return"
+      },
+      {
+        "actual_event_counts": {
+          "cast_end": 1161,
+          "cast_start": 1171,
+          "cc_seat": 1157
+        },
+        "duration_evidence": {
+          "calibration_schema": "mcm-uestc.q2-calibration/1",
+          "historical_positive_rows": 1160,
+          "metric": "cast_duration",
+          "use": "service_duration_only_if_supported_by_q2_calibration_profile"
+        },
+        "fallback": "Derive seating, preparation and occupancy from the Q1 plan and resource graph. Sample the calibrated casting service separately.",
+        "handoff_capacity": null,
+        "handoff_time_model": null,
+        "hard_release": null,
+        "interpretation": "Seat-to-start mixes preparation and wait. Adding its observed interval or the observed start error as new noise would duplicate internal queueing and preparation.",
+        "planned_event_counts": {
+          "plan_cast_end": 1266,
+          "plan_cast_start": 1266
+        },
+        "sensitivity": {
+          "q1_baseline_caster_preparation_s": 120,
+          "validated_preparation_range_s": null
+        },
+        "separate_duration_metric": "cast_duration",
+        "source_status": "derived",
+        "stage": "caster_acceptance_and_preparation"
+      }
+    ],
+    "count_rule": "canonical, valid parsed seconds and unique or identity-resolved link",
+    "historical_timing_field_coverage": {
+      "actual_with_announced_at": 0,
+      "actual_with_visible_at": 0,
+      "rows_with_predicted_time": 0
+    },
+    "independent_exogenous_timestamp_models_enabled": [],
+    "publication_class": "public_summary_only",
+    "schema": "mcm-uestc.q2-external-boundary/1",
+    "scope": "external interface evidence and dependency rules; not a strategy observation stream",
+    "seat_to_cast_mixed_interval_count_audit_only": 1056,
+    "signed_residuals_audit_only": {
+      "cast_start_plan_error": {
+        "active_exogenous_model": false,
+        "centered": false,
+        "n": 1096,
+        "negative": 121,
+        "positive": 975,
+        "raw_location": "approved_private_calibration_csv",
+        "reason": "Historical caster start is an endogenous response to preparation and resource readiness.",
+        "zero": 0
+      },
+      "tap_end_plan_error": {
+        "active_exogenous_model": false,
+        "centered": false,
+        "n": 1221,
+        "negative": 855,
+        "positive": 366,
+        "raw_location": "approved_private_calibration_csv",
+        "reason": "Historical actual tap completion minus planned converter end. Phase semantics differ.",
+        "zero": 0
+      }
+    },
+    "source_sha256": {
+      "calibration.csv": "f95f02095b1dfb6343fadcffb4f7babf8edd8fed151cbfb23db00d731c4e4733",
+      "events.csv": "617cff628b275a17ac182b8020ce7d44d1751c5c2e613c543fb627e7e6f35fe0"
+    },
+    "timing_fields": {
+      "actual_time_s": "Simulator actual execution clock; historical realized values stay in private audit.",
+      "announced_at_s": "Evidence of an announcement; not inferred from historical operation time.",
+      "plan_time_s": "Plan target; enforce only with the inherited Q1 evidence and authority.",
+      "predicted_time_s": "Conditioned on a currently visible state, with a model version and time issued.",
+      "visible_at_s": "Decision availability inherited from Q1; no future-actual leakage."
+    }
+  },
+  "inputs": {
+    "approved_calibration_sha256": "f95f02095b1dfb6343fadcffb4f7babf8edd8fed151cbfb23db00d731c4e4733",
+    "approved_identity_audit_sha256": "43a8ddf1af1f1d8ed1581b83a2efe442248ea445b665d73020aef2fad8537ba0",
+    "q1_bundle_sha256": {
+      "q1_instance.json": "b8847f9234b8bd066d68642aec9e99710792eb8d73d00be36e98821c1a14ef27",
+      "q1_policy_view.json": "c9ecdb27e0ccf991fc8f195e599de1f5d53294689bb826c601e1f04a3c1fe881",
+      "q1_simulator_truth.json": "ce234cbf5baa487a46ad83f78ee14c7e66470cf366869b65fd0e8e8fcc18c814"
+    }
+  },
+  "model_selection": {
+    "families": {
+      "cast_duration/CC1": "empirical",
+      "cast_duration/CC1/L0": "empirical",
+      "cast_duration/CC1/R0": "block_pair",
+      "cast_duration/CC2": "empirical",
+      "cast_duration/CC2/L0": "empirical",
+      "cast_duration/CC2/R0": "empirical",
+      "cast_duration/CC3": "empirical",
+      "cast_duration/CC3/L0": "lognormal",
+      "cast_duration/CC3/R0": "empirical",
+      "cast_duration/pool": "empirical",
+      "lf_duration/LF1": "block_pair",
+      "lf_duration/LF1/L0": "block_pair",
+      "lf_duration/LF3": "empirical",
+      "lf_duration/LF3/L0": "empirical",
+      "lf_duration/pool": "empirical",
+      "rh_duration/RH1": "empirical",
+      "rh_duration/RH1/R0": "empirical",
+      "rh_duration/RH2": "empirical",
+      "rh_duration/RH2/R0": "block_pair",
+      "rh_duration/pool": "empirical",
+      "slag_duration/1#倒渣位": "empirical",
+      "slag_duration/1#倒渣位/L0": "empirical",
+      "slag_duration/2#倒渣位": "empirical",
+      "slag_duration/2#倒渣位/L0": "empirical",
+      "slag_duration/3#倒渣位": "block_pair",
+      "slag_duration/3#倒渣位/L0": "block_pair",
+      "slag_duration/3#倒渣位/R0": "empirical",
+      "slag_duration/pool": "block_pair",
+      "tap_duration/BOFA": "block_pair",
+      "tap_duration/BOFA/L0": "gamma",
+      "tap_duration/BOFA/R0": "lognormal",
+      "tap_duration/BOFB": "gamma",
+      "tap_duration/BOFB/L0": "gamma",
+      "tap_duration/BOFB/R0": "gamma",
+      "tap_duration/BOFC": "empirical",
+      "tap_duration/BOFC/L0": "empirical",
+      "tap_duration/BOFC/R0": "empirical",
+      "tap_duration/pool": "empirical"
+    },
+    "source": "validation_selection_without_final_holdout"
+  },
+  "motion_profile": {
+    "analytical_checks": {
+      "unrestricted_loaded_lf1_cc3_rest_to_rest": {
+        "base": {
+          "accelerate_s": 25.0,
+          "critical_distance_m": 9.000000000000002,
+          "cruise_s": 137.5,
+          "decelerate_s": 20.0,
+          "distance_m": 64.0,
+          "peak_speed_m_s": 0.4,
+          "profile": "trapezoidal",
+          "total_s": 182.5
+        },
+        "scale_high": {
+          "accelerate_s": 25.0,
+          "critical_distance_m": 9.000000000000002,
+          "cruise_s": 177.5,
+          "decelerate_s": 20.0,
+          "distance_m": 80.0,
+          "peak_speed_m_s": 0.4,
+          "profile": "trapezoidal",
+          "total_s": 222.5
+        },
+        "scale_low": {
+          "accelerate_s": 25.0,
+          "critical_distance_m": 9.000000000000002,
+          "cruise_s": 97.5,
+          "decelerate_s": 20.0,
+          "distance_m": 48.0,
+          "peak_speed_m_s": 0.4,
+          "profile": "trapezoidal",
+          "total_s": 142.5
+        }
+      }
+    },
+    "approval_required": true,
+    "approval_scope": "conditional_q2_simulation_only",
+    "evidence": {
+      "assumed": [
+        "longitudinal_scale_3_4_5_m_per_reference_unit",
+        "receiving_interface_points",
+        "parking_positions_and_initial_track_occupancy",
+        "three_speed_gears_and_ramps",
+        "slag_approach_zone_and_reference_clearance"
+      ],
+      "documented": [
+        "five_ef_cranes_and_nominal_tonnage",
+        "shared_rail_no_overtaking",
+        "station_relative_order_and_side"
+      ],
+      "kinematics_basis": "Frozen Q1 assumed 0.10 reference-unit/s at the base scale; B stage02 scenario ramp and approach ratios; no calibration from transport timestamps",
+      "pending": [
+        "surveyed_coordinates_and_rail_limits",
+        "crane_reference_envelopes",
+        "factory_velocity_and_ramp_profiles",
+        "actual_zones_and_legal_parking",
+        "actual_initial_positions_and_150t_track_occupancy"
+      ]
+    },
+    "kinematic_sensitivities": {
+      "fast": {
+        "empty_ladle": {
+          "acceleration_m_s2": 0.0216,
+          "deceleration_m_s2": 0.027,
+          "gear_speed_caps_m_s": {
+            "approach": 0.405,
+            "creep": 0.27,
+            "cruise": 0.54
+          },
+          "source_status": "assumed"
+        },
+        "loaded": {
+          "acceleration_m_s2": 0.0192,
+          "deceleration_m_s2": 0.024,
+          "gear_speed_caps_m_s": {
+            "approach": 0.36,
+            "creep": 0.24,
+            "cruise": 0.48
+          },
+          "source_status": "assumed"
+        },
+        "no_load": {
+          "acceleration_m_s2": 0.024,
+          "deceleration_m_s2": 0.03,
+          "gear_speed_caps_m_s": {
+            "approach": 0.45,
+            "creep": 0.3,
+            "cruise": 0.6
+          },
+          "source_status": "assumed"
+        }
+      },
+      "nominal": {
+        "empty_ladle": {
+          "acceleration_m_s2": 0.018,
+          "deceleration_m_s2": 0.0225,
+          "gear_speed_caps_m_s": {
+            "approach": 0.3375,
+            "creep": 0.225,
+            "cruise": 0.45
+          },
+          "source_status": "assumed"
+        },
+        "loaded": {
+          "acceleration_m_s2": 0.016,
+          "deceleration_m_s2": 0.02,
+          "gear_speed_caps_m_s": {
+            "approach": 0.3,
+            "creep": 0.2,
+            "cruise": 0.4
+          },
+          "source_status": "assumed"
+        },
+        "no_load": {
+          "acceleration_m_s2": 0.02,
+          "deceleration_m_s2": 0.025,
+          "gear_speed_caps_m_s": {
+            "approach": 0.375,
+            "creep": 0.25,
+            "cruise": 0.5
+          },
+          "source_status": "assumed"
+        }
+      },
+      "slow": {
+        "empty_ladle": {
+          "acceleration_m_s2": 0.0144,
+          "deceleration_m_s2": 0.018,
+          "gear_speed_caps_m_s": {
+            "approach": 0.27,
+            "creep": 0.18,
+            "cruise": 0.36
+          },
+          "source_status": "assumed"
+        },
+        "loaded": {
+          "acceleration_m_s2": 0.0128,
+          "deceleration_m_s2": 0.016,
+          "gear_speed_caps_m_s": {
+            "approach": 0.24,
+            "creep": 0.16,
+            "cruise": 0.32
+          },
+          "source_status": "assumed"
+        },
+        "no_load": {
+          "acceleration_m_s2": 0.016,
+          "deceleration_m_s2": 0.02,
+          "gear_speed_caps_m_s": {
+            "approach": 0.3,
+            "creep": 0.2,
+            "cruise": 0.4
+          },
+          "source_status": "assumed"
+        }
+      }
+    },
+    "positive_direction": "west_to_east",
+    "scenarios": {
+      "base": {
+        "authorized_ef_legs": [
+          [
+            "BOF_B",
+            "LF1"
+          ],
+          [
+            "LF1",
+            "CC3"
+          ],
+          [
+            "CC3",
+            "SLAG:2#"
+          ],
+          [
+            "CC3",
+            "SLAG:3#"
+          ]
+        ],
+        "clearance": {
+          "adjacent_pairs": [
+            {
+              "left_crane": "2#150",
+              "min_distance_m": 16.0,
+              "right_crane": "4#450"
+            },
+            {
+              "left_crane": "4#450",
+              "min_distance_m": 16.0,
+              "right_crane": "3#450"
+            },
+            {
+              "left_crane": "3#450",
+              "min_distance_m": 16.0,
+              "right_crane": "5#450"
+            },
+            {
+              "left_crane": "5#450",
+              "min_distance_m": 16.0,
+              "right_crane": "1#150"
+            }
+          ],
+          "convention": "minimum_longitudinal_reference_point_separation_includes_envelope",
+          "source_status": "assumed",
+          "threshold_sensitivities_m": {
+            "base": 16.0,
+            "high": 24.0,
+            "low": 12.0
+          },
+          "vehicle_envelope_dimension_m": null
+        },
+        "crane_catalog": [
+          {
+            "capacity_source_status": "documented",
+            "capacity_t": 150,
+            "crane_id": "2#150",
+            "dispatch_candidate": false,
+            "motion_profile_group": null,
+            "rail_limits_m": [
+              0.0,
+              400.0
+            ]
+          },
+          {
+            "capacity_source_status": "documented",
+            "capacity_t": 450,
+            "crane_id": "4#450",
+            "dispatch_candidate": true,
+            "motion_profile_group": "mobile_450t",
+            "rail_limits_m": [
+              0.0,
+              400.0
+            ]
+          },
+          {
+            "capacity_source_status": "documented",
+            "capacity_t": 450,
+            "crane_id": "3#450",
+            "dispatch_candidate": true,
+            "motion_profile_group": "mobile_450t",
+            "rail_limits_m": [
+              0.0,
+              400.0
+            ]
+          },
+          {
+            "capacity_source_status": "documented",
+            "capacity_t": 450,
+            "crane_id": "5#450",
+            "dispatch_candidate": true,
+            "motion_profile_group": "mobile_450t",
+            "rail_limits_m": [
+              0.0,
+              400.0
+            ]
+          },
+          {
+            "capacity_source_status": "documented",
+            "capacity_t": 150,
+            "crane_id": "1#150",
+            "dispatch_candidate": false,
+            "motion_profile_group": null,
+            "rail_limits_m": [
+              0.0,
+              400.0
+            ]
+          }
+        ],
+        "crane_order": [
+          "2#150",
+          "4#450",
+          "3#450",
+          "5#450",
+          "1#150"
+        ],
+        "initial_layout": "dispersed",
+        "initial_state_layouts": {
+          "crowded": [
+            {
+              "crane_id": "2#150",
+              "dispatch_allowed": false,
+              "load_state": "no_load",
+              "mode": "parked",
+              "position_m": 0.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "4#450",
+              "dispatch_allowed": true,
+              "load_state": "no_load",
+              "mode": "idle",
+              "position_m": 196.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "3#450",
+              "dispatch_allowed": true,
+              "load_state": "no_load",
+              "mode": "idle",
+              "position_m": 220.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "5#450",
+              "dispatch_allowed": true,
+              "load_state": "no_load",
+              "mode": "idle",
+              "position_m": 244.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "1#150",
+              "dispatch_allowed": false,
+              "load_state": "no_load",
+              "mode": "parked",
+              "position_m": 400.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            }
+          ],
+          "dispersed": [
+            {
+              "crane_id": "2#150",
+              "dispatch_allowed": false,
+              "load_state": "no_load",
+              "mode": "parked",
+              "position_m": 0.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "4#450",
+              "dispatch_allowed": true,
+              "load_state": "no_load",
+              "mode": "idle",
+              "position_m": 104.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "3#450",
+              "dispatch_allowed": true,
+              "load_state": "no_load",
+              "mode": "idle",
+              "position_m": 216.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "5#450",
+              "dispatch_allowed": true,
+              "load_state": "no_load",
+              "mode": "idle",
+              "position_m": 304.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "1#150",
+              "dispatch_allowed": false,
+              "load_state": "no_load",
+              "mode": "parked",
+              "position_m": 400.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            }
+          ]
+        },
+        "interface_positions_m": {
+          "BOF_B": 172.0,
+          "SLAG:2#": 344.0,
+          "SLAG:3#": 356.0
+        },
+        "motion": {
+          "gear_applicability": {
+            "approach": "local_zone_or_approaching_a_restricted_segment",
+            "creep": "positioning_or_yield_on_authorized_path",
+            "cruise": "ordinary_segment_outside_restricted_zones"
+          },
+          "mobile_450t": {
+            "empty_ladle": {
+              "acceleration_m_s2": 0.018,
+              "deceleration_m_s2": 0.0225,
+              "gear_speed_caps_m_s": {
+                "approach": 0.3375,
+                "creep": 0.225,
+                "cruise": 0.45
+              },
+              "source_status": "assumed"
+            },
+            "loaded": {
+              "acceleration_m_s2": 0.016,
+              "deceleration_m_s2": 0.02,
+              "gear_speed_caps_m_s": {
+                "approach": 0.3,
+                "creep": 0.2,
+                "cruise": 0.4
+              },
+              "source_status": "assumed"
+            },
+            "no_load": {
+              "acceleration_m_s2": 0.02,
+              "deceleration_m_s2": 0.025,
+              "gear_speed_caps_m_s": {
+                "approach": 0.375,
+                "creep": 0.25,
+                "cruise": 0.5
+              },
+              "source_status": "assumed"
+            }
+          },
+          "parked_150t_acceleration_m_s2": 0.0,
+          "parked_150t_speed_m_s": 0.0
+        },
+        "parking_positions_m": [
+          32.0,
+          88.0,
+          136.0,
+          200.0,
+          264.0,
+          300.0,
+          328.0,
+          376.0
+        ],
+        "rail_limits_m": [
+          0.0,
+          400.0
+        ],
+        "scale_m_per_reference_unit": 4.0,
+        "source_status": "assumed",
+        "speed_zones": [
+          {
+            "crane_ids": [
+              "4#450",
+              "3#450",
+              "5#450"
+            ],
+            "interval_m": [
+              336.0,
+              368.0
+            ],
+            "permitted_gears": [
+              "creep",
+              "approach"
+            ],
+            "source_status": "assumed",
+            "speed_caps_m_s": {
+              "empty_ladle": 0.3375,
+              "loaded": 0.3,
+              "no_load": 0.375
+            },
+            "zone_id": "slag_approach"
+          }
+        ],
+        "station_positions_m": {
+          "CC1": 108.0,
+          "CC2": 192.0,
+          "CC3": 312.0,
+          "LF1": 248.0,
+          "LF3": 48.0,
+          "RH1": 104.0,
+          "RH2": 68.0
+        },
+        "station_sides": {
+          "CC1": "E",
+          "CC2": "E",
+          "CC3": "E",
+          "LF1": "F",
+          "LF3": "E",
+          "RH1": "F",
+          "RH2": "F"
+        },
+        "waypoint_rules": {
+          "allow_lateral_detour": false,
+          "allow_passing": false,
+          "direction_change_requires_zero_speed": true,
+          "position_and_speed_continuous": true,
+          "station_stop_requires_service_reservation": true,
+          "stop_and_yield": "declared_parking_only"
+        }
+      },
+      "scale_high": {
+        "authorized_ef_legs": [
+          [
+            "BOF_B",
+            "LF1"
+          ],
+          [
+            "LF1",
+            "CC3"
+          ],
+          [
+            "CC3",
+            "SLAG:2#"
+          ],
+          [
+            "CC3",
+            "SLAG:3#"
+          ]
+        ],
+        "clearance": {
+          "adjacent_pairs": [
+            {
+              "left_crane": "2#150",
+              "min_distance_m": 20.0,
+              "right_crane": "4#450"
+            },
+            {
+              "left_crane": "4#450",
+              "min_distance_m": 20.0,
+              "right_crane": "3#450"
+            },
+            {
+              "left_crane": "3#450",
+              "min_distance_m": 20.0,
+              "right_crane": "5#450"
+            },
+            {
+              "left_crane": "5#450",
+              "min_distance_m": 20.0,
+              "right_crane": "1#150"
+            }
+          ],
+          "convention": "minimum_longitudinal_reference_point_separation_includes_envelope",
+          "source_status": "assumed",
+          "threshold_sensitivities_m": {
+            "base": 20.0,
+            "high": 30.0,
+            "low": 15.0
+          },
+          "vehicle_envelope_dimension_m": null
+        },
+        "crane_catalog": [
+          {
+            "capacity_source_status": "documented",
+            "capacity_t": 150,
+            "crane_id": "2#150",
+            "dispatch_candidate": false,
+            "motion_profile_group": null,
+            "rail_limits_m": [
+              0.0,
+              500.0
+            ]
+          },
+          {
+            "capacity_source_status": "documented",
+            "capacity_t": 450,
+            "crane_id": "4#450",
+            "dispatch_candidate": true,
+            "motion_profile_group": "mobile_450t",
+            "rail_limits_m": [
+              0.0,
+              500.0
+            ]
+          },
+          {
+            "capacity_source_status": "documented",
+            "capacity_t": 450,
+            "crane_id": "3#450",
+            "dispatch_candidate": true,
+            "motion_profile_group": "mobile_450t",
+            "rail_limits_m": [
+              0.0,
+              500.0
+            ]
+          },
+          {
+            "capacity_source_status": "documented",
+            "capacity_t": 450,
+            "crane_id": "5#450",
+            "dispatch_candidate": true,
+            "motion_profile_group": "mobile_450t",
+            "rail_limits_m": [
+              0.0,
+              500.0
+            ]
+          },
+          {
+            "capacity_source_status": "documented",
+            "capacity_t": 150,
+            "crane_id": "1#150",
+            "dispatch_candidate": false,
+            "motion_profile_group": null,
+            "rail_limits_m": [
+              0.0,
+              500.0
+            ]
+          }
+        ],
+        "crane_order": [
+          "2#150",
+          "4#450",
+          "3#450",
+          "5#450",
+          "1#150"
+        ],
+        "initial_layout": "dispersed",
+        "initial_state_layouts": {
+          "crowded": [
+            {
+              "crane_id": "2#150",
+              "dispatch_allowed": false,
+              "load_state": "no_load",
+              "mode": "parked",
+              "position_m": 0.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "4#450",
+              "dispatch_allowed": true,
+              "load_state": "no_load",
+              "mode": "idle",
+              "position_m": 245.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "3#450",
+              "dispatch_allowed": true,
+              "load_state": "no_load",
+              "mode": "idle",
+              "position_m": 275.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "5#450",
+              "dispatch_allowed": true,
+              "load_state": "no_load",
+              "mode": "idle",
+              "position_m": 305.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "1#150",
+              "dispatch_allowed": false,
+              "load_state": "no_load",
+              "mode": "parked",
+              "position_m": 500.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            }
+          ],
+          "dispersed": [
+            {
+              "crane_id": "2#150",
+              "dispatch_allowed": false,
+              "load_state": "no_load",
+              "mode": "parked",
+              "position_m": 0.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "4#450",
+              "dispatch_allowed": true,
+              "load_state": "no_load",
+              "mode": "idle",
+              "position_m": 130.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "3#450",
+              "dispatch_allowed": true,
+              "load_state": "no_load",
+              "mode": "idle",
+              "position_m": 270.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "5#450",
+              "dispatch_allowed": true,
+              "load_state": "no_load",
+              "mode": "idle",
+              "position_m": 380.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "1#150",
+              "dispatch_allowed": false,
+              "load_state": "no_load",
+              "mode": "parked",
+              "position_m": 500.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            }
+          ]
+        },
+        "interface_positions_m": {
+          "BOF_B": 215.0,
+          "SLAG:2#": 430.0,
+          "SLAG:3#": 445.0
+        },
+        "motion": {
+          "gear_applicability": {
+            "approach": "local_zone_or_approaching_a_restricted_segment",
+            "creep": "positioning_or_yield_on_authorized_path",
+            "cruise": "ordinary_segment_outside_restricted_zones"
+          },
+          "mobile_450t": {
+            "empty_ladle": {
+              "acceleration_m_s2": 0.018,
+              "deceleration_m_s2": 0.0225,
+              "gear_speed_caps_m_s": {
+                "approach": 0.3375,
+                "creep": 0.225,
+                "cruise": 0.45
+              },
+              "source_status": "assumed"
+            },
+            "loaded": {
+              "acceleration_m_s2": 0.016,
+              "deceleration_m_s2": 0.02,
+              "gear_speed_caps_m_s": {
+                "approach": 0.3,
+                "creep": 0.2,
+                "cruise": 0.4
+              },
+              "source_status": "assumed"
+            },
+            "no_load": {
+              "acceleration_m_s2": 0.02,
+              "deceleration_m_s2": 0.025,
+              "gear_speed_caps_m_s": {
+                "approach": 0.375,
+                "creep": 0.25,
+                "cruise": 0.5
+              },
+              "source_status": "assumed"
+            }
+          },
+          "parked_150t_acceleration_m_s2": 0.0,
+          "parked_150t_speed_m_s": 0.0
+        },
+        "parking_positions_m": [
+          40.0,
+          110.0,
+          170.0,
+          250.0,
+          330.0,
+          375.0,
+          410.0,
+          470.0
+        ],
+        "rail_limits_m": [
+          0.0,
+          500.0
+        ],
+        "scale_m_per_reference_unit": 5.0,
+        "source_status": "assumed",
+        "speed_zones": [
+          {
+            "crane_ids": [
+              "4#450",
+              "3#450",
+              "5#450"
+            ],
+            "interval_m": [
+              420.0,
+              460.0
+            ],
+            "permitted_gears": [
+              "creep",
+              "approach"
+            ],
+            "source_status": "assumed",
+            "speed_caps_m_s": {
+              "empty_ladle": 0.3375,
+              "loaded": 0.3,
+              "no_load": 0.375
+            },
+            "zone_id": "slag_approach"
+          }
+        ],
+        "station_positions_m": {
+          "CC1": 135.0,
+          "CC2": 240.0,
+          "CC3": 390.0,
+          "LF1": 310.0,
+          "LF3": 60.0,
+          "RH1": 130.0,
+          "RH2": 85.0
+        },
+        "station_sides": {
+          "CC1": "E",
+          "CC2": "E",
+          "CC3": "E",
+          "LF1": "F",
+          "LF3": "E",
+          "RH1": "F",
+          "RH2": "F"
+        },
+        "waypoint_rules": {
+          "allow_lateral_detour": false,
+          "allow_passing": false,
+          "direction_change_requires_zero_speed": true,
+          "position_and_speed_continuous": true,
+          "station_stop_requires_service_reservation": true,
+          "stop_and_yield": "declared_parking_only"
+        }
+      },
+      "scale_low": {
+        "authorized_ef_legs": [
+          [
+            "BOF_B",
+            "LF1"
+          ],
+          [
+            "LF1",
+            "CC3"
+          ],
+          [
+            "CC3",
+            "SLAG:2#"
+          ],
+          [
+            "CC3",
+            "SLAG:3#"
+          ]
+        ],
+        "clearance": {
+          "adjacent_pairs": [
+            {
+              "left_crane": "2#150",
+              "min_distance_m": 12.0,
+              "right_crane": "4#450"
+            },
+            {
+              "left_crane": "4#450",
+              "min_distance_m": 12.0,
+              "right_crane": "3#450"
+            },
+            {
+              "left_crane": "3#450",
+              "min_distance_m": 12.0,
+              "right_crane": "5#450"
+            },
+            {
+              "left_crane": "5#450",
+              "min_distance_m": 12.0,
+              "right_crane": "1#150"
+            }
+          ],
+          "convention": "minimum_longitudinal_reference_point_separation_includes_envelope",
+          "source_status": "assumed",
+          "threshold_sensitivities_m": {
+            "base": 12.0,
+            "high": 18.0,
+            "low": 9.0
+          },
+          "vehicle_envelope_dimension_m": null
+        },
+        "crane_catalog": [
+          {
+            "capacity_source_status": "documented",
+            "capacity_t": 150,
+            "crane_id": "2#150",
+            "dispatch_candidate": false,
+            "motion_profile_group": null,
+            "rail_limits_m": [
+              0.0,
+              300.0
+            ]
+          },
+          {
+            "capacity_source_status": "documented",
+            "capacity_t": 450,
+            "crane_id": "4#450",
+            "dispatch_candidate": true,
+            "motion_profile_group": "mobile_450t",
+            "rail_limits_m": [
+              0.0,
+              300.0
+            ]
+          },
+          {
+            "capacity_source_status": "documented",
+            "capacity_t": 450,
+            "crane_id": "3#450",
+            "dispatch_candidate": true,
+            "motion_profile_group": "mobile_450t",
+            "rail_limits_m": [
+              0.0,
+              300.0
+            ]
+          },
+          {
+            "capacity_source_status": "documented",
+            "capacity_t": 450,
+            "crane_id": "5#450",
+            "dispatch_candidate": true,
+            "motion_profile_group": "mobile_450t",
+            "rail_limits_m": [
+              0.0,
+              300.0
+            ]
+          },
+          {
+            "capacity_source_status": "documented",
+            "capacity_t": 150,
+            "crane_id": "1#150",
+            "dispatch_candidate": false,
+            "motion_profile_group": null,
+            "rail_limits_m": [
+              0.0,
+              300.0
+            ]
+          }
+        ],
+        "crane_order": [
+          "2#150",
+          "4#450",
+          "3#450",
+          "5#450",
+          "1#150"
+        ],
+        "initial_layout": "dispersed",
+        "initial_state_layouts": {
+          "crowded": [
+            {
+              "crane_id": "2#150",
+              "dispatch_allowed": false,
+              "load_state": "no_load",
+              "mode": "parked",
+              "position_m": 0.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "4#450",
+              "dispatch_allowed": true,
+              "load_state": "no_load",
+              "mode": "idle",
+              "position_m": 147.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "3#450",
+              "dispatch_allowed": true,
+              "load_state": "no_load",
+              "mode": "idle",
+              "position_m": 165.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "5#450",
+              "dispatch_allowed": true,
+              "load_state": "no_load",
+              "mode": "idle",
+              "position_m": 183.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "1#150",
+              "dispatch_allowed": false,
+              "load_state": "no_load",
+              "mode": "parked",
+              "position_m": 300.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            }
+          ],
+          "dispersed": [
+            {
+              "crane_id": "2#150",
+              "dispatch_allowed": false,
+              "load_state": "no_load",
+              "mode": "parked",
+              "position_m": 0.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "4#450",
+              "dispatch_allowed": true,
+              "load_state": "no_load",
+              "mode": "idle",
+              "position_m": 78.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "3#450",
+              "dispatch_allowed": true,
+              "load_state": "no_load",
+              "mode": "idle",
+              "position_m": 162.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "5#450",
+              "dispatch_allowed": true,
+              "load_state": "no_load",
+              "mode": "idle",
+              "position_m": 228.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            },
+            {
+              "crane_id": "1#150",
+              "dispatch_allowed": false,
+              "load_state": "no_load",
+              "mode": "parked",
+              "position_m": 300.0,
+              "source_status": "assumed",
+              "speed_m_s": 0.0,
+              "track_present": true
+            }
+          ]
+        },
+        "interface_positions_m": {
+          "BOF_B": 129.0,
+          "SLAG:2#": 258.0,
+          "SLAG:3#": 267.0
+        },
+        "motion": {
+          "gear_applicability": {
+            "approach": "local_zone_or_approaching_a_restricted_segment",
+            "creep": "positioning_or_yield_on_authorized_path",
+            "cruise": "ordinary_segment_outside_restricted_zones"
+          },
+          "mobile_450t": {
+            "empty_ladle": {
+              "acceleration_m_s2": 0.018,
+              "deceleration_m_s2": 0.0225,
+              "gear_speed_caps_m_s": {
+                "approach": 0.3375,
+                "creep": 0.225,
+                "cruise": 0.45
+              },
+              "source_status": "assumed"
+            },
+            "loaded": {
+              "acceleration_m_s2": 0.016,
+              "deceleration_m_s2": 0.02,
+              "gear_speed_caps_m_s": {
+                "approach": 0.3,
+                "creep": 0.2,
+                "cruise": 0.4
+              },
+              "source_status": "assumed"
+            },
+            "no_load": {
+              "acceleration_m_s2": 0.02,
+              "deceleration_m_s2": 0.025,
+              "gear_speed_caps_m_s": {
+                "approach": 0.375,
+                "creep": 0.25,
+                "cruise": 0.5
+              },
+              "source_status": "assumed"
+            }
+          },
+          "parked_150t_acceleration_m_s2": 0.0,
+          "parked_150t_speed_m_s": 0.0
+        },
+        "parking_positions_m": [
+          24.0,
+          66.0,
+          102.0,
+          150.0,
+          198.0,
+          225.0,
+          246.0,
+          282.0
+        ],
+        "rail_limits_m": [
+          0.0,
+          300.0
+        ],
+        "scale_m_per_reference_unit": 3.0,
+        "source_status": "assumed",
+        "speed_zones": [
+          {
+            "crane_ids": [
+              "4#450",
+              "3#450",
+              "5#450"
+            ],
+            "interval_m": [
+              252.0,
+              276.0
+            ],
+            "permitted_gears": [
+              "creep",
+              "approach"
+            ],
+            "source_status": "assumed",
+            "speed_caps_m_s": {
+              "empty_ladle": 0.3375,
+              "loaded": 0.3,
+              "no_load": 0.375
+            },
+            "zone_id": "slag_approach"
+          }
+        ],
+        "station_positions_m": {
+          "CC1": 81.0,
+          "CC2": 144.0,
+          "CC3": 234.0,
+          "LF1": 186.0,
+          "LF3": 36.0,
+          "RH1": 78.0,
+          "RH2": 51.0
+        },
+        "station_sides": {
+          "CC1": "E",
+          "CC2": "E",
+          "CC3": "E",
+          "LF1": "F",
+          "LF3": "E",
+          "RH1": "F",
+          "RH2": "F"
+        },
+        "waypoint_rules": {
+          "allow_lateral_detour": false,
+          "allow_passing": false,
+          "direction_change_requires_zero_speed": true,
+          "position_and_speed_continuous": true,
+          "station_stop_requires_service_reservation": true,
+          "stop_and_yield": "declared_parking_only"
+        }
+      }
+    },
+    "schema": "mcm-uestc.q2-motion-profile/1",
+    "source_status": "assumed",
+    "units": {
+      "acceleration": "m/s^2",
+      "capacity": "t",
+      "position": "m",
+      "speed": "m/s",
+      "time": "s"
+    }
+  },
+  "parent_schema": "mcm-uestc.dispatch/1",
+  "policy_parameters": {
+    "buffer_probability_candidates": [
+      0.75,
+      0.9,
+      0.95
+    ],
+    "buffer_rule": "max(0, Qp - mean); multiply by plan_mean_s for ratio strata",
+    "fallback_rule": "metric/device/route -> metric/device -> metric/pool -> no calibrated fit",
+    "fallbacks": {
+      "cast_duration/CC1/R0L0": "cast_duration/CC1",
+      "cast_duration/CC2/L0R0": "cast_duration/CC2",
+      "cast_duration/CC3/L0R0": "cast_duration/CC3",
+      "cast_duration/CC3/R0L0": "cast_duration/CC3",
+      "lf_duration/LF1/L0R0": "lf_duration/LF1",
+      "lf_duration/LF1/R0L0": "lf_duration/LF1",
+      "lf_duration/LF3/L0R0": "lf_duration/LF3",
+      "lf_duration/LF3/R0L0": "lf_duration/LF3",
+      "rh_duration/RH1/L0R0": "rh_duration/RH1",
+      "rh_duration/RH1/R0L0": "rh_duration/RH1",
+      "rh_duration/RH2/L0R0": "rh_duration/RH2",
+      "rh_duration/RH2/R0L0": "rh_duration/RH2",
+      "slag_duration/1#倒渣位/L0R0": "slag_duration/1#倒渣位",
+      "slag_duration/1#倒渣位/R0": "slag_duration/1#倒渣位",
+      "slag_duration/1#倒渣位/R0L0": "slag_duration/1#倒渣位",
+      "slag_duration/2#倒渣位/L0R0": "slag_duration/2#倒渣位",
+      "slag_duration/2#倒渣位/R0": "slag_duration/2#倒渣位",
+      "slag_duration/2#倒渣位/R0L0": "slag_duration/2#倒渣位",
+      "slag_duration/3#倒渣位/L0R0": "slag_duration/3#倒渣位",
+      "slag_duration/3#倒渣位/R0L0": "slag_duration/3#倒渣位",
+      "slag_duration/4#倒渣位": "slag_duration/pool",
+      "slag_duration/4#倒渣位/L0": "slag_duration/4#倒渣位",
+      "slag_duration/4#倒渣位/L0R0": "slag_duration/4#倒渣位",
+      "tap_duration/BOFA/L0R0": "tap_duration/BOFA",
+      "tap_duration/BOFA/R0L0": "tap_duration/BOFA",
+      "tap_duration/BOFB/L0R0": "tap_duration/BOFB",
+      "tap_duration/BOFB/R0L0": "tap_duration/BOFB",
+      "tap_duration/BOFC/L0R0": "tap_duration/BOFC",
+      "tap_duration/BOFC/R0L0": "tap_duration/BOFC"
+    },
+    "fit_source": "train_only",
+    "schema": "mcm-uestc.q2-policy-parameters/1",
+    "strata": {
+      "cast_duration/CC1": {
+        "basis": "paired_plan_ratio",
+        "empirical_positive_buffers": {
+          "p75": 0.039289497685707,
+          "p90": 0.15679606094781473,
+          "p95": 0.20454607782110923
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 0.032797616905446914,
+            "p90": 0.1534172029242551,
+            "p95": 0.20098057329654995
+          },
+          "empirical": {
+            "p75": 0.039289497685707,
+            "p90": 0.15679606094781473,
+            "p95": 0.20454607782110923
+          },
+          "gamma": {
+            "p75": 0.0640032022526622,
+            "p90": 0.12697542829022268,
+            "p95": 0.16581331473653704
+          },
+          "lognormal": {
+            "p75": 0.062253709974076754,
+            "p90": 0.12629438413882776,
+            "p95": 0.16645222831232798
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 1.0000000000000004,
+            "quantiles": {
+              "p10": 0.9113680573076689,
+              "p50": 0.9710622370596744,
+              "p75": 1.0327976169054474,
+              "p90": 1.1534172029242555,
+              "p95": 1.2009805732965504
+            },
+            "sd": 0.09486721156316498
+          },
+          "empirical": {
+            "mean": 1.0000000000000002,
+            "quantiles": {
+              "p10": 0.8997764049080814,
+              "p50": 0.9755479945504987,
+              "p75": 1.0392894976857072,
+              "p90": 1.156796060947815,
+              "p95": 1.2045460778211095
+            },
+            "sd": 0.10046704735125475
+          },
+          "gamma": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.877105322077254,
+              "p50": 0.9968248676543348,
+              "p75": 1.0640032022526622,
+              "p90": 1.1269754282902227,
+              "p95": 1.165813314736537
+            },
+            "sd": 0.09762580941510868
+          },
+          "lognormal": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.8796492275889293,
+              "p50": 0.9953612334451593,
+              "p75": 1.0622537099740768,
+              "p90": 1.1262943841388278,
+              "p95": 1.166452228312328
+            },
+            "sd": 0.09665655266994871
+          }
+        },
+        "training_mean_raw": 1.0292205608158624,
+        "training_n": 223
+      },
+      "cast_duration/CC1/L0": {
+        "basis": "paired_plan_ratio",
+        "empirical_positive_buffers": {
+          "p75": 0.0337871816573716,
+          "p90": 0.15901406700433585,
+          "p95": 0.21565326874261648
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 0.026206658240658598,
+            "p90": 0.1494951186829765,
+            "p95": 0.20467601457531615
+          },
+          "empirical": {
+            "p75": 0.0337871816573716,
+            "p90": 0.15901406700433585,
+            "p95": 0.21565326874261648
+          },
+          "gamma": {
+            "p75": 0.06399987746499058,
+            "p90": 0.1269685340918698,
+            "p95": 0.16580415935414483
+          },
+          "lognormal": {
+            "p75": 0.062129412032181364,
+            "p90": 0.1260242292114655,
+            "p95": 0.16608669217445504
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 1.0000000000000002,
+            "quantiles": {
+              "p10": 0.9122578226539583,
+              "p50": 0.9717991257642399,
+              "p75": 1.0262066582406588,
+              "p90": 1.1494951186829767,
+              "p95": 1.2046760145753164
+            },
+            "sd": 0.09251572648307083
+          },
+          "empirical": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.8988542783360607,
+              "p50": 0.96912834009688,
+              "p75": 1.0337871816573716,
+              "p90": 1.1590140670043358,
+              "p95": 1.2156532687426165
+            },
+            "sd": 0.10088871083500954
+          },
+          "gamma": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.8771117790437899,
+              "p50": 0.9968252077281766,
+              "p75": 1.0639998774649906,
+              "p90": 1.1269685340918698,
+              "p95": 1.1658041593541448
+            },
+            "sd": 0.09762057817251306
+          },
+          "lognormal": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.8798945832010961,
+              "p50": 0.9953806406779057,
+              "p75": 1.0621294120321814,
+              "p90": 1.1260242292114655,
+              "p95": 1.166086692174455
+            },
+            "sd": 0.09645273793732667
+          }
+        },
+        "training_mean_raw": 1.0198167698145464,
+        "training_n": 179
+      },
+      "cast_duration/CC1/R0": {
+        "basis": "paired_plan_ratio",
+        "empirical_positive_buffers": {
+          "p75": 0.0682808113012694,
+          "p90": 0.13715108220398187,
+          "p95": 0.1839749502947341
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 0.016410758905448408,
+            "p90": 0.13046304143984522,
+            "p95": 0.18867071480076125
+          },
+          "empirical": {
+            "p75": 0.0682808113012694,
+            "p90": 0.13715108220398187,
+            "p95": 0.1839749502947341
+          },
+          "gamma": {
+            "p75": 0.05746293846992656,
+            "p90": 0.11347749929767903,
+            "p95": 0.14791972041548807
+          },
+          "lognormal": {
+            "p75": 0.05621987725695421,
+            "p90": 0.11327312430879566,
+            "p95": 0.148880788368978
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 0.9999999999999997,
+            "quantiles": {
+              "p10": 0.9276683234633111,
+              "p50": 0.9663702345632021,
+              "p75": 1.016410758905448,
+              "p90": 1.1304630414398449,
+              "p95": 1.188670714800761
+            },
+            "sd": 0.08322274276703383
+          },
+          "empirical": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.9139164110020864,
+              "p50": 0.9557455422779206,
+              "p75": 1.0682808113012694,
+              "p90": 1.1371510822039819,
+              "p95": 1.183974950294734
+            },
+            "sd": 0.08903029301962631
+          },
+          "gamma": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.8897911045850423,
+              "p50": 0.997456592256973,
+              "p75": 1.0574629384699266,
+              "p90": 1.113477499297679,
+              "p95": 1.147919720415488
+            },
+            "sd": 0.08737096819834475
+          },
+          "lognormal": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.8915315833299045,
+              "p50": 0.9962520520398692,
+              "p75": 1.0562198772569542,
+              "p90": 1.1132731243087957,
+              "p95": 1.148880788368978
+            },
+            "sd": 0.08682308935109605
+          }
+        },
+        "training_mean_raw": 1.0796962663906953,
+        "training_n": 38
+      },
+      "cast_duration/CC2": {
+        "basis": "paired_plan_ratio",
+        "empirical_positive_buffers": {
+          "p75": 0.022091614705818552,
+          "p90": 0.09222472321176767,
+          "p95": 0.14256305450662943
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 0.021357715807791333,
+            "p90": 0.08831822650121546,
+            "p95": 0.1309195938662635
+          },
+          "empirical": {
+            "p75": 0.022091614705818552,
+            "p90": 0.09222472321176767,
+            "p95": 0.14256305450662943
+          },
+          "gamma": {
+            "p75": 0.05581869932935568,
+            "p90": 0.11010397429891428,
+            "p95": 0.14345742614634527
+          },
+          "lognormal": {
+            "p75": 0.05312487172179092,
+            "p90": 0.10666617554256286,
+            "p95": 0.14000176616661553
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.9297004585185277,
+              "p50": 0.9865164598833399,
+              "p75": 1.0213577158077913,
+              "p90": 1.0883182265012155,
+              "p95": 1.1309195938662635
+            },
+            "sd": 0.06800388420231814
+          },
+          "empirical": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.9247164466186851,
+              "p50": 0.9819876798722449,
+              "p75": 1.0220916147058186,
+              "p90": 1.0922247232117677,
+              "p95": 1.1425630545066294
+            },
+            "sd": 0.09279319370035906
+          },
+          "gamma": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.8929754100261142,
+              "p50": 0.9976037892167624,
+              "p75": 1.0558186993293557,
+              "p90": 1.1101039742989143,
+              "p95": 1.1434574261463453
+            },
+            "sd": 0.08480392283338621
+          },
+          "lognormal": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.8976050359228093,
+              "p50": 0.9966690184070337,
+              "p75": 1.053124871721791,
+              "p90": 1.1066661755425629,
+              "p95": 1.1400017661666155
+            },
+            "sd": 0.08182541141887659
+          }
+        },
+        "training_mean_raw": 1.016928350100104,
+        "training_n": 183
+      },
+      "cast_duration/CC2/L0": {
+        "basis": "paired_plan_ratio",
+        "empirical_positive_buffers": {
+          "p75": 0.02587069974781353,
+          "p90": 0.09057531090575655,
+          "p95": 0.11745980410064649
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 0.018830776500154855,
+            "p90": 0.0992411045869569,
+            "p95": 0.16885121987433938
+          },
+          "empirical": {
+            "p75": 0.02587069974781353,
+            "p90": 0.09057531090575655,
+            "p95": 0.11745980410064649
+          },
+          "gamma": {
+            "p75": 0.042442724450331815,
+            "p90": 0.08294979799882807,
+            "p95": 0.1076832130476868
+          },
+          "lognormal": {
+            "p75": 0.04165099771025771,
+            "p90": 0.08258142857050577,
+            "p95": 0.107841919678765
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 0.9999999999999999,
+            "quantiles": {
+              "p10": 0.9409332711660652,
+              "p50": 0.9781447394995977,
+              "p75": 1.0188307765001547,
+              "p90": 1.0992411045869568,
+              "p95": 1.1688512198743393
+            },
+            "sd": 0.0674622235718626
+          },
+          "empirical": {
+            "mean": 1.0000000000000002,
+            "quantiles": {
+              "p10": 0.9388227651969824,
+              "p50": 0.9800896999309157,
+              "p75": 1.0258706997478138,
+              "p90": 1.0905753109057568,
+              "p95": 1.1174598041006467
+            },
+            "sd": 0.06538214587462966
+          },
+          "gamma": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.9188085078961675,
+              "p50": 0.9986316179661369,
+              "p75": 1.0424427244503318,
+              "p90": 1.082949797998828,
+              "p95": 1.1076832130476868
+            },
+            "sd": 0.06407922235142918
+          },
+          "lognormal": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.9200022241985184,
+              "p50": 0.9979866342596351,
+              "p75": 1.0416509977102577,
+              "p90": 1.0825814285705058,
+              "p95": 1.107841919678765
+            },
+            "sd": 0.06355253837381085
+          }
+        },
+        "training_mean_raw": 1.0184663769729052,
+        "training_n": 40
+      },
+      "cast_duration/CC2/R0": {
+        "basis": "paired_plan_ratio",
+        "empirical_positive_buffers": {
+          "p75": 0.017152862606094388,
+          "p90": 0.10948961891598552,
+          "p95": 0.14125365202700513
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 0.01688933864713482,
+            "p90": 0.0850772534835319,
+            "p95": 0.1409818113368576
+          },
+          "empirical": {
+            "p75": 0.017152862606094388,
+            "p90": 0.10948961891598552,
+            "p95": 0.14125365202700513
+          },
+          "gamma": {
+            "p75": 0.06011290165703298,
+            "p90": 0.11893123348263224,
+            "p95": 0.15514191256712007
+          },
+          "lognormal": {
+            "p75": 0.05678670683256448,
+            "p90": 0.11448838324284627,
+            "p95": 0.15051664709204515
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 0.9999999999999997,
+            "quantiles": {
+              "p10": 0.9294309261395822,
+              "p50": 0.9893052529672166,
+              "p75": 1.0168893386471345,
+              "p90": 1.0850772534835316,
+              "p95": 1.1409818113368573
+            },
+            "sd": 0.06790435261151222
+          },
+          "empirical": {
+            "mean": 0.9999999999999998,
+            "quantiles": {
+              "p10": 0.9244071194178587,
+              "p50": 0.9828386130617731,
+              "p75": 1.0171528626060942,
+              "p90": 1.1094896189159853,
+              "p95": 1.141253652027005
+            },
+            "sd": 0.10154005583030278
+          },
+          "gamma": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.8846549223537785,
+              "p50": 0.9972095747840622,
+              "p75": 1.060112901657033,
+              "p90": 1.1189312334826322,
+              "p95": 1.15514191256712
+            },
+            "sd": 0.09151745894316803
+          },
+          "lognormal": {
+            "mean": 0.9999999999999998,
+            "quantiles": {
+              "p10": 0.8904177216138698,
+              "p50": 0.9961727796784153,
+              "p75": 1.0567867068325643,
+              "p90": 1.114488383242846,
+              "p95": 1.150516647092045
+            },
+            "sd": 0.08774171645036534
+          }
+        },
+        "training_mean_raw": 1.0237280128376645,
+        "training_n": 125
+      },
+      "cast_duration/CC3": {
+        "basis": "paired_plan_ratio",
+        "empirical_positive_buffers": {
+          "p75": 0.02980576708635796,
+          "p90": 0.0936288483136315,
+          "p95": 0.1302332465551207
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 0.026650432588996686,
+            "p90": 0.10623900180939039,
+            "p95": 0.1439003054409409
+          },
+          "empirical": {
+            "p75": 0.02980576708635796,
+            "p90": 0.0936288483136315,
+            "p95": 0.1302332465551207
+          },
+          "gamma": {
+            "p75": 0.04516681852843196,
+            "p90": 0.08843865057216993,
+            "p95": 0.11489383961257604
+          },
+          "lognormal": {
+            "p75": 0.04446144331395807,
+            "p90": 0.08842274980305964,
+            "p95": 0.11561193320179308
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 1.0000000000000002,
+            "quantiles": {
+              "p10": 0.9116410091775767,
+              "p50": 0.9883152338292189,
+              "p75": 1.026650432588997,
+              "p90": 1.1062390018093906,
+              "p95": 1.1439003054409411
+            },
+            "sd": 0.06984141596913844
+          },
+          "empirical": {
+            "mean": 0.9999999999999999,
+            "quantiles": {
+              "p10": 0.9174283832096536,
+              "p50": 0.991127616209875,
+              "p75": 1.0298057670863578,
+              "p90": 1.0936288483136314,
+              "p95": 1.1302332465551206
+            },
+            "sd": 0.06920318288358897
+          },
+          "gamma": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.9135575822549789,
+              "p50": 0.9984464873308884,
+              "p75": 1.045166818528432,
+              "p90": 1.08843865057217,
+              "p95": 1.114893839612576
+            },
+            "sd": 0.06827758094944408
+          },
+          "lognormal": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.914532753287107,
+              "p50": 0.9976964739427098,
+              "p75": 1.044461443313958,
+              "p90": 1.0884227498030596,
+              "p95": 1.115611933201793
+            },
+            "sd": 0.06799279259464563
+          }
+        },
+        "training_mean_raw": 1.0089518076633295,
+        "training_n": 200
+      },
+      "cast_duration/CC3/L0": {
+        "basis": "paired_plan_ratio",
+        "empirical_positive_buffers": {
+          "p75": 0.030142530960345137,
+          "p90": 0.0631288997233781,
+          "p95": 0.08002358378874974
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 0.025261945045836343,
+            "p90": 0.05448322992369714,
+            "p95": 0.11998177690785117
+          },
+          "empirical": {
+            "p75": 0.030142530960345137,
+            "p90": 0.0631288997233781,
+            "p95": 0.08002358378874974
+          },
+          "gamma": {
+            "p75": 0.03761906685988259,
+            "p90": 0.07328120019293327,
+            "p95": 0.09500724028515828
+          },
+          "lognormal": {
+            "p75": 0.03733820252103448,
+            "p90": 0.07368850861512777,
+            "p95": 0.09604914025660438
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 0.9999999999999999,
+            "quantiles": {
+              "p10": 0.9158775207649088,
+              "p50": 1.005803120827065,
+              "p75": 1.0252619450458362,
+              "p90": 1.054483229923697,
+              "p95": 1.119981776907851
+            },
+            "sd": 0.05496726393068962
+          },
+          "empirical": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.9231428652129922,
+              "p50": 1.0042035382270824,
+              "p75": 1.0301425309603451,
+              "p90": 1.063128899723378,
+              "p95": 1.0800235837887497
+            },
+            "sd": 0.05667234114918496
+          },
+          "gamma": {
+            "mean": 1.0000000000000002,
+            "quantiles": {
+              "p10": 0.9280941301688339,
+              "p50": 0.9989296274405289,
+              "p75": 1.0376190668598828,
+              "p90": 1.0732812001929335,
+              "p95": 1.0950072402851585
+            },
+            "sd": 0.0566721242491508
+          },
+          "lognormal": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.9283756490849179,
+              "p50": 0.9983918399609377,
+              "p75": 1.0373382025210345,
+              "p90": 1.0736885086151278,
+              "p95": 1.0960491402566044
+            },
+            "sd": 0.056781117316601785
+          }
+        },
+        "training_mean_raw": 0.9865036009065001,
+        "training_n": 106
+      },
+      "cast_duration/CC3/R0": {
+        "basis": "paired_plan_ratio",
+        "empirical_positive_buffers": {
+          "p75": 0.03319718991790199,
+          "p90": 0.07703162383918905,
+          "p95": 0.09641098884338595
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 0.028973381626425376,
+            "p90": 0.0652986675332271,
+            "p95": 0.08771899551106188
+          },
+          "empirical": {
+            "p75": 0.03319718991790199,
+            "p90": 0.07703162383918905,
+            "p95": 0.09641098884338595
+          },
+          "gamma": {
+            "p75": 0.03938808845740405,
+            "p90": 0.07681956733645334,
+            "p95": 0.09964241935244744
+          },
+          "lognormal": {
+            "p75": 0.03878315141616251,
+            "p90": 0.07665851260576528,
+            "p95": 0.09998274288638642
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 0.9999999999999999,
+            "quantiles": {
+              "p10": 0.9426226429097819,
+              "p50": 0.9841778921834279,
+              "p75": 1.0289733816264253,
+              "p90": 1.065298667533227,
+              "p95": 1.0877189955110618
+            },
+            "sd": 0.05220709742637137
+          },
+          "empirical": {
+            "mean": 0.9999999999999998,
+            "quantiles": {
+              "p10": 0.9329559113068546,
+              "p50": 0.9827536983048739,
+              "p75": 1.0331971899179018,
+              "p90": 1.0770316238391888,
+              "p95": 1.0964109888433857
+            },
+            "sd": 0.060292461594762085
+          },
+          "gamma": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.924690558338043,
+              "p50": 0.9988247351510287,
+              "p75": 1.039388088457404,
+              "p90": 1.0768195673364533,
+              "p95": 1.0996424193524474
+            },
+            "sd": 0.05938461475623482
+          },
+          "lognormal": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.9255728563942947,
+              "p50": 0.9982614361347186,
+              "p75": 1.0387831514161625,
+              "p90": 1.0766585126057653,
+              "p95": 1.0999827428863864
+            },
+            "sd": 0.059044192002621405
+          }
+        },
+        "training_mean_raw": 1.0587905238363249,
+        "training_n": 42
+      },
+      "cast_duration/pool": {
+        "basis": "paired_plan_ratio",
+        "empirical_positive_buffers": {
+          "p75": 0.026924110686301184,
+          "p90": 0.11928679611158621,
+          "p95": 0.17070334341225468
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 0.025558569275707654,
+            "p90": 0.11185750146563755,
+            "p95": 0.16898100902702562
+          },
+          "empirical": {
+            "p75": 0.026924110686301184,
+            "p90": 0.11928679611158621,
+            "p95": 0.17070334341225468
+          },
+          "gamma": {
+            "p75": 0.05618262345705172,
+            "p90": 0.11084996386591128,
+            "p95": 0.14444383682994566
+          },
+          "lognormal": {
+            "p75": 0.05440884316438699,
+            "p90": 0.10940124566827936,
+            "p95": 0.1436744178897582
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 1.0000000000000002,
+            "quantiles": {
+              "p10": 0.9169555994304417,
+              "p50": 0.9830842301656642,
+              "p75": 1.0255585692757079,
+              "p90": 1.1118575014656378,
+              "p95": 1.1689810090270258
+            },
+            "sd": 0.07930101175273142
+          },
+          "empirical": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.9131569969933638,
+              "p50": 0.9819373913810473,
+              "p75": 1.0269241106863012,
+              "p90": 1.1192867961115862,
+              "p95": 1.1707033434122547
+            },
+            "sd": 0.08945149654621093
+          },
+          "gamma": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.892270787502011,
+              "p50": 0.997571608693058,
+              "p75": 1.0561826234570517,
+              "p90": 1.1108499638659113,
+              "p95": 1.1444438368299457
+            },
+            "sd": 0.08537171744497692
+          },
+          "lognormal": {
+            "mean": 1.0,
+            "quantiles": {
+              "p10": 0.8950871690681484,
+              "p50": 0.9964992826620086,
+              "p75": 1.054408843164387,
+              "p90": 1.1094012456682794,
+              "p95": 1.1436744178897582
+            },
+            "sd": 0.08389500641390976
+          }
+        },
+        "training_mean_raw": 1.018819199113733,
+        "training_n": 606
+      },
+      "lf_duration/LF1": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 264.6041666666665,
+          "p90": 634.6041666666665,
+          "p95": 814.6041666666665
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 280.0,
+            "p90": 601.0,
+            "p95": 713.0
+          },
+          "empirical": {
+            "p75": 264.6041666666665,
+            "p90": 634.6041666666665,
+            "p95": 814.6041666666665
+          },
+          "gamma": {
+            "p75": 299.7127279393144,
+            "p90": 626.6597144901034,
+            "p95": 834.8776752266754
+          },
+          "lognormal": {
+            "p75": 286.0955421491685,
+            "p90": 631.8670902011104,
+            "p95": 861.0444660644548
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 2224.0,
+            "quantiles": {
+              "p10": 1752.0,
+              "p50": 2166.0,
+              "p75": 2504.0,
+              "p90": 2825.0,
+              "p95": 2937.0
+            },
+            "sd": 437.2367779590368
+          },
+          "empirical": {
+            "mean": 2239.3958333333335,
+            "quantiles": {
+              "p10": 1767.0,
+              "p50": 2161.0,
+              "p75": 2504.0,
+              "p90": 2874.0,
+              "p95": 3054.0
+            },
+            "sd": 493.91673301205896
+          },
+          "gamma": {
+            "mean": 2239.3958333333335,
+            "quantiles": {
+              "p10": 1655.9018407190729,
+              "p50": 2205.856137924348,
+              "p75": 2539.108561272648,
+              "p90": 2866.055547823437,
+              "p95": 3074.273508560009
+            },
+            "sd": 475.3305625160425
+          },
+          "lognormal": {
+            "mean": 2239.3958333333335,
+            "quantiles": {
+              "p10": 1670.26418256287,
+              "p50": 2189.9241128176873,
+              "p75": 2525.491375482502,
+              "p90": 2871.262923534444,
+              "p95": 3100.4402993977883
+            },
+            "sd": 478.68391412944766
+          }
+        },
+        "training_mean_raw": 2239.3958333333335,
+        "training_n": 192
+      },
+      "lf_duration/LF1/L0": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 208.0333333333333,
+          "p90": 483.0333333333333,
+          "p95": 846.0333333333333
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 220.3125,
+            "p90": 490.3125,
+            "p95": 766.3125
+          },
+          "empirical": {
+            "p75": 208.0333333333333,
+            "p90": 483.0333333333333,
+            "p95": 846.0333333333333
+          },
+          "gamma": {
+            "p75": 286.2042935387303,
+            "p90": 597.1055211129483,
+            "p95": 794.8569698045089
+          },
+          "lognormal": {
+            "p75": 271.674262017646,
+            "p90": 597.1058693934028,
+            "p95": 812.1499909724489
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 2170.6875,
+            "quantiles": {
+              "p10": 1706.0,
+              "p50": 2059.0,
+              "p75": 2391.0,
+              "p90": 2661.0,
+              "p95": 2937.0
+            },
+            "sd": 439.99598275864975
+          },
+          "empirical": {
+            "mean": 2182.9666666666667,
+            "quantiles": {
+              "p10": 1761.0,
+              "p50": 2061.0,
+              "p75": 2391.0,
+              "p90": 2666.0,
+              "p95": 3029.0
+            },
+            "sd": 480.3093921861431
+          },
+          "gamma": {
+            "mean": 2182.9666666666667,
+            "quantiles": {
+              "p10": 1626.1043185930039,
+              "p50": 2151.695373224681,
+              "p75": 2469.170960205397,
+              "p90": 2780.072187779615,
+              "p95": 2977.8236364711756
+            },
+            "sd": 453.12813764005637
+          },
+          "lognormal": {
+            "mean": 2182.966666666667,
+            "quantiles": {
+              "p10": 1643.5106464511578,
+              "p50": 2137.540364746639,
+              "p75": 2454.640928684313,
+              "p90": 2780.07253606007,
+              "p95": 2995.116657639116
+            },
+            "sd": 452.432536283981
+          }
+        },
+        "training_mean_raw": 2182.9666666666667,
+        "training_n": 150
+      },
+      "lf_duration/LF3": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 267.4224598930482,
+          "p90": 567.4224598930482,
+          "p95": 871.4224598930482
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 305.4044943820227,
+            "p90": 592.4044943820227,
+            "p95": 933.4044943820227
+          },
+          "empirical": {
+            "p75": 267.4224598930482,
+            "p90": 567.4224598930482,
+            "p95": 871.4224598930482
+          },
+          "gamma": {
+            "p75": 375.9340177952736,
+            "p90": 805.4602864607009,
+            "p95": 1082.7210521421957
+          },
+          "lognormal": {
+            "p75": 335.7956828152105,
+            "p90": 762.6158424586183,
+            "p95": 1050.3753689173718
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 2279.5955056179773,
+            "quantiles": {
+              "p10": 1614.0,
+              "p50": 2160.0,
+              "p75": 2585.0,
+              "p90": 2872.0,
+              "p95": 3213.0
+            },
+            "sd": 768.86110460996
+          },
+          "empirical": {
+            "mean": 2304.577540106952,
+            "quantiles": {
+              "p10": 1677.0,
+              "p50": 2196.0,
+              "p75": 2572.0,
+              "p90": 2872.0,
+              "p95": 3176.0
+            },
+            "sd": 780.0314871804082
+          },
+          "gamma": {
+            "mean": 2304.577540106952,
+            "quantiles": {
+              "p10": 1567.714672527096,
+              "p50": 2251.32904892837,
+              "p75": 2680.5115579022254,
+              "p90": 3110.0378265676527,
+              "p95": 3387.2985922491475
+            },
+            "sd": 608.0377376819838
+          },
+          "lognormal": {
+            "mean": 2304.577540106952,
+            "quantiles": {
+              "p10": 1629.2266970954713,
+              "p50": 2235.431355249002,
+              "p75": 2640.3732229221623,
+              "p90": 3067.19338256557,
+              "p95": 3354.9529090243236
+            },
+            "sd": 577.6203031272694
+          }
+        },
+        "training_mean_raw": 2304.577540106952,
+        "training_n": 187
+      },
+      "lf_duration/LF3/L0": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 173.45911949685524,
+          "p90": 516.4591194968552,
+          "p95": 932.4591194968552
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 273.2465753424658,
+            "p90": 590.2465753424658,
+            "p95": 954.2465753424658
+          },
+          "empirical": {
+            "p75": 173.45911949685524,
+            "p90": 516.4591194968552,
+            "p95": 932.4591194968552
+          },
+          "gamma": {
+            "p75": 378.54363631454453,
+            "p90": 813.4830443362985,
+            "p95": 1094.6868068320146
+          },
+          "lognormal": {
+            "p75": 333.07868311202583,
+            "p90": 757.5075506344283,
+            "p95": 1043.896202290835
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 2258.753424657534,
+            "quantiles": {
+              "p10": 1614.0,
+              "p50": 2137.0,
+              "p75": 2532.0,
+              "p90": 2849.0,
+              "p95": 3213.0
+            },
+            "sd": 811.9517038208534
+          },
+          "empirical": {
+            "mean": 2272.5408805031448,
+            "quantiles": {
+              "p10": 1677.0,
+              "p50": 2137.0,
+              "p75": 2446.0,
+              "p90": 2789.0,
+              "p95": 3205.0
+            },
+            "sd": 815.901259149038
+          },
+          "gamma": {
+            "mean": 2272.5408805031448,
+            "quantiles": {
+              "p10": 1529.9351381416025,
+              "p50": 2217.5299030398,
+              "p75": 2651.0845168176893,
+              "p90": 3086.023924839443,
+              "p95": 3367.2276873351593
+            },
+            "sd": 613.7720231824127
+          },
+          "lognormal": {
+            "mean": 2272.5408805031448,
+            "quantiles": {
+              "p10": 1602.271978142877,
+              "p50": 2203.397761101595,
+              "p75": 2605.6195636151706,
+              "p90": 3030.048431137573,
+              "p95": 3316.4370827939797
+            },
+            "sd": 573.7667105861618
+          }
+        },
+        "training_mean_raw": 2272.5408805031448,
+        "training_n": 159
+      },
+      "lf_duration/pool": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 260.4432717678101,
+          "p90": 602.4432717678101,
+          "p95": 904.4432717678101
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 295.0643274853801,
+            "p90": 596.0643274853801,
+            "p95": 776.0643274853801
+          },
+          "empirical": {
+            "p75": 260.4432717678101,
+            "p90": 602.4432717678101,
+            "p95": 904.4432717678101
+          },
+          "gamma": {
+            "p75": 339.65142858799027,
+            "p90": 719.3622154007853,
+            "p95": 962.9328300962611
+          },
+          "lognormal": {
+            "p75": 311.6026692257815,
+            "p90": 698.1208865189874,
+            "p95": 956.5723386305631
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 2252.93567251462,
+            "quantiles": {
+              "p10": 1641.0,
+              "p50": 2166.0,
+              "p75": 2548.0,
+              "p90": 2849.0,
+              "p95": 3029.0
+            },
+            "sd": 632.550131117364
+          },
+          "empirical": {
+            "mean": 2271.55672823219,
+            "quantiles": {
+              "p10": 1707.0,
+              "p50": 2175.0,
+              "p75": 2532.0,
+              "p90": 2874.0,
+              "p95": 3176.0
+            },
+            "sd": 651.8121553270079
+          },
+          "gamma": {
+            "mean": 2271.55672823219,
+            "quantiles": {
+              "p10": 1607.960671199309,
+              "p50": 2228.2475563220282,
+              "p75": 2611.20815682018,
+              "p90": 2990.9189436329752,
+              "p95": 3234.489558328451
+            },
+            "sd": 544.2116115467495
+          },
+          "lognormal": {
+            "mean": 2271.55672823219,
+            "quantiles": {
+              "p10": 1648.254293975382,
+              "p50": 2212.41584704056,
+              "p75": 2583.1593974579714,
+              "p90": 2969.6776147511773,
+              "p95": 3228.129066862753
+            },
+            "sd": 528.7278610338599
+          }
+        },
+        "training_mean_raw": 2271.55672823219,
+        "training_n": 379
+      },
+      "rh_duration/RH1": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 253.0,
+          "p90": 533.0,
+          "p95": 858.0
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 175.74305555555566,
+            "p90": 469.74305555555566,
+            "p95": 600.7430555555557
+          },
+          "empirical": {
+            "p75": 253.0,
+            "p90": 533.0,
+            "p95": 858.0
+          },
+          "gamma": {
+            "p75": 314.10565169124857,
+            "p90": 656.1542966750426,
+            "p95": 873.8764798445832
+          },
+          "lognormal": {
+            "p75": 306.3801807314512,
+            "p90": 678.3656579713233,
+            "p95": 925.3009981013829
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 2342.2569444444443,
+            "quantiles": {
+              "p10": 1845.0,
+              "p50": 2340.0,
+              "p75": 2518.0,
+              "p90": 2812.0,
+              "p95": 2943.0
+            },
+            "sd": 382.92624664345135
+          },
+          "empirical": {
+            "mean": 2367.0,
+            "quantiles": {
+              "p10": 1798.0,
+              "p50": 2343.0,
+              "p75": 2620.0,
+              "p90": 2900.0,
+              "p95": 3225.0
+            },
+            "sd": 499.8191165349034
+          },
+          "gamma": {
+            "mean": 2367.0,
+            "quantiles": {
+              "p10": 1755.6375234782195,
+              "p50": 2332.195703076874,
+              "p75": 2681.1056516912486,
+              "p90": 3023.1542966750426,
+              "p95": 3240.876479844583
+            },
+            "sd": 497.80050362562815
+          },
+          "lognormal": {
+            "mean": 2367.0,
+            "quantiles": {
+              "p10": 1756.9356965733982,
+              "p50": 2313.117297849063,
+              "p75": 2673.380180731451,
+              "p90": 3045.3656579713233,
+              "p95": 3292.300998101383
+            },
+            "sd": 513.8704613852515
+          }
+        },
+        "training_mean_raw": 2367.0,
+        "training_n": 134
+      },
+      "rh_duration/RH1/R0": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 239.7047619047621,
+          "p90": 537.7047619047621,
+          "p95": 613.7047619047621
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 181.2033898305085,
+            "p90": 522.2033898305085,
+            "p95": 626.2033898305085
+          },
+          "empirical": {
+            "p75": 239.7047619047621,
+            "p90": 537.7047619047621,
+            "p95": 613.7047619047621
+          },
+          "gamma": {
+            "p75": 262.466176766457,
+            "p90": 539.0618059958224,
+            "p95": 713.3873843439851
+          },
+          "lognormal": {
+            "p75": 254.446363507765,
+            "p90": 546.2328552538243,
+            "p95": 736.1940617261835
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 2331.7966101694915,
+            "quantiles": {
+              "p10": 1832.0,
+              "p50": 2323.0,
+              "p75": 2513.0,
+              "p90": 2854.0,
+              "p95": 2958.0
+            },
+            "sd": 383.33610422456735
+          },
+          "empirical": {
+            "mean": 2362.295238095238,
+            "quantiles": {
+              "p10": 1832.0,
+              "p50": 2344.0,
+              "p75": 2602.0,
+              "p90": 2900.0,
+              "p95": 2976.0
+            },
+            "sd": 414.9526633659159
+          },
+          "gamma": {
+            "mean": 2362.295238095238,
+            "quantiles": {
+              "p10": 1853.7717376969879,
+              "p50": 2338.5532243475577,
+              "p75": 2624.761414861695,
+              "p90": 2901.3570440910603,
+              "p95": 3075.682622439223
+            },
+            "sd": 410.5630232164644
+          },
+          "lognormal": {
+            "mean": 2362.295238095238,
+            "quantiles": {
+              "p10": 1861.3341362976887,
+              "p50": 2326.7450712382392,
+              "p75": 2616.741601603003,
+              "p90": 2908.528093349062,
+              "p95": 3098.4892998214214
+            },
+            "sd": 414.52256487321034
+          }
+        },
+        "training_mean_raw": 2362.295238095238,
+        "training_n": 105
+      },
+      "rh_duration/RH2": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 277.6484375,
+          "p90": 550.6484375,
+          "p95": 627.6484375
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 302.5394736842104,
+            "p90": 496.5394736842104,
+            "p95": 588.5394736842104
+          },
+          "empirical": {
+            "p75": 277.6484375,
+            "p90": 550.6484375,
+            "p95": 627.6484375
+          },
+          "gamma": {
+            "p75": 260.1088474550911,
+            "p90": 538.6058893308946,
+            "p95": 714.9791312289394
+          },
+          "lognormal": {
+            "p75": 249.9135260521939,
+            "p90": 543.3375371191746,
+            "p95": 735.9110785573139
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 2113.4605263157896,
+            "quantiles": {
+              "p10": 1650.0,
+              "p50": 2101.0,
+              "p75": 2416.0,
+              "p90": 2610.0,
+              "p95": 2702.0
+            },
+            "sd": 376.30670374567273
+          },
+          "empirical": {
+            "mean": 2138.3515625,
+            "quantiles": {
+              "p10": 1645.0,
+              "p50": 2074.0,
+              "p75": 2416.0,
+              "p90": 2689.0,
+              "p95": 2766.0
+            },
+            "sd": 418.48119338425306
+          },
+          "gamma": {
+            "mean": 2138.3515625,
+            "quantiles": {
+              "p10": 1633.2902657491238,
+              "p50": 2112.2788895164995,
+              "p75": 2398.460409955091,
+              "p90": 2676.9574518308946,
+              "p95": 2853.3306937289394
+            },
+            "sd": 409.42235528723666
+          },
+          "lognormal": {
+            "mean": 2138.3515625,
+            "quantiles": {
+              "p10": 1644.0884723472013,
+              "p50": 2099.7462073076904,
+              "p75": 2388.265088552194,
+              "p90": 2681.6890996191746,
+              "p95": 2874.262641057314
+            },
+            "sd": 411.92823855831233
+          }
+        },
+        "training_mean_raw": 2138.3515625,
+        "training_n": 128
+      },
+      "rh_duration/RH2/R0": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 227.56470588235288,
+          "p90": 433.5647058823529,
+          "p95": 502.5647058823529
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 240.98000000000002,
+            "p90": 405.98,
+            "p95": 463.98
+          },
+          "empirical": {
+            "p75": 227.56470588235288,
+            "p90": 433.5647058823529,
+            "p95": 502.5647058823529
+          },
+          "gamma": {
+            "p75": 238.99401442039334,
+            "p90": 488.78969884711205,
+            "p95": 645.8268748540481
+          },
+          "lognormal": {
+            "p75": 231.7477962381722,
+            "p90": 493.9674932735702,
+            "p95": 663.8971206788665
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 2238.02,
+            "quantiles": {
+              "p10": 1742.0,
+              "p50": 2308.0,
+              "p75": 2479.0,
+              "p90": 2644.0,
+              "p95": 2702.0
+            },
+            "sd": 326.97238354332006
+          },
+          "empirical": {
+            "mean": 2263.435294117647,
+            "quantiles": {
+              "p10": 1779.0,
+              "p50": 2294.0,
+              "p75": 2491.0,
+              "p90": 2697.0,
+              "p95": 2766.0
+            },
+            "sd": 377.63684538140524
+          },
+          "gamma": {
+            "mean": 2263.435294117647,
+            "quantiles": {
+              "p10": 1800.9065776426148,
+              "p50": 2243.016217836712,
+              "p75": 2502.4293085380405,
+              "p90": 2752.224992964759,
+              "p95": 2909.2621689716952
+            },
+            "sd": 372.6621489907795
+          },
+          "lognormal": {
+            "mean": 2263.4352941176476,
+            "quantiles": {
+              "p10": 1808.2914643348747,
+              "p50": 2232.977367590798,
+              "p75": 2495.18309035582,
+              "p90": 2757.4027873912178,
+              "p95": 2927.332414796514
+            },
+            "sd": 375.1172282574824
+          }
+        },
+        "training_mean_raw": 2263.435294117647,
+        "training_n": 85
+      },
+      "rh_duration/pool": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 262.7061068702292,
+          "p90": 533.7061068702292,
+          "p95": 702.7061068702292
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 231.2331081081079,
+            "p90": 472.2331081081079,
+            "p95": 619.2331081081079
+          },
+          "empirical": {
+            "p75": 262.7061068702292,
+            "p90": 533.7061068702292,
+            "p95": 702.7061068702292
+          },
+          "gamma": {
+            "p75": 295.6445041579814,
+            "p90": 616.7912515875919,
+            "p95": 821.0576888212927
+          },
+          "lognormal": {
+            "p75": 285.5034611855108,
+            "p90": 629.4753514665604,
+            "p95": 857.2162730823234
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 2224.766891891892,
+            "quantiles": {
+              "p10": 1694.0,
+              "p50": 2223.0,
+              "p75": 2456.0,
+              "p90": 2697.0,
+              "p95": 2844.0
+            },
+            "sd": 396.39512823398445
+          },
+          "empirical": {
+            "mean": 2255.293893129771,
+            "quantiles": {
+              "p10": 1679.0,
+              "p50": 2223.0,
+              "p75": 2518.0,
+              "p90": 2789.0,
+              "p95": 2958.0
+            },
+            "sd": 475.8059068097752
+          },
+          "gamma": {
+            "mean": 2255.293893129771,
+            "quantiles": {
+              "p10": 1680.0662646662727,
+              "p50": 2222.996515960854,
+              "p75": 2550.938397287752,
+              "p90": 2872.0851447173627,
+              "p95": 3076.3515819510635
+            },
+            "sd": 468.06867562236033
+          },
+          "lognormal": {
+            "mean": 2255.2938931297704,
+            "quantiles": {
+              "p10": 1687.708961588542,
+              "p50": 2206.5019615264873,
+              "p75": 2540.797354315281,
+              "p90": 2884.7692445963307,
+              "p95": 3112.5101662120937
+            },
+            "sd": 476.90039228853374
+          }
+        },
+        "training_mean_raw": 2255.293893129771,
+        "training_n": 262
+      },
+      "slag_duration/1#倒渣位": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 39.375,
+          "p90": 49.375,
+          "p95": 56.375
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 36.45833333333333,
+            "p90": 53.45833333333333,
+            "p95": 62.45833333333333
+          },
+          "empirical": {
+            "p75": 39.375,
+            "p90": 49.375,
+            "p95": 56.375
+          },
+          "gamma": {
+            "p75": 17.992890463841633,
+            "p90": 40.363692553650466,
+            "p95": 55.144363528036365
+          },
+          "lognormal": {
+            "p75": 16.19627411852747,
+            "p90": 40.13348789795258,
+            "p95": 57.09735292639016
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 87.54166666666667,
+            "quantiles": {
+              "p10": 55.0,
+              "p50": 68.0,
+              "p75": 124.0,
+              "p90": 141.0,
+              "p95": 150.0
+            },
+            "sd": 35.290436814462296
+          },
+          "empirical": {
+            "mean": 84.625,
+            "quantiles": {
+              "p10": 55.0,
+              "p50": 69.0,
+              "p75": 124.0,
+              "p90": 134.0,
+              "p95": 141.0
+            },
+            "sd": 32.36438049770148
+          },
+          "gamma": {
+            "mean": 84.625,
+            "quantiles": {
+              "p10": 48.884081487981796,
+              "p50": 81.04493413465816,
+              "p75": 102.61789046384163,
+              "p90": 124.98869255365047,
+              "p95": 139.76936352803637
+            },
+            "sd": 30.268166725313773
+          },
+          "lognormal": {
+            "mean": 84.625,
+            "quantiles": {
+              "p10": 50.75116390504119,
+              "p50": 79.57159334746345,
+              "p75": 100.82127411852747,
+              "p90": 124.75848789795258,
+              "p95": 141.72235292639016
+            },
+            "sd": 30.63478398009295
+          }
+        },
+        "training_mean_raw": 84.625,
+        "training_n": 64
+      },
+      "slag_duration/1#倒渣位/L0": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 39.152173913043484,
+          "p90": 49.152173913043484,
+          "p95": 51.152173913043484
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 33.3,
+            "p90": 40.3,
+            "p95": 41.3
+          },
+          "empirical": {
+            "p75": 39.152173913043484,
+            "p90": 49.152173913043484,
+            "p95": 51.152173913043484
+          },
+          "gamma": {
+            "p75": 16.320139371342734,
+            "p90": 36.05643723349681,
+            "p95": 48.99959817085747
+          },
+          "lognormal": {
+            "p75": 14.826240774822097,
+            "p90": 35.76745915604613,
+            "p95": 50.390004217895225
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 90.7,
+            "quantiles": {
+              "p10": 54.0,
+              "p50": 76.0,
+              "p75": 124.0,
+              "p90": 131.0,
+              "p95": 132.0
+            },
+            "sd": 32.286374835214936
+          },
+          "empirical": {
+            "mean": 82.84782608695652,
+            "quantiles": {
+              "p10": 55.0,
+              "p50": 70.0,
+              "p75": 122.0,
+              "p90": 132.0,
+              "p95": 134.0
+            },
+            "sd": 28.999225920181978
+          },
+          "gamma": {
+            "mean": 82.8478260869565,
+            "quantiles": {
+              "p10": 50.57556115138848,
+              "p50": 79.91473590364744,
+              "p75": 99.16796545829924,
+              "p90": 118.90426332045331,
+              "p95": 131.84742425781397
+            },
+            "sd": 27.089344785006393
+          },
+          "lognormal": {
+            "mean": 82.84782608695652,
+            "quantiles": {
+              "p10": 52.2341622057247,
+              "p50": 78.71321394442806,
+              "p75": 97.67406686177861,
+              "p90": 118.61528524300265,
+              "p95": 133.23783030485174
+            },
+            "sd": 27.203148957308542
+          }
+        },
+        "training_mean_raw": 82.84782608695652,
+        "training_n": 46
+      },
+      "slag_duration/2#倒渣位": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 36.24031007751938,
+          "p90": 43.24031007751938,
+          "p95": 49.24031007751938
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 38.565217391304344,
+            "p90": 40.565217391304344,
+            "p95": 52.565217391304344
+          },
+          "empirical": {
+            "p75": 36.24031007751938,
+            "p90": 43.24031007751938,
+            "p95": 49.24031007751938
+          },
+          "gamma": {
+            "p75": 19.953304217008892,
+            "p90": 45.32392144645678,
+            "p95": 62.185860192397115
+          },
+          "lognormal": {
+            "p75": 18.19052864195497,
+            "p90": 46.59589359964605,
+            "p95": 67.08618650121716
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 85.43478260869566,
+            "quantiles": {
+              "p10": 53.0,
+              "p50": 70.0,
+              "p75": 124.0,
+              "p90": 126.0,
+              "p95": 138.0
+            },
+            "sd": 32.01470597812487
+          },
+          "empirical": {
+            "mean": 88.75968992248062,
+            "quantiles": {
+              "p10": 53.0,
+              "p50": 70.0,
+              "p75": 125.0,
+              "p90": 132.0,
+              "p95": 138.0
+            },
+            "sd": 34.01499331833666
+          },
+          "gamma": {
+            "mean": 88.75968992248062,
+            "quantiles": {
+              "p10": 48.975766159918614,
+              "p50": 84.47245177329252,
+              "p75": 108.71299413948951,
+              "p90": 134.0836113689374,
+              "p95": 150.94555011487773
+            },
+            "sd": 33.94295651758606
+          },
+          "lognormal": {
+            "mean": 88.75968992248062,
+            "quantiles": {
+              "p10": 50.06957986128527,
+              "p50": 82.32373411618298,
+              "p75": 106.95021856443559,
+              "p90": 135.35558352212666,
+              "p95": 155.84587642369777
+            },
+            "sd": 35.77677654605893
+          }
+        },
+        "training_mean_raw": 88.75968992248062,
+        "training_n": 129
+      },
+      "slag_duration/2#倒渣位/L0": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 38.68181818181819,
+          "p90": 44.68181818181819,
+          "p95": 52.68181818181819
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 38.736842105263165,
+            "p90": 40.736842105263165,
+            "p95": 52.736842105263165
+          },
+          "empirical": {
+            "p75": 38.68181818181819,
+            "p90": 44.68181818181819,
+            "p95": 52.68181818181819
+          },
+          "gamma": {
+            "p75": 19.14490282381395,
+            "p90": 43.46909551910733,
+            "p95": 59.63234002184302
+          },
+          "lognormal": {
+            "p75": 17.35691095518922,
+            "p90": 44.28596683805229,
+            "p95": 63.671221593867855
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 85.26315789473684,
+            "quantiles": {
+              "p10": 51.0,
+              "p50": 72.0,
+              "p75": 124.0,
+              "p90": 126.0,
+              "p95": 138.0
+            },
+            "sd": 32.873508939991495
+          },
+          "empirical": {
+            "mean": 85.31818181818181,
+            "quantiles": {
+              "p10": 53.0,
+              "p50": 70.0,
+              "p75": 124.0,
+              "p90": 130.0,
+              "p95": 138.0
+            },
+            "sd": 33.236598616635035
+          },
+          "gamma": {
+            "mean": 85.31818181818181,
+            "quantiles": {
+              "p10": 47.1510109696836,
+              "p50": 81.21507504637626,
+              "p75": 104.46308464199576,
+              "p90": 128.78727733728914,
+              "p95": 144.95052184002483
+            },
+            "sd": 32.55524382190183
+          },
+          "lognormal": {
+            "mean": 85.31818181818183,
+            "quantiles": {
+              "p10": 48.47668053316513,
+              "p50": 79.26398242695798,
+              "p75": 102.67509277337105,
+              "p90": 129.60414865623412,
+              "p95": 148.98940341204968
+            },
+            "sd": 33.977032664162564
+          }
+        },
+        "training_mean_raw": 85.31818181818181,
+        "training_n": 88
+      },
+      "slag_duration/3#倒渣位": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 32.04697986577182,
+          "p90": 46.04697986577182,
+          "p95": 52.04697986577182
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 35.68181818181819,
+            "p90": 48.68181818181819,
+            "p95": 52.68181818181819
+          },
+          "empirical": {
+            "p75": 32.04697986577182,
+            "p90": 46.04697986577182,
+            "p95": 52.04697986577182
+          },
+          "gamma": {
+            "p75": 20.11716907545879,
+            "p90": 45.411705003540874,
+            "p95": 62.1738762924891
+          },
+          "lognormal": {
+            "p75": 18.480464195756923,
+            "p90": 46.857151879913516,
+            "p95": 67.21676290043862
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 90.31818181818181,
+            "quantiles": {
+              "p10": 54.0,
+              "p50": 75.0,
+              "p75": 126.0,
+              "p90": 139.0,
+              "p95": 143.0
+            },
+            "sd": 34.073965486378924
+          },
+          "empirical": {
+            "mean": 91.95302013422818,
+            "quantiles": {
+              "p10": 54.0,
+              "p50": 84.0,
+              "p75": 124.0,
+              "p90": 138.0,
+              "p95": 144.0
+            },
+            "sd": 33.8877609651004
+          },
+          "gamma": {
+            "mean": 91.95302013422818,
+            "quantiles": {
+              "p10": 51.91776062807008,
+              "p50": 87.7907933324628,
+              "p75": 112.07018920968697,
+              "p90": 137.36472513776906,
+              "p95": 154.12689642671728
+            },
+            "sd": 34.030300088469474
+          },
+          "lognormal": {
+            "mean": 91.95302013422818,
+            "quantiles": {
+              "p10": 52.85373054524376,
+              "p50": 85.65416177030968,
+              "p75": 110.4334843299851,
+              "p90": 138.8101720141417,
+              "p95": 159.1697830346668
+            },
+            "sd": 35.906966102911454
+          }
+        },
+        "training_mean_raw": 91.95302013422818,
+        "training_n": 149
+      },
+      "slag_duration/3#倒渣位/L0": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 32.46913580246914,
+          "p90": 43.46913580246914,
+          "p95": 50.46913580246914
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 29.441176470588232,
+            "p90": 41.44117647058823,
+            "p95": 46.44117647058823
+          },
+          "empirical": {
+            "p75": 32.46913580246914,
+            "p90": 43.46913580246914,
+            "p95": 50.46913580246914
+          },
+          "gamma": {
+            "p75": 20.0665635314743,
+            "p90": 45.209038980482006,
+            "p95": 61.855022329465925
+          },
+          "lognormal": {
+            "p75": 18.529635807223997,
+            "p90": 46.89658030181255,
+            "p95": 67.22959272462461
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 96.55882352941177,
+            "quantiles": {
+              "p10": 54.0,
+              "p50": 90.0,
+              "p75": 126.0,
+              "p90": 138.0,
+              "p95": 143.0
+            },
+            "sd": 32.73349712313114
+          },
+          "empirical": {
+            "mean": 92.53086419753086,
+            "quantiles": {
+              "p10": 54.0,
+              "p50": 87.0,
+              "p75": 125.0,
+              "p90": 136.0,
+              "p95": 143.0
+            },
+            "sd": 33.32077038063999
+          },
+          "gamma": {
+            "mean": 92.53086419753086,
+            "quantiles": {
+              "p10": 52.619710806013906,
+              "p50": 88.4289838995288,
+              "p75": 112.59742772900516,
+              "p90": 137.73990317801287,
+              "p95": 154.38588652699679
+            },
+            "sd": 33.8855052742206
+          },
+          "lognormal": {
+            "mean": 92.53086419753086,
+            "quantiles": {
+              "p10": 53.36398728678897,
+              "p50": 86.25777863875487,
+              "p75": 111.06050000475486,
+              "p90": 139.4274444993434,
+              "p95": 159.76045692215547
+            },
+            "sd": 35.925177111034564
+          }
+        },
+        "training_mean_raw": 92.53086419753086,
+        "training_n": 81
+      },
+      "slag_duration/3#倒渣位/R0": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 32.07692307692308,
+          "p90": 44.07692307692308,
+          "p95": 57.07692307692308
+        },
+        "positive_buffers_by_model": {
+          "empirical": {
+            "p75": 32.07692307692308,
+            "p90": 44.07692307692308,
+            "p95": 57.07692307692308
+          },
+          "gamma": {
+            "p75": 19.950186349353984,
+            "p90": 44.548495873662105,
+            "p95": 60.76478746978343
+          },
+          "lognormal": {
+            "p75": 18.502146177199222,
+            "p90": 46.005126443609626,
+            "p95": 65.53239997961948
+          }
+        },
+        "predictive_summary": {
+          "empirical": {
+            "mean": 95.92307692307692,
+            "quantiles": {
+              "p10": 56.0,
+              "p50": 87.0,
+              "p75": 128.0,
+              "p90": 140.0,
+              "p95": 153.0
+            },
+            "sd": 33.23605133708369
+          },
+          "gamma": {
+            "mean": 95.92307692307692,
+            "quantiles": {
+              "p10": 56.348526427914656,
+              "p50": 92.07004114213272,
+              "p75": 115.8732632724309,
+              "p90": 140.47157279673903,
+              "p95": 156.68786439286035
+            },
+            "sd": 33.42428191556957
+          },
+          "lognormal": {
+            "mean": 95.92307692307692,
+            "quantiles": {
+              "p10": 57.16101772825345,
+              "p50": 90.07086403927927,
+              "p75": 114.42522310027614,
+              "p90": 141.92820336668655,
+              "p95": 161.4554769026964
+            },
+            "sd": 35.13566911489411
+          }
+        },
+        "training_mean_raw": 95.92307692307692,
+        "training_n": 39
+      },
+      "slag_duration/pool": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 34.77325581395348,
+          "p90": 45.77325581395348,
+          "p95": 51.77325581395348
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 37.236842105263165,
+            "p90": 50.236842105263165,
+            "p95": 53.236842105263165
+          },
+          "empirical": {
+            "p75": 34.77325581395348,
+            "p90": 45.77325581395348,
+            "p95": 51.77325581395348
+          },
+          "gamma": {
+            "p75": 19.67298525223279,
+            "p90": 44.48700504906839,
+            "p95": 60.944366114090116
+          },
+          "lognormal": {
+            "p75": 17.946796056758572,
+            "p90": 45.52237217220906,
+            "p95": 65.31142940866297
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 87.76315789473684,
+            "quantiles": {
+              "p10": 54.0,
+              "p50": 72.0,
+              "p75": 125.0,
+              "p90": 138.0,
+              "p95": 141.0
+            },
+            "sd": 33.59466922822751
+          },
+          "empirical": {
+            "mean": 89.22674418604652,
+            "quantiles": {
+              "p10": 54.0,
+              "p50": 72.0,
+              "p75": 124.0,
+              "p90": 135.0,
+              "p95": 141.0
+            },
+            "sd": 33.72944309146151
+          },
+          "gamma": {
+            "mean": 89.22674418604652,
+            "quantiles": {
+              "p10": 50.05480828917862,
+              "p50": 85.1124606484803,
+              "p75": 108.89972943827931,
+              "p90": 133.7137492351149,
+              "p95": 150.17111030013663
+            },
+            "sd": 33.33124136911878
+          },
+          "lognormal": {
+            "mean": 89.22674418604652,
+            "quantiles": {
+              "p10": 51.24869108753474,
+              "p50": 83.10063681201555,
+              "p75": 107.17354024280509,
+              "p90": 134.74911635825558,
+              "p95": 154.5381735947095
+            },
+            "sd": 34.8867200700847
+          }
+        },
+        "training_mean_raw": 89.22674418604652,
+        "training_n": 344
+      },
+      "tap_duration/BOFA": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 23.201877934272318,
+          "p90": 110.20187793427232,
+          "p95": 133.20187793427232
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 19.030303030303003,
+            "p90": 94.030303030303,
+            "p95": 130.030303030303
+          },
+          "empirical": {
+            "p75": 23.201877934272318,
+            "p90": 110.20187793427232,
+            "p95": 133.20187793427232
+          },
+          "gamma": {
+            "p75": 49.04545589357997,
+            "p90": 103.80525855739984,
+            "p95": 138.91857433902175
+          },
+          "lognormal": {
+            "p75": 51.129034593601375,
+            "p90": 117.94610466823787,
+            "p95": 163.41511432725395
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 332.969696969697,
+            "quantiles": {
+              "p10": 273.0,
+              "p50": 318.0,
+              "p75": 352.0,
+              "p90": 427.0,
+              "p95": 463.0
+            },
+            "sd": 68.5116600774995
+          },
+          "empirical": {
+            "mean": 329.7981220657277,
+            "quantiles": {
+              "p10": 269.0,
+              "p50": 314.0,
+              "p75": 353.0,
+              "p90": 440.0,
+              "p95": 463.0
+            },
+            "sd": 71.2807159472808
+          },
+          "gamma": {
+            "mean": 329.79812206572774,
+            "quantiles": {
+              "p10": 233.9932497479301,
+              "p50": 323.58468669640075,
+              "p75": 378.8435779593077,
+              "p90": 433.6033806231276,
+              "p95": 468.7166964047495
+            },
+            "sd": 78.54108145947349
+          },
+          "lognormal": {
+            "mean": 329.7981220657277,
+            "quantiles": {
+              "p10": 226.30065724433675,
+              "p50": 318.3155867802482,
+              "p75": 380.92715665932906,
+              "p90": 447.74422673396555,
+              "p95": 493.2132363929816
+            },
+            "sd": 89.37885186771794
+          }
+        },
+        "training_mean_raw": 329.7981220657277,
+        "training_n": 213
+      },
+      "tap_duration/BOFA/L0": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 29.01162790697674,
+          "p90": 119.01162790697674,
+          "p95": 137.01162790697674
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 24.26190476190476,
+            "p90": 117.26190476190476,
+            "p95": 120.26190476190476
+          },
+          "empirical": {
+            "p75": 29.01162790697674,
+            "p90": 119.01162790697674,
+            "p95": 137.01162790697674
+          },
+          "gamma": {
+            "p75": 55.348318215488234,
+            "p90": 119.27770817308516,
+            "p95": 160.6720003006941
+          },
+          "lognormal": {
+            "p75": 58.981557555724635,
+            "p90": 142.86898000828228,
+            "p95": 201.57813618542548
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 342.73809523809524,
+            "quantiles": {
+              "p10": 265.0,
+              "p50": 337.0,
+              "p75": 367.0,
+              "p90": 460.0,
+              "p95": 463.0
+            },
+            "sd": 76.40277342379707
+          },
+          "empirical": {
+            "mean": 325.98837209302326,
+            "quantiles": {
+              "p10": 255.0,
+              "p50": 314.0,
+              "p75": 355.0,
+              "p90": 445.0,
+              "p95": 463.0
+            },
+            "sd": 75.03944608965969
+          },
+          "gamma": {
+            "mean": 325.98837209302326,
+            "quantiles": {
+              "p10": 217.3224440028085,
+              "p50": 317.7531487295147,
+              "p75": 381.3366903085115,
+              "p90": 445.2660802661084,
+              "p95": 486.66037239371735
+            },
+            "sd": 89.95159757750285
+          },
+          "lognormal": {
+            "mean": 325.98837209302326,
+            "quantiles": {
+              "p10": 203.9700099246582,
+              "p50": 309.2455961874837,
+              "p75": 384.9699296487479,
+              "p90": 468.85735210130554,
+              "p95": 527.5665082784487
+            },
+            "sd": 108.71242270900224
+          }
+        },
+        "training_mean_raw": 325.98837209302326,
+        "training_n": 86
+      },
+      "tap_duration/BOFA/R0": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 16.98969072164948,
+          "p90": 115.98969072164948,
+          "p95": 154.98969072164948
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 9.25,
+            "p90": 94.25,
+            "p95": 159.25
+          },
+          "empirical": {
+            "p75": 16.98969072164948,
+            "p90": 115.98969072164948,
+            "p95": 154.98969072164948
+          },
+          "gamma": {
+            "p75": 46.919996393326755,
+            "p90": 98.59967344315811,
+            "p95": 131.60625956678751
+          },
+          "lognormal": {
+            "p75": 46.72294704992362,
+            "p90": 105.05523149726588,
+            "p95": 144.1453920276623
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 332.75,
+            "quantiles": {
+              "p10": 280.0,
+              "p50": 312.0,
+              "p75": 342.0,
+              "p90": 427.0,
+              "p95": 492.0
+            },
+            "sd": 69.56237734656042
+          },
+          "empirical": {
+            "mean": 335.0103092783505,
+            "quantiles": {
+              "p10": 274.0,
+              "p50": 315.0,
+              "p75": 352.0,
+              "p90": 451.0,
+              "p95": 490.0
+            },
+            "sd": 73.11021123278393
+          },
+          "gamma": {
+            "mean": 335.0103092783505,
+            "quantiles": {
+              "p10": 243.53802480024612,
+              "p50": 329.47335787463254,
+              "p75": 381.9303056716773,
+              "p90": 433.60998272150863,
+              "p95": 466.61656884513803
+            },
+            "sd": 74.70981662712754
+          },
+          "lognormal": {
+            "mean": 335.0103092783505,
+            "quantiles": {
+              "p10": 241.41752759820585,
+              "p50": 325.9440670348469,
+              "p75": 381.73325632827414,
+              "p90": 440.0655407756164,
+              "p95": 479.1557013060128
+            },
+            "sd": 79.563612257375
+          }
+        },
+        "training_mean_raw": 335.0103092783505,
+        "training_n": 97
+      },
+      "tap_duration/BOFB": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 28.484978540772545,
+          "p90": 84.48497854077254,
+          "p95": 139.48497854077254
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 30.79047619047617,
+            "p90": 85.79047619047617,
+            "p95": 139.79047619047617
+          },
+          "empirical": {
+            "p75": 28.484978540772545,
+            "p90": 84.48497854077254,
+            "p95": 139.48497854077254
+          },
+          "gamma": {
+            "p75": 58.74289373859153,
+            "p90": 127.55263843462473,
+            "p95": 172.28328129125197
+          },
+          "lognormal": {
+            "p75": 71.48471743799524,
+            "p90": 189.5065679300577,
+            "p95": 276.1571942495806
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 329.20952380952383,
+            "quantiles": {
+              "p10": 261.0,
+              "p50": 325.0,
+              "p75": 360.0,
+              "p90": 415.0,
+              "p95": 469.0
+            },
+            "sd": 68.3721184106776
+          },
+          "empirical": {
+            "mean": 329.51502145922746,
+            "quantiles": {
+              "p10": 264.0,
+              "p50": 324.0,
+              "p75": 358.0,
+              "p90": 414.0,
+              "p95": 469.0
+            },
+            "sd": 67.36494030340326
+          },
+          "gamma": {
+            "mean": 329.51502145922746,
+            "quantiles": {
+              "p10": 213.9356701539745,
+              "p50": 320.22647955908036,
+              "p75": 388.257915197819,
+              "p90": 457.0676598938522,
+              "p95": 501.7983027504794
+            },
+            "sd": 96.07336114358108
+          },
+          "lognormal": {
+            "mean": 329.51502145922746,
+            "quantiles": {
+              "p10": 174.63474116994405,
+              "p50": 301.0634499978548,
+              "p75": 400.9997388972227,
+              "p90": 519.0215893892852,
+              "p95": 605.672215708808
+            },
+            "sd": 146.60199569087908
+          }
+        },
+        "training_mean_raw": 329.51502145922746,
+        "training_n": 233
+      },
+      "tap_duration/BOFB/L0": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 25.333333333333314,
+          "p90": 68.33333333333331,
+          "p95": 117.33333333333331
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 25.452380952380963,
+            "p90": 61.45238095238096,
+            "p95": 91.45238095238096
+          },
+          "empirical": {
+            "p75": 25.333333333333314,
+            "p90": 68.33333333333331,
+            "p95": 117.33333333333331
+          },
+          "gamma": {
+            "p75": 34.72704337232227,
+            "p90": 70.99301283267471,
+            "p95": 93.78613390779202
+          },
+          "lognormal": {
+            "p75": 33.6114545862996,
+            "p90": 71.5722382315231,
+            "p95": 96.15686566036612
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 330.54761904761904,
+            "quantiles": {
+              "p10": 259.0,
+              "p50": 335.0,
+              "p75": 356.0,
+              "p90": 392.0,
+              "p95": 422.0
+            },
+            "sd": 53.503093983055194
+          },
+          "empirical": {
+            "mean": 330.6666666666667,
+            "quantiles": {
+              "p10": 263.0,
+              "p50": 328.0,
+              "p75": 356.0,
+              "p90": 399.0,
+              "p95": 448.0
+            },
+            "sd": 55.12882308287493
+          },
+          "gamma": {
+            "mean": 330.6666666666667,
+            "quantiles": {
+              "p10": 263.46656393205745,
+              "p50": 327.7174757340022,
+              "p75": 365.39371003898896,
+              "p90": 401.6596794993414,
+              "p95": 424.4528005744587
+            },
+            "sd": 54.13221540043733
+          },
+          "lognormal": {
+            "mean": 330.6666666666667,
+            "quantiles": {
+              "p10": 264.6772181629805,
+              "p50": 326.28741070623084,
+              "p75": 364.2781212529663,
+              "p90": 402.2389048981898,
+              "p95": 426.8235323270328
+            },
+            "sd": 54.35728678015021
+          }
+        },
+        "training_mean_raw": 330.6666666666667,
+        "training_n": 114
+      },
+      "tap_duration/BOFB/R0": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 36.22352941176473,
+          "p90": 104.22352941176473,
+          "p95": 140.22352941176473
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 37.46875,
+            "p90": 132.46875,
+            "p95": 143.46875
+          },
+          "empirical": {
+            "p75": 36.22352941176473,
+            "p90": 104.22352941176473,
+            "p95": 140.22352941176473
+          },
+          "gamma": {
+            "p75": 67.4442342883703,
+            "p90": 149.64631165926795,
+            "p95": 203.66929335604755
+          },
+          "lognormal": {
+            "p75": 79.85709276758143,
+            "p90": 230.30410839431272,
+            "p95": 345.32052673199985
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 336.53125,
+            "quantiles": {
+              "p10": 259.0,
+              "p50": 320.0,
+              "p75": 374.0,
+              "p90": 469.0,
+              "p95": 480.0
+            },
+            "sd": 83.94243477985871
+          },
+          "empirical": {
+            "mean": 334.77647058823527,
+            "quantiles": {
+              "p10": 264.0,
+              "p50": 326.0,
+              "p75": 371.0,
+              "p90": 439.0,
+              "p95": 475.0
+            },
+            "sd": 73.85030590092975
+          },
+          "gamma": {
+            "mean": 334.77647058823527,
+            "quantiles": {
+              "p10": 201.24085980337367,
+              "p50": 322.2920314602239,
+              "p75": 402.22070487660557,
+              "p90": 484.4227822475032,
+              "p95": 538.4457639442828
+            },
+            "sd": 112.36671208650475
+          },
+          "lognormal": {
+            "mean": 334.77647058823527,
+            "quantiles": {
+              "p10": 152.9185438970507,
+              "p50": 293.95798904352574,
+              "p75": 414.6335633558167,
+              "p90": 565.080578982548,
+              "p95": 680.0969973202351
+            },
+            "sd": 182.44489382269873
+          }
+        },
+        "training_mean_raw": 334.77647058823527,
+        "training_n": 85
+      },
+      "tap_duration/BOFC": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 41.35294117647061,
+          "p90": 84.35294117647061,
+          "p95": 129.3529411764706
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 31.391304347826065,
+            "p90": 79.39130434782606,
+            "p95": 115.39130434782606
+          },
+          "empirical": {
+            "p75": 41.35294117647061,
+            "p90": 84.35294117647061,
+            "p95": 129.3529411764706
+          },
+          "gamma": {
+            "p75": 63.71058286972993,
+            "p90": 138.19970388281126,
+            "p95": 186.59692926818263
+          },
+          "lognormal": {
+            "p75": 70.29205342168683,
+            "p90": 175.83183374727446,
+            "p95": 251.0091213709569
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 348.60869565217394,
+            "quantiles": {
+              "p10": 267.0,
+              "p50": 356.0,
+              "p75": 380.0,
+              "p90": 428.0,
+              "p95": 464.0
+            },
+            "sd": 79.88414933946521
+          },
+          "empirical": {
+            "mean": 359.6470588235294,
+            "quantiles": {
+              "p10": 268.0,
+              "p50": 364.0,
+              "p75": 401.0,
+              "p90": 444.0,
+              "p95": 489.0
+            },
+            "sd": 89.41216956326535
+          },
+          "gamma": {
+            "mean": 359.6470588235294,
+            "quantiles": {
+              "p10": 234.3298222647574,
+              "p50": 349.65271918407154,
+              "p75": 423.3576416932593,
+              "p90": 497.84676270634066,
+              "p95": 546.243988091712
+            },
+            "sd": 104.10948150863038
+          },
+          "lognormal": {
+            "mean": 359.6470588235294,
+            "quantiles": {
+              "p10": 211.944645849119,
+              "p50": 336.88556550496116,
+              "p75": 429.9391122452162,
+              "p90": 535.4788925708039,
+              "p95": 610.6561801944863
+            },
+            "sd": 134.42041038173272
+          }
+        },
+        "training_mean_raw": 359.6470588235294,
+        "training_n": 221
+      },
+      "tap_duration/BOFC/L0": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 44.40880503144655,
+          "p90": 90.40880503144655,
+          "p95": 171.40880503144655
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 36.19230769230768,
+            "p90": 74.19230769230768,
+            "p95": 127.19230769230768
+          },
+          "empirical": {
+            "p75": 44.40880503144655,
+            "p90": 90.40880503144655,
+            "p95": 171.40880503144655
+          },
+          "gamma": {
+            "p75": 66.8855437521645,
+            "p90": 146.47105925093518,
+            "p95": 198.43233017006213
+          },
+          "lognormal": {
+            "p75": 73.92476865550282,
+            "p90": 190.5669405149256,
+            "p95": 274.98629818585584
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 341.8076923076923,
+            "quantiles": {
+              "p10": 265.0,
+              "p50": 341.0,
+              "p75": 378.0,
+              "p90": 416.0,
+              "p95": 469.0
+            },
+            "sd": 82.67313731276982
+          },
+          "empirical": {
+            "mean": 356.59119496855345,
+            "quantiles": {
+              "p10": 265.0,
+              "p50": 356.0,
+              "p75": 401.0,
+              "p90": 447.0,
+              "p95": 528.0
+            },
+            "sd": 94.5353558589435
+          },
+          "gamma": {
+            "mean": 356.59119496855345,
+            "quantiles": {
+              "p10": 224.668503596095,
+              "p50": 345.3096811355416,
+              "p75": 423.47673872071795,
+              "p90": 503.06225421948864,
+              "p95": 555.0235251386156
+            },
+            "sd": 110.18056488307309
+          },
+          "lognormal": {
+            "mean": 356.5911949685535,
+            "quantiles": {
+              "p10": 198.83274029682988,
+              "p50": 329.83776535424846,
+              "p75": 430.5159636240563,
+              "p90": 547.1581354834791,
+              "p95": 631.5774931544094
+            },
+            "sd": 146.50679461674306
+          }
+        },
+        "training_mean_raw": 356.59119496855345,
+        "training_n": 159
+      },
+      "tap_duration/BOFC/R0": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 23.136363636363626,
+          "p90": 70.13636363636363,
+          "p95": 78.13636363636363
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 23.4736842105263,
+            "p90": 74.4736842105263,
+            "p95": 94.4736842105263
+          },
+          "empirical": {
+            "p75": 23.136363636363626,
+            "p90": 70.13636363636363,
+            "p95": 78.13636363636363
+          },
+          "gamma": {
+            "p75": 56.66899034984215,
+            "p90": 120.56456127117968,
+            "p95": 161.65275916846088
+          },
+          "lognormal": {
+            "p75": 58.739441358288445,
+            "p90": 136.81988896736112,
+            "p95": 190.25652815662693
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 369.5263157894737,
+            "quantiles": {
+              "p10": 345.0,
+              "p50": 377.0,
+              "p75": 393.0,
+              "p90": 444.0,
+              "p95": 464.0
+            },
+            "sd": 68.36270791736541
+          },
+          "empirical": {
+            "mean": 365.8636363636364,
+            "quantiles": {
+              "p10": 277.0,
+              "p50": 373.0,
+              "p75": 389.0,
+              "p90": 436.0,
+              "p95": 444.0
+            },
+            "sd": 77.6084551711319
+          },
+          "gamma": {
+            "mean": 365.8636363636364,
+            "quantiles": {
+              "p10": 255.00693212164475,
+              "p50": 358.3256926363404,
+              "p75": 422.5326267134785,
+              "p90": 486.42819763481606,
+              "p95": 527.5163955320972
+            },
+            "sd": 91.13071403908275
+          },
+          "lognormal": {
+            "mean": 365.8636363636364,
+            "quantiles": {
+              "p10": 246.46927844698993,
+              "p50": 351.9887012043428,
+              "p75": 424.6030777219248,
+              "p90": 502.6835253309975,
+              "p95": 556.1201645202633
+            },
+            "sd": 103.73458270861238
+          }
+        },
+        "training_mean_raw": 365.8636363636364,
+        "training_n": 44
+      },
+      "tap_duration/pool": {
+        "basis": "historical_seconds",
+        "empirical_positive_buffers": {
+          "p75": 36.41079460269867,
+          "p90": 96.41079460269867,
+          "p95": 133.41079460269867
+        },
+        "positive_buffers_by_model": {
+          "block_pair": {
+            "p75": 34.06083650190112,
+            "p90": 89.06083650190112,
+            "p95": 127.06083650190112
+          },
+          "empirical": {
+            "p75": 36.41079460269867,
+            "p90": 96.41079460269867,
+            "p95": 133.41079460269867
+          },
+          "gamma": {
+            "p75": 58.03062537756131,
+            "p90": 125.17927291330932,
+            "p95": 168.68022918336413
+          },
+          "lognormal": {
+            "p75": 66.33190696629771,
+            "p90": 165.87950347590976,
+            "p95": 236.7778435106198
+          }
+        },
+        "predictive_summary": {
+          "block_pair": {
+            "mean": 336.9391634980989,
+            "quantiles": {
+              "p10": 267.0,
+              "p50": 333.0,
+              "p75": 371.0,
+              "p90": 426.0,
+              "p95": 464.0
+            },
+            "sd": 73.15746927229564
+          },
+          "empirical": {
+            "mean": 339.5892053973013,
+            "quantiles": {
+              "p10": 266.0,
+              "p50": 333.0,
+              "p75": 376.0,
+              "p90": 436.0,
+              "p95": 473.0
+            },
+            "sd": 77.82051238166335
+          },
+          "gamma": {
+            "mean": 339.5892053973013,
+            "quantiles": {
+              "p10": 225.62572890027047,
+              "p50": 330.885622276241,
+              "p75": 397.61983077486263,
+              "p90": 464.76847831061065,
+              "p95": 508.26943458066546
+            },
+            "sd": 94.38681098493578
+          },
+          "lognormal": {
+            "mean": 339.5892053973013,
+            "quantiles": {
+              "p10": 200.22754243150072,
+              "p50": 318.13323836673646,
+              "p75": 405.92111236359904,
+              "p90": 505.4687088732111,
+              "p95": 576.3670489079211
+            },
+            "sd": 126.80611815091929
+          }
+        },
+        "training_mean_raw": 339.5892053973013,
+        "training_n": 667
+      }
+    }
+  },
+  "schema": "mcm-uestc.q2-parameter-pack/1",
+  "sidecar_protocol": {
+    "block_draw": "Choose donor using a frozen group key and map events to fixed ranks before dispatch.",
+    "exposure": "Policy receives training prediction parameters and visible simulator notices only.",
+    "independent_seed_test_vector_hex": "d7c58bd4a81f16baf5c14ee4f3611064",
+    "no_draws_created": true,
+    "seed_encoding": "First 16 SHA-256 bytes as a big-endian integer of compact UTF-8 JSON [master_seed,replicate_id,heat_id,process_stage,event_id,device_id]",
+    "stable_draw_key_fields": [
+      "replicate_id",
+      "heat_id",
+      "process_stage",
+      "event_id",
+      "device_id"
+    ]
+  },
+  "status": "conditional_pending_approval",
+  "window_manifest_schema": "mcm-uestc.q2-window-manifest/1"
+}
