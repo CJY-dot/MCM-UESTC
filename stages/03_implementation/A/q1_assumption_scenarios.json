@@ -1,0 +1,31 @@
+{
+  "schema": "mcm-uestc.q1-assumptions/1",
+  "unit": "normalized",
+  "rail": [0, 100],
+  "stations": {"LF3": 12, "RH2": 17, "RH1": 26, "CC1": 27, "CC2": 48, "LF1": 62, "CC3": 78},
+  "station_sides": {"LF3": "E", "RH2": "F", "RH1": "F", "CC1": "E", "CC2": "E", "LF1": "F", "CC3": "E"},
+  "interface_points": {"BOF_B": 43, "SLAG:2#": 86, "SLAG:3#": 89},
+  "parking": [8, 22, 34, 50, 66, 75, 82, 94],
+  "crane_order": ["2#150", "4#450", "3#450", "5#450", "1#150"],
+  "dispatch": ["4#450", "3#450", "5#450"],
+  "layouts": {
+    "dispersed": [0, 26, 54, 76, 100],
+    "crowded": [0, 49, 55, 61, 100]
+  },
+  "authorized_ef_legs": [["BOF_B", "LF1"], ["LF1", "CC3"], ["CC3", "SLAG:2#"], ["CC3", "SLAG:3#"]],
+  "assumed_mass_upper_t": {"loaded": 450, "empty_ladle": 150},
+  "capacity": {"bof_receipt": 1, "refine_position": 1, "caster_seat": 1, "caster_supply": 1, "caster_return": 1, "slag_position": 1},
+  "lookahead_s": 300,
+  "planning_margin_s": 3600,
+  "seat_lead_s": 120,
+  "caster_preparation_s": 120,
+  "pickup_operation_s": 0,
+  "drop_operation_s": 0,
+  "transfer_operation_s": 0,
+  "scenarios": {
+    "optimistic": {"speed": 0.13, "distance_factor": 0.85, "gap": 3, "prep_s": 60, "max_pick_wait_s": 1200, "lf_s": 1876, "rh_s": 1721.4, "slag_s": {"SLAG:2#": 57, "SLAG:3#": 60}},
+    "base": {"speed": 0.10, "distance_factor": 1.0, "gap": 4, "prep_s": 120, "max_pick_wait_s": 900, "lf_s": 2158, "rh_s": 2336.0, "slag_s": {"SLAG:2#": 70, "SLAG:3#": 82}},
+    "conservative": {"speed": 0.075, "distance_factor": 1.15, "gap": 6, "prep_s": 180, "max_pick_wait_s": 600, "lf_s": 2504, "rh_s": 2854.0, "slag_s": {"SLAG:2#": 124, "SLAG:3#": 124}}
+  },
+  "sensitivity": ["speed", "distance_factor", "gap", "prep_s", "max_pick_wait_s"]
+}
