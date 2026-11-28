@@ -10,6 +10,7 @@ sys.path.insert(0, str(ROOT / "code/dispatch"))
 
 from q1_scenario import CASE_SCHEMA, CONFIG, build_case, online_replay_boundary, project_batch, read_json
 from q1_scheduler import add_segment, capacity_conflict, continuous_gaps, solve, verify_trace
+from q1_diagnostic import terminal_bound
 from q1_builder import build_policy_view
 
 B_FIXTURE = ROOT / "stages/03_implementation/B/fixtures/q1_synthetic_fixture.json"
@@ -88,6 +89,14 @@ class SafetyTests(unittest.TestCase):
         # A retained holder keeps consuming capacity until the horizon.
         actual = capacity_conflict({"seat": 1}, [occupancy(0, None), occupancy(5, 10)], 10)
         self.assertEqual((actual["time_s"], actual["demand"]), (5, 2))
+
+    def test_terminal_arrival_cannot_hide_retained_holder(self):
+        def occupancy(start, end):
+            return {"resource_id": "seat", "start_s": start, "end_s": end, "demand": 1}
+
+        simultaneous = capacity_conflict({"seat": 1}, [occupancy(0, None), occupancy(10, None)], 10)
+        self.assertEqual((simultaneous["time_s"], simultaneous["demand"]), (10, 2))
+        self.assertIsNone(capacity_conflict({"seat": 1}, [occupancy(0, 10), occupancy(10, None)], 10))
 
     def test_empty_yield_parking_clears_the_route(self):
         case = scenario([task()])
@@ -204,6 +213,38 @@ class DispatchTests(unittest.TestCase):
         self.assertEqual(diagnostic["metrics"]["late_count"], 1)
         self.assertEqual(diagnostic["metrics"]["late_total_s"], 1)
         self.assertEqual(diagnostic["outcome"], "unresolved")
+
+    def test_cast_duration_and_preparation_are_checked_in_returned_trace(self):
+        order = task(destination="CC:A", service="cast", target=20)
+        case = scenario([order], middle=70)
+        case["positions"]["CC:A"] = 60
+        case["capacity"].update({"seat/CC:A": 1, "supply/CC:A": 1, "return/CC:A": 1})
+        case["caster_preparation_s"] = 3
+        witness = solve(case, "fcfs")
+        row = witness["tasks"][0]
+        self.assertEqual((row["drop_complete_s"], row["service_start_s"], row["service_end_s"]), (10, 13, 15))
+        changed = copy.deepcopy(witness)
+        changed["tasks"][0]["service_start_s"] -= 1
+        with self.assertRaisesRegex(ValueError, "Casting timing"):
+            verify_trace(case, changed)
+
+    def test_optional_decision_audit_does_not_change_committed_result(self):
+        case = scenario([task()], middle=70)
+        journal = []
+        self.assertEqual(solve(case, "fcfs"), solve(case, "fcfs", audit=journal))
+        first = next(s for s in journal if s["selected"])
+        self.assertEqual(first["selected"]["drop_complete_s"], 10)
+        self.assertEqual(first["tasks"][0]["attempts"][0]["direct_loaded_travel_s"], 10)
+
+    def test_relaxed_bound_counts_retained_resource_stock(self):
+        first = task("T1", "L1", destination="SLAG:A", service="slag")
+        second = task("T2", "L2", destination="SLAG:A", service="slag")
+        case = scenario([first, second], middle=70)
+        case["capacity"]["slag/SLAG:A"] = 1
+        proof = terminal_bound(case)
+        self.assertEqual(proof["gates"]["external"]["upper"], 2)
+        self.assertEqual(proof["gates"]["terminal_stock"]["upper"], 1)
+        self.assertEqual(proof["maximum_subsets"], [["T1"], ["T2"]])
 
 
 class DataBoundaryTests(unittest.TestCase):

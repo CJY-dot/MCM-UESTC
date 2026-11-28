@@ -103,7 +103,9 @@ def capacity_conflict(capacity, bookings, horizon):
         if resource not in capacity or begin < 0 or begin > end or end > horizon:
             raise ValueError("Invalid resource booking")
         deltas[resource][begin] += booking["demand"]
-        deltas[resource][end] -= booking["demand"]
+        # A retained holder remains present in the terminal state, including at H.
+        if booking["end_s"] is not None:
+            deltas[resource][end] -= booking["demand"]
     for resource, events in sorted(deltas.items()):
         use = 0
         # Resolve negligible numerical differences between the same event endpoints.
@@ -209,7 +211,7 @@ def make_reservations(case, task, bookings, completed, lifted, unloading, droppe
 
 
 def candidate(case, task, crane, paths, bookings, completed, departure, release, drop_floor,
-              enforce, *, clear=False, pause=None, slot=None):
+              enforce, *, clear=False, pause=None, slot=None, timing=None):
     """Construct and check one complete spatiotemporal reservation."""
     new_paths = {k: list(v) for k, v in paths.items()}
     reconnect = None
@@ -238,6 +240,9 @@ def candidate(case, task, crane, paths, bookings, completed, departure, release,
     approach = move_time + abs(x - before) / speed
     entry = source_entry(task, completed) if not task["predecessor"] else None
     pick = max(approach, release, task["pickup_window"]["hard_earliest_s"] or 0, entry or 0)
+    if timing is not None:
+        timing["pickup_start_s"] = pick
+        timing["direct_loaded_travel_s"] = abs(y - x) / speed
     pickup_limit = task["pickup_window"]["hard_latest_s"]
     if pick > min(release + params["max_pick_wait_s"],
                   inf if pickup_limit is None else pickup_limit) + EPS:
@@ -263,6 +268,8 @@ def candidate(case, task, crane, paths, bookings, completed, departure, release,
         enroute_wait, drop_wait = drop_wait, 0
         arrival = unload
     dropped = unload + drop_s
+    if timing is not None:
+        timing["drop_complete_s"] = dropped
     delivery_limit = task["delivery_window"]["hard_latest_s"]
     if delivery_limit is not None and dropped > delivery_limit + EPS:
         return None, "hard_delivery_window"
@@ -309,17 +316,33 @@ def candidate(case, task, crane, paths, bookings, completed, departure, release,
     }, None
 
 
-def propose(case, task, paths, books, complete, now, release, enforce):
+def propose(case, task, paths, books, complete, now, release, enforce, *, attempts=None, unlock_pad_s=0):
     rejections = Counter()
     choices = []
     _, boundary = case["rail"]
     phases = {s["t1_s"] for segments in paths.values() for s in segments if s["t1_s"] > now}
     # Include finite crossings used for waiting or clearing after a locked reservation.
     unlocks = sorted({b["end_s"] for b in books if b["end_s"] is not None and b["end_s"] > now})
+    if unlock_pad_s:
+        unlocks = sorted(set(unlocks) | {t + unlock_pad_s for t in unlocks})
     end = case["horizon_s"]
     release_end = release + case["params"]["max_pick_wait_s"]
     max_service = boundary / case["params"]["speed"] + 1
     drop_times = sorted({0, *(x for x in unlocks if x < min(end, release_end + max_service))})
+
+    def try_candidate(crane, start, floor, *, clear, pause=None, slot=None):
+        timing = {} if attempts is not None else None
+        option, reason = candidate(case, task, crane, paths, books, complete, start,
+                                   release, floor, enforce, clear=clear, pause=pause, slot=slot,
+                                   timing=timing)
+        if attempts is not None:
+            attempts.append({
+                "crane_id": crane, "departure_s": start, "drop_floor_s": floor,
+                "clear": clear, "pause_position": pause, "idle_slot_index": slot,
+                "rejection": reason, **timing,
+            })
+        return option, reason
+
     for crane in task["eligible"]:
         locked = len(case["locked_trajectories"].get(crane, []))
         for slot, segment in enumerate(paths[crane]):
@@ -331,8 +354,7 @@ def propose(case, task, paths, books, complete, now, release, enforce):
             for floor in drop_times:
                 found = False
                 for clear in (False, True):
-                    option, reason = candidate(case, task, crane, paths, books, complete, start,
-                                               release, floor, enforce, slot=slot, clear=clear)
+                    option, reason = try_candidate(crane, start, floor, slot=slot, clear=clear)
                     if option:
                         choices.append(option)
                         found = True
@@ -354,8 +376,7 @@ def propose(case, task, paths, books, complete, now, release, enforce):
             accepted = False
             for floor in drop_times:
                 for clear in (False, True):
-                    option, reason = candidate(case, task, crane, paths, books, complete, start,
-                                               release, floor, enforce, clear=clear)
+                    option, reason = try_candidate(crane, start, floor, clear=clear)
                     if option:
                         choices.append(option)
                         accepted = True
@@ -365,8 +386,7 @@ def propose(case, task, paths, books, complete, now, release, enforce):
                         # A later receipt can wait at a declared intermediate stop.
                         for p in case["parking"]:
                             if min(origin, destination) < p < max(origin, destination):
-                                option, reason = candidate(case, task, crane, paths, books, complete,
-                                                           start, release, floor, enforce, clear=clear, pause=p)
+                                option, reason = try_candidate(crane, start, floor, clear=clear, pause=p)
                                 if option:
                                     choices.append(option)
                                     accepted = True
@@ -511,13 +531,31 @@ def calculate_metrics(rows, paths, gap, horizon, rejections, plans):
     }
 
 
-def solve(case, policy, enforce_plan=False):
+def candidate_rank(option):
+    return (option["lateness_s"] or 0, sum(option["waiting_s"].values()),
+            option["empty_run_s"] + option["loaded_run_s"],
+            option["drop_complete_s"], option["crane_id"])
+
+
+def return_rank(option):
+    return (option["drop_complete_s"], option["empty_run_s"], option["crane_id"])
+
+
+def recorded_option(option):
+    fields = ("task_id", "crane_id", "first_action_s", "pickup_start_s", "drop_complete_s",
+              "lateness_s", "waiting_s", "empty_run_s", "loaded_run_s", "yield_cranes")
+    return {key: option[key] for key in fields}
+
+
+def solve(case, policy, enforce_plan=False, *, audit=None, rank_candidate=candidate_rank,
+          search_lookahead_s=None, unlock_pad_s=0):
     validate_case(case)
     if policy not in POLICIES:
         raise ValueError("Unknown Q1 dispatch policy")
     paths = {c["id"]: list(case["locked_trajectories"].get(c["id"], [])) for c in case["cranes"]}
     books = list(case["initial_occupancy"])
     horizon = case["horizon_s"]
+    lookahead = case["lookahead_s"] if search_lookahead_s is None else search_lookahead_s
     validate_trajectory(case, paths)
     if not continuous_gaps(case, paths)["ok"] or capacity_conflict(case["capacity"], books, horizon):
         raise ValueError("Unsafe locked Q1 snapshot")
@@ -536,23 +574,43 @@ def solve(case, policy, enforce_plan=False):
     while now <= horizon + EPS:
         offers = []
         next_times = []
+        step = {"now_s": now, "tasks": [], "selected": None, "return_reservation": None}
         for task in case["tasks"]:
             tid = task["id"]
             if tid in complete or tid in blocked:
                 continue
             release = planned_release(case, task, complete)
+            entry = None
+            if audit is not None:
+                entry = {
+                    "task_id": tid, "release_s": release, "eligible": task["eligible"],
+                    "missing": [dep for dep in task_dependencies(task) if dep not in complete],
+                    "attempts": [], "options": [], "task_priority": None,
+                }
+                step["tasks"].append(entry)
             if release is None:
+                if entry is not None:
+                    entry["status"] = "predecessor_unfulfilled"
                 continue
             known_release[tid] = release
-            if release > now + case["lookahead_s"] + EPS:
-                next_times.append(release - case["lookahead_s"])
+            if release > now + lookahead + EPS:
+                next_times.append(release - lookahead)
+                if entry is not None:
+                    entry["status"] = "outside_lookahead"
                 continue
-            proposals, causes = propose(case, task, paths, books, complete, now, release, enforce_plan)
+            proposals, causes = propose(case, task, paths, books, complete, now, release, enforce_plan,
+                                         attempts=entry["attempts"] if entry is not None else None,
+                                         unlock_pad_s=unlock_pad_s)
             rejected.update(causes)
             if causes:
                 last_reasons[tid] = causes
             current = [p for p in proposals if p["first_action_s"] <= now + EPS]
             next_times.extend(p["first_action_s"] for p in proposals if p["first_action_s"] > now + EPS)
+            if entry is not None:
+                entry["options"] = [recorded_option(p) | {"rank": rank_candidate(p)}
+                                    for p in proposals]
+                entry["status"] = ("selectable" if current else
+                                   "future_option" if proposals else "no_generated_option")
             if not current:
                 if release > now + EPS:
                     next_times.append(release)
@@ -561,14 +619,16 @@ def solve(case, policy, enforce_plan=False):
             # the dispatched task's alternatives by target breach, wait and motion.
             first_del = min(p["drop_complete_s"] for p in current)
             margin = task["plan_target_s"] - first_del if task["plan_target_s"] is not None else inf
-            best = min(current, key=lambda p: (p["lateness_s"] or 0, sum(p["waiting_s"].values()),
-                                               p["empty_run_s"] + p["loaded_run_s"],
-                                               p["drop_complete_s"], p["crane_id"]))
+            best = min(current, key=rank_candidate)
             order = (release, tid) if policy == "fcfs" else (margin, release, tid)
+            if entry is not None:
+                entry["task_priority"] = [release > now + EPS, *(None if v == inf else v for v in order)]
             offers.append(((release > now + EPS, *order), best, margin, len(current)))
         if offers:
             _, choice, margin, count = min(offers, key=lambda offer: offer[0])
             tid = choice["task_id"]
+            if audit is not None:
+                step["selected"] = recorded_option(choice)
             paths, books = choice["paths"], choice["bookings"]
             complete[tid] = {k: v for k, v in choice.items() if k not in {"paths", "bookings"}}
             decisions.append({"now_s": now, "task_id": tid, "crane_id": choice["crane_id"],
@@ -582,12 +642,21 @@ def solve(case, policy, enforce_plan=False):
                 due = planned_release(case, returning, complete)
                 if due is not None:
                     known_release[returning["id"]] = due
+                    attempt_time = max(now, due - lookahead)
+                    return_attempts = [] if audit is not None else None
                     options, causes = propose(case, returning, paths, books, complete,
-                                              max(now, due - case["lookahead_s"]), due, enforce_plan)
+                                              attempt_time, due, enforce_plan, attempts=return_attempts,
+                                              unlock_pad_s=unlock_pad_s)
                     rejected.update(causes)
+                    if audit is not None:
+                        step["return_reservation"] = {
+                            "task_id": returning["id"], "release_s": due, "search_from_s": attempt_time,
+                            "eligible": returning["eligible"], "attempts": return_attempts,
+                            "options": [recorded_option(p) | {"rank": return_rank(p)} for p in options],
+                            "selected": None,
+                        }
                     if options:
-                        follow = min(options, key=lambda p: (p["drop_complete_s"],
-                                                             p["empty_run_s"], p["crane_id"]))
+                        follow = min(options, key=return_rank)
                         paths, books = follow["paths"], follow["bookings"]
                         complete[returning["id"]] = {
                             k: v for k, v in follow.items() if k not in {"paths", "bookings"}
@@ -597,9 +666,16 @@ def solve(case, policy, enforce_plan=False):
                             "candidate_count": len(options), "plan_margin_s": None,
                             "yield_cranes": follow["yield_cranes"], "reserved_return_for": tid,
                         })
+                        if audit is not None:
+                            step["return_reservation"]["selected"] = recorded_option(follow)
+            if audit is not None:
+                audit.append(step)
             continue
         next_times.extend(s["t1_s"] for path in paths.values() for s in path if s["t1_s"] > now + EPS)
         future = [t for t in next_times if now + EPS < t <= horizon]
+        if audit is not None:
+            step["advance_to_s"] = min(future) if future else None
+            audit.append(step)
         if not future:
             break
         now = min(future)
@@ -735,8 +811,18 @@ def verify_trace(case, result):
             raise ValueError("Discontinuous holder chain")
         if not task["predecessor"] and row["pickup_start_s"] < source_entry(task, completed) - EPS:
             raise ValueError("Upstream receipt not ready")
-        if task["previous_cast"] and row["service_start_s"] < completed[task["previous_cast"]]["service_end_s"] - EPS:
-            raise ValueError("Casting order violation")
+        service = task["service"]
+        if service["kind"] == "cast":
+            previous = task["previous_cast"]
+            previous_end = completed[previous]["service_end_s"] if previous else 0
+            preparation = order[-1] + case.get("caster_preparation_s", case["seat_lead_s"])
+            start, stop = row["service_start_s"], row["service_end_s"]
+            supply = [(b["start_s"], b["end_s"]) for b in result["occupancy"]
+                      if b["task_id"] == tid and b["resource_id"] == f"supply/{task['destination']}"]
+            if (start < max(preparation, previous_end, service["not_before_s"]) - EPS
+                    or abs(stop - start - service["duration_s"]) > EPS
+                    or supply != [(start, stop)]):
+                raise ValueError("Casting timing or capacity booking disagrees with the planned process")
     for intervals in (*carrying.values(), *crane_busy.values()):
         intervals.sort()
         if any(b[0] < a[1] - EPS for a, b in zip(intervals, intervals[1:])):
