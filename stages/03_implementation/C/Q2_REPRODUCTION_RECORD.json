@@ -1,0 +1,566 @@
+{
+  "schema": "mcm-uestc.q2-independent-audit/1",
+  "date": "2026-11-28",
+  "baseline": {
+    "id": "3aec24503becd863706ae6c6a79e1aaf4d590904",
+    "branch": "stage03-q2-c-audit",
+    "a_implementation": "abfc37481567328afc486ae7019b0a1f557b1c5e",
+    "b_delivery": "0e81b5d05c2aa7234680a127ac890a1bf2e925de",
+    "b_merge": "6d8aa34bbfb3bf4e60ac84da8305666138978b7c",
+    "verified_against": "origin/main",
+    "both_merges_ancestors": true
+  },
+  "status": {
+    "conditional_simulation": "NOT PASS",
+    "field_applicability": "NOT VERIFIED",
+    "archive_statistics": "CONDITIONAL PASS",
+    "archive_motion_numerics": "CONDITIONAL PASS",
+    "accepted_station_reservations": "NOT PASS",
+    "random_sample_raw_partition": "NOT VERIFIED",
+    "roster_original_rebuild": "NOT VERIFIED",
+    "candidate_diagnosis": "1: no competing feasible tasks in the audited states under the frozen dispatch conditions"
+  },
+  "environment": {
+    "environment": "mcm-modeling",
+    "python": "3.13.18",
+    "numpy": "2.5.5",
+    "pandas": "3.1.1",
+    "scipy": "1.18.1",
+    "openpyxl": "3.1.5",
+    "python-calamine": "0.9.1",
+    "workbench_script": ".agents/skills/mathodology-workbench/scripts/mtd.py"
+  },
+  "inputs": {
+    "validation": {
+      "cases": {
+        "Q1W01": {
+          "predecessor": 16,
+          "previous_bof": 5,
+          "previous_cast": 5,
+          "reuse_predecessor": 0
+        },
+        "Q1W07": {
+          "predecessor": 21,
+          "previous_bof": 5,
+          "previous_cast": 5,
+          "reuse_predecessor": 0
+        }
+      },
+      "counts": {
+        "a_manifest_members": 75,
+        "a_public_files": 15,
+        "archive_python": "3.13.18",
+        "b_private_files": 6,
+        "b_public_files": 12,
+        "public_summary_sha256": "81ea6ff633ef06ee732154303698bf9e678b009878b82ab00d2d50984d984281"
+      },
+      "discrepancies": []
+    },
+    "a_delivery": "local/stage03_a_q2/delivery",
+    "b_delivery": "local/stage03_q2_b/delivery",
+    "original_workbooks_hash_matched": 12,
+    "public_git_lf_sha256": {
+      "stages/03_implementation/A/Q2_SHA256SUMS.txt": "5dfbac90e5192216ebe1d08a404b03e115571c88333e287c1b5315eb4729bf16",
+      "stages/03_implementation/B/Q2_SHA256SUMS.txt": "633378e0e61472ef14f290261fc53b47efd280a5cd51955d29315934c9cdd8a0",
+      "stages/03_implementation/A/q2_results/q2_summary.json": "81ea6ff633ef06ee732154303698bf9e678b009878b82ab00d2d50984d984281"
+    },
+    "not_present": [
+      "problem/data/processed/stage03_q2_b/q2_sample_ledger.csv",
+      "problem/data/processed/stage03_q2_b/q2_split_private.json",
+      "problem/data/processed/stage03_a_q2_w01",
+      "problem/data/processed/stage03_a_q2_w07",
+      "problem/data/processed/stage02_b_ladle_identity_approved"
+    ],
+    "window_method": "Use SHA-verified archived cases; original rebuild directories were not required for the specified black-box replays."
+  },
+  "runs": {
+    "workbench_status": {
+      "command": "& $modelingPython -B $workbenchScript status",
+      "exit": 0,
+      "checks": "3 questions, workspace and recorded runs"
+    },
+    "workbench_static": {
+      "command": "& $modelingPython -B $workbenchScript check --no-sync",
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0
+    },
+    "q1_a": {
+      "command": "& $modelingPython -B -m unittest discover -s code/dispatch/tests -p 'test_q1_dispatch.py' -v",
+      "tests": 19,
+      "exit": 0
+    },
+    "q1_b": {
+      "command": "& $modelingPython -B -m unittest discover -s code/data/tests -p 'test_q1*.py' -v",
+      "tests": 47,
+      "exit": 0
+    },
+    "q2_a_selftest": {
+      "command": "& $modelingPython -B -m unittest discover -s code/dispatch/tests -p 'test_q2*.py'",
+      "tests": 20,
+      "exit": 0
+    },
+    "q2_b_selftest": {
+      "command": "& $modelingPython -B -m unittest discover -s code/data/tests -p 'test_q2_calibration.py'",
+      "tests": 7,
+      "exit": 0
+    },
+    "q2_c": {
+      "command": "& $modelingPython -B -m unittest discover -s stages/03_implementation/C -p 'test_q2*.py' -v",
+      "tests": 19,
+      "exit": 0,
+      "coverage": {
+        "motion": 5,
+        "event": 6,
+        "random": 8
+      }
+    },
+    "smoke": {
+      "command": "& $modelingPython -B experiments/smoke.py",
+      "temporary_path_prefix": "local/TinyTeX/bin/windows",
+      "exit": 0,
+      "checks": "seeded run, manifests, figure trace, macros, table, PDF, stale-result and unknown-key regression"
+    },
+    "complete_archive": {
+      "command": "& $modelingPython -B $workbenchScript run --name stage03_c_q2_acceptance --seed 20261128 -- $modelingPython -B stages/03_implementation/C/run_q2_audit.py --output local/stage03_c2_q2/delivery/acceptance",
+      "exit": 0,
+      "run_id": "20261128-230638-stage03_c_q2_acceptance",
+      "elapsed_s": 70.14,
+      "exit_semantics": "The audit completed; the acceptance decision is recorded separately."
+    }
+  },
+  "settings": {
+    "windows": [
+      "Q1W01",
+      "Q1W07"
+    ],
+    "conditions": 24,
+    "master_seed": 20261128,
+    "main_and_strict_repeats_per_window_condition": 500,
+    "single_factor_repeats_per_window_condition": 200,
+    "target_ef": {
+      "Q1W01": 17,
+      "Q1W07": 18
+    },
+    "plan_targets_per_window": 6,
+    "undeclared_path_tasks_kept_per_window": 4
+  },
+  "coverage": {
+    "counts": {
+      "all_policy_outputs_identical": 6000,
+      "common_prefix": 4600,
+      "five_crane_tracks": 18000,
+      "motion_segments": 831504,
+      "observed_service_durations": 77250,
+      "strategies": 18000,
+      "tape_matched": 6000,
+      "lf_override_common_non_lf1": 400,
+      "lf_override_different_tape": 400
+    },
+    "paired_records": 6000,
+    "all_id_sets_complete": true,
+    "calibration": {
+      "block_strata": 37,
+      "frozen_families": {
+        "block_pair": 8,
+        "empirical": 24,
+        "gamma": 4,
+        "lognormal": 2
+      },
+      "issues": [],
+      "ratio_strata": 10,
+      "raw_partition_membership": "NOT VERIFIED without the approved dated sample ledger",
+      "strata": 38,
+      "train_eligible_rows": 2258
+    },
+    "printed_statistic_differences": 0,
+    "independent_event_and_resource_issue_count": 0,
+    "motion_numerical_issue_count": 0,
+    "issues": {
+      "station_idle_reservation_absent": 77532
+    },
+    "motion_tolerance": {
+      "s": 1e-07,
+      "m": 1e-07,
+      "m_s": 1e-08,
+      "m_s2": 1e-10
+    },
+    "minimum_gap_m_by_condition": [
+      12,
+      16,
+      20,
+      24
+    ],
+    "minimum_margin_m": 0,
+    "synthetic_interior_gap": {
+      "endpoints_m": [
+        10,
+        10
+      ],
+      "minimum_m": 8,
+      "minimum_at_s": 1,
+      "threshold_m": 9,
+      "rejected": true
+    }
+  },
+  "candidate_summary": {
+    "deduplication": "Full successful decision sequence without strategy tag, scoped within window/condition/replicate; full policy outputs also matched. A decision uses its sequence ordinal even at equal timestamps.",
+    "success_task_hist": {
+      "1": 26207
+    },
+    "vehicle_option_hist": {
+      "1": 5082,
+      "2": 14261,
+      "3": 6864
+    },
+    "observable_checkpoints": {
+      "checkpoints_without_logged_dispatch": 134522,
+      "observed_checkpoints": 160728
+    },
+    "observable_screen_width": {
+      "0": 130878,
+      "1": 29849,
+      "2": 1
+    },
+    "same_timestamp_probe": {
+      "window": "Q1W07",
+      "condition": "clearance_high",
+      "replicate": 107,
+      "early_and_final_widths_by_round": [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          0
+        ]
+      ]
+    },
+    "main": {
+      "Q1W01": {
+        "success_task_hist": {
+          "1": 2160
+        },
+        "observable_checkpoints": {
+          "checkpoints_without_logged_dispatch": 11338,
+          "observed_checkpoints": 13498
+        },
+        "observable_screen_width": {
+          "0": 10950,
+          "1": 2548
+        },
+        "unfinished_classes": {
+          "input_blocked": 2000,
+          "predecessor_unfinished_at_horizon": 2373,
+          "root_source_not_admitted": 1168,
+          "seat_retained_without_service_start": 33,
+          "unserved_after_release_unresolved": 799
+        }
+      },
+      "Q1W07": {
+        "success_task_hist": {
+          "1": 2134
+        },
+        "observable_checkpoints": {
+          "checkpoints_without_logged_dispatch": 10870,
+          "observed_checkpoints": 13004
+        },
+        "observable_screen_width": {
+          "0": 10611,
+          "1": 2393
+        },
+        "unfinished_classes": {
+          "input_blocked": 2000,
+          "predecessor_unfinished_at_horizon": 3366,
+          "root_source_not_admitted": 683,
+          "unserved_after_release_unresolved": 817
+        }
+      }
+    }
+  },
+  "blackbox_replay": {
+    "prespecified_ids": {
+      "main_and_strict": [
+        0,
+        249,
+        499
+      ],
+      "each_single_factor": [
+        0
+      ]
+    },
+    "prespecified_pairs": 32,
+    "additional_diagnostic_pairs": 1,
+    "total_policy_runs_in_forward_order": 99,
+    "exact_archive_matches": 99,
+    "reverse_order_matches": 99,
+    "unchanged_tapes": 33,
+    "hidden_future_checks": 99,
+    "same_visible_prefix": 99,
+    "changed_future_suffix": 99,
+    "checks_with_dispatch_between_start_and_unannounced_end": 42,
+    "dispatches_in_that_interval": 48,
+    "complete_18000_policy_rerun": false
+  },
+  "statistics": {
+    "scope": "Conditional Monte Carlo; fixed rosters and condition parameters",
+    "quantile": "Inclusive linear interpolation, zero-based position (n-1)p",
+    "confidence_interval": "Two-sided Student t mean CI, ddof=1, computed on paired differences",
+    "published_compare_tolerance": {
+      "absolute": 1e-07,
+      "relative": 1e-10
+    },
+    "per_group_aggregates": {
+      "Q1W01/clearance_high": {
+        "paired_repeats": 200,
+        "policies": 600,
+        "completed_ef_mean": 4.22,
+        "seat_on_time_mean": 1.65,
+        "min_gap_m": 24.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 2631
+      },
+      "Q1W01/clearance_low": {
+        "paired_repeats": 200,
+        "policies": 600,
+        "completed_ef_mean": 4.31,
+        "seat_on_time_mean": 1.7,
+        "min_gap_m": 12.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 2577
+      },
+      "Q1W01/layout_crowded": {
+        "paired_repeats": 200,
+        "policies": 600,
+        "completed_ef_mean": 4.705,
+        "seat_on_time_mean": 1.995,
+        "min_gap_m": 16.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 2994
+      },
+      "Q1W01/lf1_empirical": {
+        "paired_repeats": 200,
+        "policies": 600,
+        "completed_ef_mean": 4.01,
+        "seat_on_time_mean": 1.49,
+        "min_gap_m": 16.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 2406
+      },
+      "Q1W01/main": {
+        "paired_repeats": 500,
+        "policies": 1500,
+        "completed_ef_mean": 4.254,
+        "seat_on_time_mean": 1.656,
+        "min_gap_m": 16.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 6369
+      },
+      "Q1W01/motion_fast": {
+        "paired_repeats": 200,
+        "policies": 600,
+        "completed_ef_mean": 4.4,
+        "seat_on_time_mean": 1.74,
+        "min_gap_m": 16.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 2607
+      },
+      "Q1W01/motion_slow": {
+        "paired_repeats": 200,
+        "policies": 600,
+        "completed_ef_mean": 4.19,
+        "seat_on_time_mean": 1.595,
+        "min_gap_m": 16.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 2514
+      },
+      "Q1W01/quantile_p75": {
+        "paired_repeats": 200,
+        "policies": 600,
+        "completed_ef_mean": 4.31,
+        "seat_on_time_mean": 1.7,
+        "min_gap_m": 16.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 2577
+      },
+      "Q1W01/quantile_p95": {
+        "paired_repeats": 200,
+        "policies": 600,
+        "completed_ef_mean": 4.31,
+        "seat_on_time_mean": 1.7,
+        "min_gap_m": 16.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 2577
+      },
+      "Q1W01/scale_high": {
+        "paired_repeats": 200,
+        "policies": 600,
+        "completed_ef_mean": 4.19,
+        "seat_on_time_mean": 1.595,
+        "min_gap_m": 20.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 2514
+      },
+      "Q1W01/scale_low": {
+        "paired_repeats": 200,
+        "policies": 600,
+        "completed_ef_mean": 4.485,
+        "seat_on_time_mean": 1.795,
+        "min_gap_m": 12.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 2640
+      },
+      "Q1W01/strict": {
+        "paired_repeats": 500,
+        "policies": 1500,
+        "completed_ef_mean": 4.254,
+        "seat_on_time_mean": 1.656,
+        "min_gap_m": 16.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 6369
+      },
+      "Q1W07/clearance_high": {
+        "paired_repeats": 200,
+        "policies": 600,
+        "completed_ef_mean": 3.99,
+        "seat_on_time_mean": 1.545,
+        "min_gap_m": 24.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 2454
+      },
+      "Q1W07/clearance_low": {
+        "paired_repeats": 200,
+        "policies": 600,
+        "completed_ef_mean": 4.33,
+        "seat_on_time_mean": 1.665,
+        "min_gap_m": 12.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 2598
+      },
+      "Q1W07/layout_crowded": {
+        "paired_repeats": 200,
+        "policies": 600,
+        "completed_ef_mean": 4.56,
+        "seat_on_time_mean": 1.89,
+        "min_gap_m": 16.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 2868
+      },
+      "Q1W07/lf1_empirical": {
+        "paired_repeats": 200,
+        "policies": 600,
+        "completed_ef_mean": 3.99,
+        "seat_on_time_mean": 1.45,
+        "min_gap_m": 16.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 2394
+      },
+      "Q1W07/main": {
+        "paired_repeats": 500,
+        "policies": 1500,
+        "completed_ef_mean": 4.268,
+        "seat_on_time_mean": 1.634,
+        "min_gap_m": 16.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 6402
+      },
+      "Q1W07/motion_fast": {
+        "paired_repeats": 200,
+        "policies": 600,
+        "completed_ef_mean": 4.485,
+        "seat_on_time_mean": 1.81,
+        "min_gap_m": 16.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 2685
+      },
+      "Q1W07/motion_slow": {
+        "paired_repeats": 200,
+        "policies": 600,
+        "completed_ef_mean": 4.22,
+        "seat_on_time_mean": 1.585,
+        "min_gap_m": 16.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 2532
+      },
+      "Q1W07/quantile_p75": {
+        "paired_repeats": 200,
+        "policies": 600,
+        "completed_ef_mean": 4.33,
+        "seat_on_time_mean": 1.665,
+        "min_gap_m": 16.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 2598
+      },
+      "Q1W07/quantile_p95": {
+        "paired_repeats": 200,
+        "policies": 600,
+        "completed_ef_mean": 4.33,
+        "seat_on_time_mean": 1.665,
+        "min_gap_m": 16.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 2598
+      },
+      "Q1W07/scale_high": {
+        "paired_repeats": 200,
+        "policies": 600,
+        "completed_ef_mean": 4.22,
+        "seat_on_time_mean": 1.585,
+        "min_gap_m": 20.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 2532
+      },
+      "Q1W07/scale_low": {
+        "paired_repeats": 200,
+        "policies": 600,
+        "completed_ef_mean": 4.555,
+        "seat_on_time_mean": 1.825,
+        "min_gap_m": 12.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 2694
+      },
+      "Q1W07/strict": {
+        "paired_repeats": 500,
+        "policies": 1500,
+        "completed_ef_mean": 4.268,
+        "seat_on_time_mean": 1.634,
+        "min_gap_m": 16.0,
+        "min_margin_m": 0.0,
+        "station_idle_reservation_absent": 6402
+      }
+    }
+  },
+  "findings": [
+    {
+      "id": "C-Q2-01",
+      "severity": "Major",
+      "owner": "A",
+      "condition": "NOT PASS",
+      "observed": "Post-service idle at non-parking stations without a covering service reservation.",
+      "required": "Provide duration-bounded authorized station holds or route to registered parking, then rerun affected conditions."
+    },
+    {
+      "id": "C-Q2-02",
+      "severity": "Observation",
+      "owner": "B/A",
+      "condition": "NOT VERIFIED",
+      "observed": "Raw sample membership ledger and original window build directories unavailable."
+    },
+    {
+      "id": "C-Q2-03",
+      "severity": "Observation",
+      "owner": "A/B",
+      "observed": "Model root release can precede upstream source admission; censored exposure is conditional."
+    }
+  ],
+  "private_evidence_outputs": [
+    "local/stage03_c2_q2/delivery/acceptance/audit_rows.jsonl.gz",
+    "local/stage03_c2_q2/delivery/acceptance/archive_audit.json",
+    "local/stage03_c2_q2/delivery/acceptance/targeted_replay.json",
+    "local/stage03_c2_q2/delivery/acceptance/calibration_checks.json"
+  ]
+}
